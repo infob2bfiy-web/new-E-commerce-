@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>সাধারণ প্রশ্ন ও উত্তর (FAQs) - Green Grocery</title>
+    <link rel="stylesheet" href="/src/style.css">
+    <script type="module" src="/src/app.js"></script>
+  </head>
+  <body class="bg-gray-50/50 pb-20 sm:pb-0">
+    <!-- Dynamic Header -->
+    <header id="shared-header"></header>
+
+    <main class="max-w-3xl mx-auto px-4 py-16 font-sans text-left">
+      <div class="bg-white rounded-3xl border border-gray-100 shadow-sm p-6 sm:p-10">
+        <h1 class="text-2xl font-extrabold text-emerald-800 mb-2 bengali-font">সাধারণ জিজ্ঞাসা ও উত্তর (FAQs)</h1>
+        <p class="text-xs text-gray-400 mb-8 max-w-sm">আমাদের সার্ভিস, শিপিং চার্জ এবং পণ্যের গুণমান সম্পর্কে ক্রেতাদের কিছু কমন প্রশ্ন ও উত্তর নিচে দেওয়া হলো।</p>
+        
+        <!-- Accordion Q1 -->
+        <div class="border-b border-gray-100 pb-4 mb-4 select-none">
+          <button class="w-full flex justify-between items-center font-bold text-gray-800 text-sm focus:outline-none cursor-pointer" onclick="this.nextElementSibling.classList.toggle('active')">
+            <span>১. ঢাকার ভেতর এবং বাইরে ডেলিভারি পেতে কতদিন সময় লাগবে?</span>
+            <span class="text-emerald-700 font-bold">+</span>
+          </button>
+          <div class="accordion-content text-xs text-gray-500 mt-2 font-sans">
+            ঢাকার মধ্যে আমাদের হোম ডেলিভারি সাধারণত ২৪ থেকে ৪৮ ঘণ্টার মধ্যে সম্পন্ন হয়। ঢাকা সিটির বাইরে বিভিন্ন কুরিয়ার সার্ভিস (যেমন: সুন্দরবন বা রেডেক্স) এর মাধ্যমে ২/৩ কার্যদিবসের মধ্যে পণ্য পৌঁছে দেওয়া হয়।
+          </div>
+        </div>
+
+        <!-- Accordion Q2 -->
+        <div class="border-b border-gray-100 pb-4 mb-4 select-none">
+          <button class="w-full flex justify-between items-center font-bold text-gray-800 text-sm focus:outline-none cursor-pointer" onclick="this.nextElementSibling.classList.toggle('active')">
+            <span>২. প্রোডাক্ট খাঁটি এবং ফ্রেশ না হলে কি ফেরত দিতে পারব?</span>
+            <span class="text-emerald-700 font-bold">+</span>
+          </button>
+          <div class="accordion-content text-xs text-gray-500 mt-2 font-sans">
+            জী, অবশ্যই! আমাদের পণ্যের বিশুদ্ধতায় কোনো ত্রুটি বা ড্যামেজ থাকলে আপনি ৭ দিনের মধ্যে তা সম্পূর্ণ ফ্রিতে ফেরত বা রিপ্লেসমেন্ট সার্ভিস সুবিধা পেতে পারেন।
+          </div>
+        </div>
+
+        <!-- Accordion Q3 -->
+        <div class="border-b border-gray-100 pb-4 mb-4 select-none">
+          <button class="w-full flex justify-between items-center font-bold text-gray-800 text-sm focus:outline-none cursor-pointer" onclick="this.nextElementSibling.classList.toggle('active')">
+            <span>৩. bKash বা নগদে পেমেন্ট করলে কি কোনো বিশেষ ছাড় আছে?</span>
+            <span class="text-emerald-700 font-bold">+</span>
+          </button>
+          <div class="accordion-content text-xs text-gray-500 mt-2 font-sans">
+            জী! আপনি বিকাশ বা নগদে কুপন কোড ব্যবহার করে আকর্ষণীয় ফ্ল্যাট এবং পার্সেন্টেজ ডিসকাউন্ট অফার পেতে পারেন। স্পেশাল কুপন পেতে আমাদের কার্ট বা ড্যাশবোর্ড চেক করুন।
+          </div>
+        </div>
+
+        <!-- Accordion Q4 -->
+        <div class="border-b border-gray-100 pb-4 mb-4 select-none">
+          <button class="w-full flex justify-between items-center font-bold text-gray-800 text-sm focus:outline-none cursor-pointer" onclick="this.nextElementSibling.classList.toggle('active')">
+            <span>৪. আপনাদের মধু কিংবা ঘি ক্যাশ অন ডেলিভারিতে খেয়ে দেখে রাখা সম্ভব?</span>
+            <span class="text-emerald-700 font-bold">+</span>
+          </button>
+          <div class="accordion-content text-xs text-gray-500 mt-2 font-sans">
+            ডেলিভারি ম্যানের উপস্থিতে আপনি কন্টেইনারটির বাইরের সিল বা বিশুদ্ধতার পরীক্ষা সিল চেক করে পেমেন্ট করতে পারেন। পণ্য খুলে ব্যবহার করার পর যেকোনো ফিডব্যাকে আমাদের কাস্টমার কেয়ার টিম সাথে সাথে রেসপন্স করে থাকে।
+          </div>
+        </div>
+
+      </div>
+    </main>
+
+    <!-- Mobile Navigation Bar -->
+    <div id="shared-mobile-nav"></div>
+
+    <!-- Dynamic Footer -->
+    <footer id="shared-footer" class="mt-auto"></footer>
+  </body>
+</html>

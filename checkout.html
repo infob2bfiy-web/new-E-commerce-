@@ -1,0 +1,1401 @@
+<!doctype html>
+<html lang="bn">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Checkout - Organic Grocery Store</title>
+    <link rel="stylesheet" href="/src/style.css">
+    <script type="module" src="/src/app.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" crossorigin="anonymous"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+      .bengali-font {
+        font-family: 'Hind Siliguri', sans-serif;
+      }
+      @media print {
+        header, footer, #shared-mobile-nav, .no-print {
+          display: none !important;
+        }
+        body {
+          background-color: white !important;
+          padding: 0 !important;
+          margin: 0 !important;
+        }
+        main {
+          max-width: 100% !important;
+          width: 100% !important;
+          padding: 0 !important;
+          margin: 0 !important;
+        }
+        #success-receipt-overlay {
+          border: none !important;
+          box-shadow: none !important;
+          max-width: 100% !important;
+          width: 100% !important;
+          padding: 0 !important;
+          margin: 0 !important;
+          background: white !important;
+        }
+        /* Keep background colors visible when printing */
+        * {
+          -webkit-print-color-adjust: exact !important;
+          print-color-adjust: exact !important;
+        }
+      }
+    </style>
+  </head>
+  <body class="bg-gray-50/50 pb-20 sm:pb-0 bengali-font">
+    <!-- Dynamic Header -->
+    <header id="shared-header"></header>
+
+    <!-- Checkout Main Wrapper -->
+    <main class="max-w-6xl mx-auto px-4 md:px-6 py-8 font-sans">
+      
+      <!-- Top Title with Orange Border Indicator -->
+      <div class="flex items-center gap-3 mb-6 border-l-4 border-orange-500 pl-3">
+        <h1 class="text-xl md:text-2xl font-black text-slate-800 bengali-font">
+          অর্ডার করুন (Secure Checkout)
+        </h1>
+      </div>
+
+      <!-- Step Wizard Bar matching image -->
+      <div class="grid grid-cols-4 gap-2 text-center text-[10px] md:text-xs font-bold mb-8 max-w-4xl mx-auto px-2">
+        <div class="space-y-1.5 cursor-default select-none">
+          <span class="text-emerald-700 bengali-font">১. শিপিং ঠিকানা</span>
+          <div class="h-[3px] bg-emerald-600 rounded-full w-full"></div>
+        </div>
+        <div class="space-y-1.5 cursor-default select-none">
+          <span class="text-emerald-700 bengali-font">২. ডেলিভারি জোন</span>
+          <div class="h-[3px] bg-emerald-600 rounded-full w-full"></div>
+        </div>
+        <div class="space-y-1.5 cursor-default select-none">
+          <span class="text-emerald-700 bengali-font">৩. বিলিং বিবরণ</span>
+          <div class="h-[3px] bg-emerald-600 rounded-full w-full"></div>
+        </div>
+        <div class="space-y-1.5 cursor-default select-none">
+          <span class="text-emerald-400">৪. অর্ডার কনফার্ম</span>
+          <div class="h-[3px] bg-emerald-100/80 rounded-full w-full"></div>
+        </div>
+      </div>
+
+      <!-- Checkout main grid -->
+      <div class="grid grid-cols-1 lg:grid-cols-5 gap-6 align-start" id="checkout-main-grid">
+        
+        <!-- Left Customer Info & Area Options (3 cols) -->
+        <div class="lg:col-span-3 space-y-6">
+          
+          <!-- Section 1 block -->
+          <section class="bg-white border border-gray-100 shadow-sm p-5 md:p-6 rounded-2xl">
+            <h3 class="font-black text-slate-800 text-sm md:text-base mb-5 pb-2.5 flex items-center gap-2 text-left bg-transparent bengali-font">
+              <span class="bg-slate-850 text-white rounded-full w-5 h-5 flex items-center justify-center text-[11px]">❶</span>
+              <span>শিপিং ঠিকানা গ্রাহক তথ্য (Shipping Details)</span>
+            </h3>
+            
+            <form id="checkout-form" class="space-y-4 text-left font-sans text-xs" onsubmit="event.preventDefault();">
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label class="block font-bold text-slate-700 mb-1.5 bengali-font">নাম *</label>
+                  <input type="text" id="cust-name" required placeholder="আপনার নাম লিখুন" class="w-full bg-white focus:bg-white border border-gray-250 focus:border-emerald-600 focus:ring-1 focus:ring-emerald-500 rounded-xl px-4 py-3 text-xs md:text-sm outline-none transition text-slate-850 font-medium font-sans">
+                </div>
+                <div>
+                  <label class="block font-bold text-slate-700 mb-1.5 bengali-font">মোবাইল নম্বর *</label>
+                  <input type="tel" id="cust-phone" required placeholder="১১ ডিজিটের সচল মোবাইল নম্বর দিন" class="w-full bg-white focus:bg-white border border-gray-250 focus:border-emerald-600 focus:ring-1 focus:ring-emerald-500 rounded-xl px-4 py-3 text-xs md:text-sm outline-none transition text-slate-850 font-medium font-sans">
+                </div>
+              </div>
+
+              <div>
+                <label class="block font-bold text-slate-700 mb-1.5 bengali-font">ইমেইল (ঐচ্ছিক)</label>
+                <input type="email" id="cust-email" placeholder="example@gmail.com" class="w-full bg-white focus:bg-white border border-gray-250 focus:border-emerald-600 focus:ring-1 focus:ring-emerald-500 rounded-xl px-4 py-3 text-xs md:text-sm outline-none transition text-slate-850 font-medium font-sans">
+              </div>
+
+              <!-- Division, District, Upazila Selector Dropdowns matching exact screenshot specifications -->
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div>
+                  <label class="block font-bold text-slate-700 mb-1.5 bengali-font">বিভাগ *</label>
+                  <select id="cust-division" required class="w-full bg-white border border-gray-250 focus:border-emerald-600 focus:ring-1 focus:ring-emerald-500 rounded-xl px-3 py-3 text-xs md:text-sm outline-none transition cursor-pointer text-slate-850 font-sans">
+                    <!-- Loaded dynamically -->
+                  </select>
+                </div>
+                <div>
+                  <label class="block font-bold text-slate-700 mb-1.5 bengali-font">জেলা *</label>
+                  <select id="cust-district" required class="w-full bg-white border border-gray-250 focus:border-emerald-600 focus:ring-1 focus:ring-emerald-500 rounded-xl px-3 py-3 text-xs md:text-sm outline-none transition cursor-pointer text-slate-850 font-sans">
+                    <option value="">জেলা নির্বাচন করুন</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block font-bold text-slate-700 mb-1.5 bengali-font">উপজেলা/থানা *</label>
+                  <select id="cust-upazila" required class="w-full bg-white border border-gray-250 focus:border-emerald-600 focus:ring-1 focus:ring-emerald-500 rounded-xl px-3 py-3 text-xs md:text-sm outline-none transition cursor-pointer text-slate-850 font-sans">
+                    <option value="">থানা নির্বাচন করুন</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label class="block font-bold text-slate-700 mb-1.5 bengali-font">বিস্তারিত ঠিকানা *</label>
+                <textarea id="cust-address" required rows="3" placeholder="বাসা/হোল্ডিং, রোড নাম, এলাকা লিখুন" class="w-full bg-white focus:bg-white border border-gray-250 focus:border-emerald-600 focus:ring-1 focus:ring-emerald-500 rounded-xl px-4 py-3 text-xs md:text-sm outline-none transition resize-none text-slate-850 font-medium font-sans"></textarea>
+              </div>
+
+              <div>
+                <label class="block font-bold text-slate-700 mb-1.5 bengali-font">অর্ডার নোট (ঐচ্ছিক)</label>
+                <textarea id="cust-note" rows="2" placeholder="অর্ডার সংক্রান্ত বা ডেলিভারি সংক্রান্ত কোনো বিশেষ নির্দেশনা থাকলে লিখতে পারেন..." class="w-full bg-white focus:bg-white border border-gray-250 focus:border-emerald-600 focus:ring-1 focus:ring-emerald-500 rounded-xl px-4 py-3 text-xs md:text-sm outline-none transition resize-none text-slate-850 font-medium font-sans"></textarea>
+              </div>
+            </form>
+          </section>
+
+          <!-- Section 2: Delivery Area Selector Layout -->
+          <section class="bg-white border border-gray-100 shadow-sm p-5 md:p-6 rounded-2xl text-left">
+            <h3 class="font-black text-slate-800 text-sm md:text-base mb-5 pb-2.5 flex items-center gap-2 text-left bg-transparent border-b border-gray-100 bengali-font">
+              <span class="bg-slate-850 text-white rounded-full w-5 h-5 flex items-center justify-center text-[11px]">❷</span>
+              <span>ডেলিভারি এলাকা নির্বাচন করুন (Delivery Area)</span>
+            </h3>
+
+            <!-- Two Interactive Cards side by side in a grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              
+              <!-- Inside Dhaka -->
+              <div onclick="selectDeliveryArea('inside')" id="card-inside-dhaka" class="border-2 border-orange-500 bg-white hover:border-emerald-600 rounded-2xl p-4 flex items-center justify-between cursor-pointer select-none transition shadow-sm">
+                <div class="space-y-1">
+                  <p class="text-xs md:text-sm font-bold text-slate-800 bengali-font">ঢাকার ভেতরে হোম ডেলিভারি</p>
+                  <p class="text-sm md:text-base font-black text-slate-800 font-mono">৳৮০</p>
+                </div>
+                <div class="w-5 h-5 rounded-full border-2 border-orange-700 flex items-center justify-center bg-white" id="radio-inside">
+                  <div class="w-2.5 h-2.5 rounded-full bg-orange-700"></div>
+                </div>
+              </div>
+
+              <!-- Outside Dhaka -->
+              <div onclick="selectDeliveryArea('outside')" id="card-outside-dhaka" class="border border-gray-250 bg-white hover:border-emerald-600 rounded-2xl p-4 flex items-center justify-between cursor-pointer select-none transition">
+                <div class="space-y-1">
+                  <p class="text-xs md:text-sm font-bold text-slate-850 bengali-font">ঢাকার বাইরে কুরিয়ার/হোম ডেলিভারি</p>
+                  <p class="text-sm md:text-base font-black text-slate-650 font-mono">৳১০০</p>
+                </div>
+                <div class="w-5 h-5 rounded-full border border-gray-300 flex items-center justify-center bg-white" id="radio-outside">
+                  <div class="w-2.5 h-2.5 rounded-full bg-transparent"></div>
+                </div>
+              </div>
+
+            </div>
+          </section>
+
+          <!-- Section 3: Cash On Delivery Shield Panel layout -->
+          <section class="bg-white border border-gray-100 shadow-sm p-5 md:p-6 rounded-2xl text-left">
+            <h3 class="font-black text-slate-800 text-sm md:text-base mb-5 pb-2.5 flex items-center gap-2 text-left bg-transparent border-b border-gray-100 bengali-font">
+              <span class="bg-slate-850 text-white rounded-full w-5 h-5 flex items-center justify-center text-[11px]">❸</span>
+              <span>পেমেন্ট পদ্ধতি (Payment Option)</span>
+            </h3>
+
+            <!-- Shield box Cash on delivery only -->
+            <div class="border border-green-200 bg-green-50/20 rounded-2xl p-4 flex items-start gap-4">
+              <div class="bg-emerald-600 text-white p-2 rounded-xl mt-0.5">
+                <!-- SVG Shield icon -->
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.57-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z" />
+                </svg>
+              </div>
+              <div class="flex-grow space-y-1">
+                <div class="flex items-center gap-2">
+                  <p class="text-xs md:text-sm font-bold text-slate-850 bengali-font">ক্যাশ অন ডেলিভারি (Cash on Delivery)</p>
+                  <span class="bg-emerald-100 text-emerald-800 text-[9px] font-black px-2 py-0.5 rounded-md flex items-center gap-0.5 select-none bengali-font">✓ সচল</span>
+                </div>
+                <p class="text-[11px] text-slate-500 leading-relaxed bengali-font">পণ্য হাতে পেয়ে তা যাচাই করে নিশ্চিত হয়ে মূল্য পরিশোধ করুন।</p>
+              </div>
+            </div>
+          </section>
+
+          <!-- Complete action submit CTA button -->
+          <div class="pt-2">
+            <button onclick="handleSubmitCheckout()" class="w-full bg-orange-500 hover:bg-orange-600 text-white font-extrabold text-sm md:text-base py-3.5 px-6 rounded-2xl shadow-lg transition active:scale-[0.99] cursor-pointer flex items-center justify-center gap-2 select-none bengali-font">
+              <span>এখনই অর্ডার সম্পন্ন করুন</span>
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+              </svg>
+            </button>
+          </div>
+
+        </div>
+
+        <!-- Right Side Checkout list / summaries (2 cols) -->
+        <div class="lg:col-span-2">
+          <div class="bg-white border border-gray-100 shadow-md p-5 rounded-2xl sticky top-24 flex flex-col gap-5 text-left">
+            
+            <h3 class="font-black text-slate-800 text-sm md:text-base border-b border-gray-100 pb-3 flex items-center gap-2 bengali-font">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4.5 h-4.5 text-slate-500">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.993 1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 0 1-1.12-1.243l1.264-12A1.125 1.125 0 0 1 5.513 7.5h12.974c.576 0 1.059.435 1.119 1.007ZM8.625 10.5a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm7.5 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
+              </svg>
+              <span>আপনার অর্ডার বিবরণী</span>
+            </h3>
+            
+            <!-- Items scrollable tray -->
+            <div id="checkout-items-tray" class="flex flex-col gap-4 max-h-[280px] overflow-y-auto pr-1">
+              <!-- Dynamically populated line items -->
+            </div>
+
+            <!-- Promo coupon input block -->
+            <div class="pt-3 border-t border-gray-100 space-y-1.5">
+              <label class="block text-xs font-bold text-slate-600 bg-transparent text-left bengali-font">প্রোমো কোড / ছাড়ের কুপন:</label>
+              <div class="flex gap-2">
+                <input type="text" id="coupon-code-input" placeholder="উদা: BESHOK20, FREE50" class="flex-1 bg-white border border-gray-250 focus:border-emerald-600 focus:ring-1 focus:ring-emerald-500 rounded-xl px-3.5 py-2.5 text-xs font-bold font-mono uppercase text-slate-800 outline-none transition uppercase">
+                <button onclick="applyPromoCoupon()" class="bg-slate-800 hover:bg-slate-900 text-white font-extrabold text-[11px] px-4 py-2 rounded-xl transition cursor-pointer select-none bengali-font">
+                  প্রয়োগ করুন
+                </button>
+              </div>
+              <div id="coupon-status-msg" class="text-[10px] font-bold hidden text-left mt-1"></div>
+            </div>
+
+            <!-- Invoice Calculation list -->
+            <div class="flex flex-col gap-3 text-xs text-slate-500 py-4 border-y border-gray-100 select-none font-sans">
+              <div class="flex justify-between items-center">
+                <span class="bengali-font">পণ্য উপমোট (Subtotal):</span>
+                <span id="checkout-subtotal" class="font-extrabold text-slate-800 font-mono">৳০</span>
+              </div>
+              <div class="flex justify-between items-center hidden" id="discount-calc-row">
+                <span class="bengali-font text-emerald-800">কুপন ডিসকাউন্ট (Discount):</span>
+                <span id="checkout-discount" class="font-extrabold text-emerald-700 font-mono">-৳০</span>
+              </div>
+              <div class="flex justify-between items-center">
+                <span id="label-delivery" class="bengali-font">ডেলিভারি চার্জ (ঢাকা):</span>
+                <span id="checkout-delivery" class="font-extrabold text-slate-800 font-mono">৳৮০</span>
+              </div>
+            </div>
+
+            <!-- Invoiced Total exactly styled -->
+            <div class="flex justify-between items-center select-none py-1">
+              <span class="text-xs md:text-sm font-black text-slate-800 bengali-font">মোট পেয়বল অ্যামাউন্ট:</span>
+              <span id="checkout-grandtotal" class="text-base md:text-lg font-black text-emerald-700 font-mono">৳০</span>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Success Receipt Overlay Layout matching theme EXACTLY -->
+      <div id="success-receipt-overlay" class="hidden w-full max-w-4xl mx-auto space-y-6 text-slate-800 animate-fade-in font-sans">
+        
+        <!-- White card with green tick checkmark -->
+        <div class="bg-white border border-gray-150 rounded-3xl p-6 md:p-8 shadow-sm text-center flex flex-col items-center justify-center space-y-4 no-print">
+          <div class="w-16 h-16 bg-[#e6f4ea] text-emerald-600 rounded-full flex items-center justify-center text-3xl font-bold select-none">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" class="w-8 h-8">
+              <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+            </svg>
+          </div>
+          
+          <h2 class="text-xl md:text-2xl font-black text-[#137333] bengali-font tracking-tight">আপনার অর্ডারটি সফলভাবে সম্পন্ন হয়েছে!</h2>
+          <p class="text-xs md:text-sm text-slate-500 font-medium bengali-font leading-relaxed">ধন্যবাদ আমাদের উপর আস্থা রাখার জন্য। আপনার অর্ডার আইডি নিচে দেওয়া হলো।</p>
+          
+          <!-- Auto Account Creation Alert -->
+          <div id="auto-account-alert" class="hidden w-full max-w-lg mt-2 p-3.5 bg-[#e6f4ea] text-[#137333] rounded-2xl border border-emerald-100 text-xs md:text-sm font-semibold bengali-font text-center">
+            🎉 আপনার মোবাইল নম্বর দিয়ে স্বয়ংক্রিয়ভাবে অ্যাকাউন্ট তৈরি করা হয়েছে! পাসওয়ার্ড হলো আপনার মোবাইল নম্বরটি।
+          </div>
+          
+          <!-- WhatsApp order sharing button exactly customized -->
+          <a id="success-whatsapp-btn" target="_blank" href="#" class="inline-flex items-center justify-center gap-2.5 bg-[#25D366] hover:bg-[#20ba56] text-white font-extrabold text-xs md:text-sm py-3.5 px-6 rounded-2xl shadow transition w-full max-w-lg cursor-pointer select-none bengali-font">
+            <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24">
+              <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.514 2.266 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.724-1.457L0 24zm6.59-4.846c1.6.95 3.1 1.45 4.7 1.45 5.3 0 9.6-4.3 9.6-9.6s-4.3-9.6-9.6-9.6-9.6 4.3-9.6 9.6c0 1.8.5 3.5 1.4 5l-.5 1.9 2 2z"/>
+            </svg>
+            <span>আপনার অর্ডারটি দ্রুত পেতে আমাদের WhatsApp-এ এখনই অর্ডারটি পাঠান</span>
+          </a>
+        </div>
+
+        <!-- Custom invoice container printable -->
+        <div id="printable-invoice-content" class="bg-white border border-gray-150 rounded-3xl p-6 md:p-8 shadow-sm space-y-6">
+          
+          <!-- Invoice Header -->
+          <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-gray-100 pb-5">
+            <div class="space-y-1 text-left">
+              <h3 class="text-lg md:text-xl font-black text-slate-800 bengali-font">অর্ডার ইনভয়েস (Order Invoice)</h3>
+              <p class="text-[11px] text-slate-400 font-semibold font-mono" id="rec-datetime">তারিখ ও সময়: -</p>
+            </div>
+            
+            <div class="text-left md:text-right space-y-1 font-sans">
+              <h4 class="text-base md:text-lg font-black text-emerald-800 tracking-tight" id="rec-sitename-dyn">Organic Bazar</h4>
+              <p class="text-[11px] text-slate-500 font-bold" id="rec-inv-num">ইনভয়েস নং: -</p>
+              <p class="text-[11px] text-slate-500 font-mono">আইডি: <span id="rec-id-val-dyn" class="text-slate-800 font-extrabold">-</span></p>
+            </div>
+          </div>
+
+          <!-- Cards Row 1: Shipping and Payment details -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-5 text-left text-xs text-slate-600">
+            
+            <!-- Delivery Info Card -->
+            <div class="border border-gray-100 bg-gray-50/50 rounded-2xl p-4 md:p-5 space-y-2.5">
+              <h5 class="font-extrabold text-slate-800 border-b border-gray-200 pb-1.5 flex items-center gap-1.5 bengali-font">
+                <span>ডেলিভারি ঠিকানা:</span>
+              </h5>
+              <div class="space-y-1 font-medium select-text">
+                <p id="rec-cust-name-dyn" class="font-bold text-slate-800 text-sm">-</p>
+                <p id="rec-cust-phone-dyn" class="font-bold font-mono text-slate-700">-</p>
+                <p id="rec-cust-addr-dyn" class="leading-relaxed text-slate-500 font-sans">-</p>
+                <div class="pt-1 select-none">
+                  <span id="rec-zone-badge" class="bg-orange-50 text-orange-600 px-2.5 py-1 rounded-md text-[10px] font-extrabold inline-block b-f uppercase">জোনের নাম: Inside Dhaka</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Payment Info Card -->
+            <div class="border border-gray-100 bg-gray-50/50 rounded-2xl p-4 md:p-5 space-y-2.5">
+              <h5 class="font-extrabold text-slate-800 border-b border-gray-200 pb-1.5 flex items-center gap-1.5 bengali-font">
+                <span>পেমেন্ট বিবরণী:</span>
+              </h5>
+              <div class="space-y-2.5">
+                <div>
+                  <p class="font-black text-emerald-800 text-xs md:text-sm bengali-font">ক্যাশ অন ডেলিভারি (Cash on Delivery)</p>
+                </div>
+                <div class="space-y-1 text-[11px]">
+                  <div class="flex items-center gap-1.5">
+                    <span class="text-slate-400 font-medium bengali-font">পেমেন্ট স্ট্যাটাস:</span>
+                    <span class="bg-amber-100 text-amber-800 text-[9px] font-black px-2.5 py-0.5 rounded-md uppercase font-sans">PENDING VERIFICATION</span>
+                  </div>
+                  <div class="flex items-center gap-1.5">
+                    <span class="text-slate-400 font-medium bengali-font">মেথড আইডি:</span>
+                    <span class="font-mono text-slate-700 font-bold">COD-INSTANCE</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Table of items "ক্রয়কৃত পণ্যসমূহ (Products Ordered)" -->
+          <div class="space-y-3 pt-2">
+            <h5 class="font-extrabold text-slate-800 text-xs text-left border-l-4 border-emerald-600 pl-2.5 bengali-font">ক্রয়কৃত পণ্যসমূহ (Products Ordered)</h5>
+            
+            <div class="overflow-x-auto">
+              <table class="w-full text-left border-collapse text-xs">
+                <thead>
+                  <tr class="border-b border-gray-150 text-slate-450 font-bold bengali-font select-none">
+                    <th class="py-2.5 font-extrabold text-left">পণ্য বিবরণী</th>
+                    <th class="py-2.5 font-extrabold text-center w-16">পরিমাণ</th>
+                    <th class="py-2.5 font-extrabold text-center w-24">একক মূল্য</th>
+                    <th class="py-2.5 font-extrabold text-right w-24">মোট মূল্য</th>
+                  </tr>
+                </thead>
+                <tbody id="rec-items-tbody" class="divide-y divide-gray-100 font-sans">
+                  <!-- Rendered dynamically -->
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Total calculations block aligned to the right bottom of columns -->
+            <div class="flex justify-end pt-3 border-t border-gray-150">
+              <div class="w-64 space-y-2.5 text-xs select-none">
+                <div class="flex justify-between text-slate-550">
+                  <span class="bengali-font">উপমোট (Subtotal):</span>
+                  <span id="rec-calc-subtotal" class="font-bold text-slate-800 font-mono">৳০</span>
+                </div>
+                <div class="flex justify-between text-slate-550 hidden" id="rec-discount-row">
+                  <span class="bengali-font text-emerald-800">কুপন ডিসকাউন্ট:</span>
+                  <span id="rec-calc-discount" class="font-bold text-emerald-700 font-mono">-৳০</span>
+                </div>
+                <div class="flex justify-between text-slate-550">
+                  <span class="bengali-font">ডেলিভারি চার্জ:</span>
+                  <span id="rec-calc-delivery" class="font-bold text-slate-800 font-mono">৳৮০</span>
+                </div>
+                <div class="flex justify-between border-t border-gray-200 pt-2.5">
+                  <span class="font-black text-slate-850 text-sm bengali-font">প্রদেয় মোট বিল (Total):</span>
+                  <span id="rec-calc-grandtotal" class="font-black text-emerald-700 text-base font-mono">৳০</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+        <!-- Sticky or bottom page controls row layout -->
+        <div class="no-print pt-2 flex flex-col md:flex-row justify-between items-center gap-4">
+          
+          <div class="flex flex-wrap items-center gap-2.5 w-full md:w-auto">
+            <a href="/shop.html" class="bg-[#e6f4ea] text-[#137333] hover:bg-[#d2ebd9] py-3.5 px-5 rounded-2xl text-xs font-black transition cursor-pointer select-none text-center flex-1 md:flex-none bengali-font">
+              শপে ফেরত যান (Go Shop)
+            </a>
+            <a href="/dashboard.html" class="bg-[#faefe6] text-[#c2640e] hover:bg-[#f3ded0] py-3.5 px-5 rounded-2xl text-xs font-black transition cursor-pointer select-none text-center flex-1 md:flex-none bengali-font">
+              আমার অ্যাকাউন্ট (My Account Panel)
+            </a>
+            <a href="/order-tracking.html" id="success-track-btn-dyn" class="bg-slate-100 hover:bg-slate-200 text-slate-705 py-3.5 px-5 rounded-2xl text-xs font-black transition cursor-pointer select-none text-center flex-1 md:flex-none bengali-font">
+              অর্ডার ট্র্যাক করুন
+            </a>
+          </div>
+
+          <button onclick="window.downloadInvoicePDF()" class="w-full md:w-auto bg-[#e07e34] hover:bg-[#d07028] text-white py-3.5 px-6 rounded-2xl font-black text-xs transition flex items-center justify-center gap-2 select-none shadow-md cursor-pointer bengali-font">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+            </svg>
+            <span>ইনভয়েস ডাউনলোড করুন (PDF Download)</span>
+          </button>
+
+        </div>
+
+      </div>
+
+    </main>
+
+    <!-- Mobile Navigation Bar -->
+    <div id="shared-mobile-nav"></div>
+
+    <!-- Dynamic Footer -->
+    <footer id="shared-footer" class="mt-auto"></footer>
+
+    <!-- Script processes for Checkout Logic -->
+    <script type="module">
+      import { getCart, getSettings, clearCart, showToast, getCurrentUser } from './src/app.js';
+      import { saveOrderToSupabase } from './src/supabase.js';
+
+      // Bangladesh Address Hierarchy Dictionary matching elegant dynamic selector design
+      const DIVISION_DATA = {
+        "Dhaka (Dhaka)": {
+          "Dhaka (Dhaka)": ["Mirpur (Mirpur)", "Uttara (Uttara)", "Dhanmondi (Dhanmondi)", "Gulshan (Gulshan)", "Badda (Badda)", "Motijheel (Motijheel)", "Tejgaon (Tejgaon)", "Khilgaon (Khilgaon)", "Mohammadpur (Mohammadpur)", "Savar (সাভার)", "Keraniganj (কেরানীগঞ্জ)"],
+          "Gazipur (Gazipur)": ["Gazipur Sadar", "Kaliakair", "Sreepur"],
+          "Narayanganj (Narayanganj)": ["Narayanganj Sadar", "Araihazar", "Rupganj", "Sonargaon"]
+        },
+        "Chattogram (Chattogram)": {
+          "Chattogram (Chattogram)": ["Panchlaish", "Double Mooring", "Halishahar", "Hathazari", "Sandwip"],
+          "Cox's Bazar (Cox's Bazar)": ["Cox's Bazar Sadar", "Teknaf", "Ukhia", "Ramu"],
+          "Cumilla (Cumilla)": ["Cumilla Sadar", "Laksam", "Debidwar"]
+        },
+        "Rajshahi (Rajshahi)": {
+          "Rajshahi (Rajshahi)": ["Boalia", "Motihar", "Rajpara", "Paba"],
+          "Bogura (Bogura)": ["Bogura Sadar", "Shajahanpur", "Sherpur"],
+          "Naogaon (Naogaon)": ["Naogaon Sadar", "Mohadevpur", "Patnitala"]
+        },
+        "Khulna (Khulna)": {
+          "Khulna (Khulna)": ["Khulna Sadar", "Sonadanga", "Khalishpur"],
+          "Jessore (Jessore)": ["Jessore Sadar", "Jhikargachha"],
+          "Satkhira (Satkhira)": ["Satkhira Sadar", "Kalaroa", "Tala"]
+        },
+        "Barishal (Barishal)": {
+          "Barishal (Barishal)": ["Barishal Sadar", "Bakerganj", "Banaripara"]
+        },
+        "Sylhet (Sylhet)": {
+          "Sylhet (Sylhet)": ["Sylhet Sadar", "Golapganj", "Beanibazar"]
+        },
+        "Rangpur (Rangpur)": {
+          "Rangpur (Rangpur)": ["Rangpur Sadar", "Mithapukur", "Pirganj"],
+          "Dinajpur (Dinajpur)": ["Dinajpur Sadar", "Kaharole", "Birganj"]
+        },
+        "Mymensingh (Mymensingh)": {
+          "Mymensingh (Mymensingh)": ["Mymensingh Sadar", "Muktagachha", "Bhaluka"]
+        }
+      };
+
+      let cart = [];
+      let siteSettings = {};
+      let currentUser = null;
+      let selectedArea = 'inside'; // 'inside' or 'outside'
+      let deliveryCharge = 80;
+      let activeDiscount = 0;
+
+      function initCheckoutPage() {
+        try {
+          cart = (getCart() || []).filter(Boolean);
+          siteSettings = getSettings() || {};
+          currentUser = getCurrentUser();
+
+          // Safety redirect if cart is completely empty
+          if (cart.length === 0) {
+            showToast("অর্ডার বুক করতে আগে কার্টে পণ্য যোগ করুন!", "danger");
+            setTimeout(() => {
+              window.location.href = '/shop.html';
+            }, 1100);
+            return;
+          }
+
+          // Initialize Address Dropdowns
+          setupAddressSelectors();
+
+          // Load saved customer info from localStorage (Auto prefill)
+          loadSavedCustomerInfo();
+
+          // Bind auto-save listeners on all customer fields so their info is kept up to date
+          const customerFields = ['cust-name', 'cust-phone', 'cust-email', 'cust-address', 'cust-note', 'cust-division', 'cust-district', 'cust-upazila'];
+          customerFields.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) {
+              const eventType = el.tagName === 'SELECT' ? 'change' : 'input';
+              el.addEventListener(eventType, saveCustomerInfoToLocalStorage);
+            }
+          });
+
+          // Apply any session coupon applied in Cart Page
+          const cachedCode = sessionStorage.getItem('activeCouponCode');
+          const cachedPercent = Number(sessionStorage.getItem('activeCouponPercent') || 0);
+          const cachedFlat = Number(sessionStorage.getItem('activeCouponFlat') || 0);
+          if (cachedCode) {
+            const codeInput = document.getElementById('coupon-code-input');
+            if (codeInput) codeInput.value = cachedCode;
+            calculateCouponDiscount(cachedPercent, cachedFlat);
+          }
+
+          // Render checkout cart list
+          renderCheckoutCart();
+
+          // Draw calculation numbers
+          recalculateGrandTotal();
+        } catch (err) {
+          console.error("Error in initCheckoutPage:", err);
+          showToast("চেকআউট পেজ লোড হতে সমস্যা হয়েছে। দয়া করে পেজটি রিফ্রেশ করুন।", "danger");
+        }
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initCheckoutPage);
+      } else {
+        initCheckoutPage();
+      }
+
+      // Download invoice as A4 PDF document using html2pdf with isolated iframe to prevent css hanging
+      window.downloadInvoicePDF = function() {
+        const element = document.getElementById('printable-invoice-content');
+        if (!element) {
+          showToast("ইনভয়েস কন্টেন্ট খুঁজে পাওয়া যায়নি!", "danger");
+          return;
+        }
+
+        showToast("ইনভয়েস পিডিএফ ডাউনলোড হচ্ছে, দয়া করে অপেক্ষা করুন...", "success");
+
+        try {
+          const invoiceId = document.getElementById('rec-id-val-dyn')?.innerText?.trim() || 'order';
+
+          // Extract data from current DOM dynamically
+          const dateTime = document.getElementById('rec-datetime')?.innerHTML || 'তারিখ ও সময়: -';
+          const siteName = document.getElementById('rec-sitename-dyn')?.innerHTML || 'Organic Bazar';
+          const invNum = document.getElementById('rec-inv-num')?.innerHTML || 'ইনভয়েস নং: -';
+          const invIdVal = document.getElementById('rec-id-val-dyn')?.innerHTML || '-';
+
+          const custName = document.getElementById('rec-cust-name-dyn')?.innerHTML || '-';
+          const custPhone = document.getElementById('rec-cust-phone-dyn')?.innerHTML || '-';
+          const custAddr = document.getElementById('rec-cust-addr-dyn')?.innerHTML || '-';
+          const zoneText = document.getElementById('rec-zone-badge')?.innerText || 'জোনের নাম: -';
+
+          const itemsHtml = document.getElementById('rec-items-tbody')?.innerHTML || '';
+
+          const subtotal = document.getElementById('rec-calc-subtotal')?.innerHTML || '৳০';
+          const discountRow = document.getElementById('rec-discount-row');
+          const isDiscountHidden = discountRow ? discountRow.classList.contains('hidden') : true;
+          const discountVal = document.getElementById('rec-calc-discount')?.innerHTML || '-৳০';
+          const deliveryCharge = document.getElementById('rec-calc-delivery')?.innerHTML || '৳৮০';
+          const grandTotal = document.getElementById('rec-calc-grandtotal')?.innerHTML || '৳০';
+
+          // Create dynamic iframe
+          const iframe = document.createElement('iframe');
+          iframe.style.position = 'fixed';
+          iframe.style.right = '0';
+          iframe.style.bottom = '0';
+          iframe.style.width = '800px';
+          iframe.style.height = '1130px';
+          iframe.style.border = '0';
+          iframe.style.zIndex = '-9999';
+          iframe.style.visibility = 'hidden';
+          document.body.appendChild(iframe);
+
+          const doc = iframe.contentDocument || iframe.contentWindow.document;
+          doc.open();
+          doc.write(`
+            <!DOCTYPE html>
+            <html>
+              <head>
+                <title>Invoice - ${invoiceId}</title>
+                <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+                <style>
+                  body {
+                    font-family: 'Hind Siliguri', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+                    color: #1e293b;
+                    background-color: white;
+                    padding: 40px;
+                    margin: 0;
+                    box-sizing: border-box;
+                    -webkit-font-smoothing: antialiased;
+                  }
+                  .invoice-container {
+                    max-width: 720px;
+                    margin: 0 auto;
+                  }
+                  .header-section {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    border-bottom: 2px solid #e2e8f0;
+                    padding-bottom: 20px;
+                    margin-bottom: 25px;
+                  }
+                  .title {
+                    font-size: 24px;
+                    font-weight: 700;
+                    color: #065f46;
+                    margin: 0 0 5px 0;
+                  }
+                  .meta-text {
+                    font-size: 12px;
+                    color: #64748b;
+                    margin: 2px 0;
+                  }
+                  .shop-info {
+                    text-align: right;
+                  }
+                  .shop-name {
+                    font-size: 20px;
+                    font-weight: 800;
+                    color: #065f46;
+                    margin: 0 0 5px 0;
+                  }
+                  .grid {
+                    display: flex;
+                    gap: 20px;
+                    margin-bottom: 25px;
+                  }
+                  .col-6 {
+                    flex: 1;
+                    border: 1px solid #f1f5f9;
+                    background-color: #f8fafc;
+                    border-radius: 12px;
+                    padding: 15px;
+                  }
+                  .section-title {
+                    font-size: 13px;
+                    font-weight: 700;
+                    color: #1e293b;
+                    border-bottom: 1px solid #e2e8f0;
+                    padding-bottom: 8px;
+                    margin: 0 0 10px 0;
+                  }
+                  .info-p {
+                    font-size: 12px;
+                    margin: 4px 0;
+                    line-height: 1.4;
+                  }
+                  .bold-text {
+                    font-weight: 700;
+                    color: #0f172a;
+                  }
+                  .badge {
+                    display: inline-block;
+                    background-color: #ffedd5;
+                    color: #ea580c;
+                    padding: 2px 8px;
+                    border-radius: 4px;
+                    font-size: 10px;
+                    font-weight: 700;
+                    margin-top: 5px;
+                  }
+                  .status-badge {
+                    display: inline-block;
+                    background-color: #fef3c7;
+                    color: #92400e;
+                    padding: 2px 8px;
+                    border-radius: 4px;
+                    font-size: 10px;
+                    font-weight: 700;
+                    text-transform: uppercase;
+                  }
+                  .table-title {
+                    font-size: 13px;
+                    font-weight: 700;
+                    color: #1e293b;
+                    border-left: 4px solid #059669;
+                    padding-left: 10px;
+                    margin: 25px 0 10px 0;
+                  }
+                  table {
+                    width: 100%;
+                    border-collapse: collapse;
+                    font-size: 12px;
+                    margin-bottom: 20px;
+                  }
+                  th {
+                    border-bottom: 2px solid #e2e8f0;
+                    padding: 8px 4px;
+                    color: #475569;
+                    font-weight: 700;
+                  }
+                  td {
+                    border-bottom: 1px solid #f1f5f9;
+                    padding: 10px 4px;
+                    color: #334155;
+                  }
+                  .text-center { text-align: center; }
+                  .text-right { text-align: right; }
+                  .totals-box {
+                    display: flex;
+                    justify-content: flex-end;
+                    margin-top: 15px;
+                  }
+                  .totals-list {
+                    width: 240px;
+                    font-size: 12px;
+                  }
+                  .total-row {
+                    display: flex;
+                    justify-content: space-between;
+                    padding: 5px 0;
+                    color: #475569;
+                  }
+                  .grand-total {
+                    border-top: 1px solid #cbd5e1;
+                    padding-top: 8px;
+                    font-weight: 800;
+                    color: #0f172a;
+                    font-size: 14px;
+                  }
+                  .grand-total .price {
+                    color: #047857;
+                    font-size: 16px;
+                    font-weight: bold;
+                  }
+                </style>
+              </head>
+              <body>
+                <div class="invoice-container" id="invoice-root">
+                  <div class="header-section">
+                    <div>
+                      <h1 class="title">অর্ডার ইনভয়েস (Order Invoice)</h1>
+                      <div class="meta-text">${dateTime}</div>
+                    </div>
+                    <div class="shop-info">
+                      <h2 class="shop-name">${siteName}</h2>
+                      <div class="meta-text">${invNum}</div>
+                      <div class="meta-text" style="font-weight: 700;">আইডি: ${invIdVal}</div>
+                    </div>
+                  </div>
+                  
+                  <div class="grid">
+                    <div class="col-6">
+                      <h3 class="section-title">ডেলিভারি ঠিকানা:</h3>
+                      <div class="info-p bold-text">${custName}</div>
+                      <div class="info-p bold-text" style="font-family: monospace;">${custPhone}</div>
+                      <div class="info-p" style="color: #475569;">${custAddr}</div>
+                      <span class="badge">${zoneText}</span>
+                    </div>
+                    <div class="col-6">
+                      <h3 class="section-title">পেমেন্ট বিবরণী:</h3>
+                      <div class="info-p bold-text" style="color: #065f46;">ক্যাশ অন ডেলিভারি (Cash on Delivery)</div>
+                      <div class="info-p" style="margin-top: 10px;">
+                        <span class="meta-text">পেমেন্ট স্ট্যাটাস:</span>
+                        <span class="status-badge">PENDING VERIFICATION</span>
+                      </div>
+                      <div class="info-p" style="margin-top: 4px;">
+                        <span class="meta-text">মেথড আইডি:</span>
+                        <span class="bold-text" style="font-size: 11px;">COD-INSTANCE</span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <h3 class="table-title">ক্রয়কৃত পণ্যসমূহ (Products Ordered)</h3>
+                  <table>
+                    <thead>
+                      <tr>
+                        <th style="text-align: left;">পণ্য বিবরণী</th>
+                        <th class="text-center" style="width: 80px;">পরিমাণ</th>
+                        <th class="text-center" style="width: 100px;">একক মূল্য</th>
+                        <th class="text-right" style="width: 120px;">মোট মূল্য</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      ${itemsHtml}
+                    </tbody>
+                  </table>
+                  
+                  <div class="totals-box">
+                    <div class="totals-list">
+                      <div class="total-row">
+                        <span>উপমোট (Subtotal):</span>
+                        <span style="font-weight: 700;">${subtotal}</span>
+                      </div>
+                      ${!isDiscountHidden ? `
+                      <div class="total-row" style="color: #047857;">
+                        <span>কুপন ডিসকাউন্ট:</span>
+                        <span style="font-weight: 700;">${discountVal}</span>
+                      </div>
+                      ` : ''}
+                      <div class="total-row">
+                        <span>ডেলিভারি চার্জ:</span>
+                        <span style="font-weight: 700;">${deliveryCharge}</span>
+                      </div>
+                      <div class="total-row grand-total">
+                        <span>প্রদেয় মোট বিল (Total):</span>
+                        <span class="price">${grandTotal}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </body>
+            </html>
+          `);
+          doc.close();
+
+          // Load html2pdf dynamically in the isolated iframe's head
+          const scriptEl = doc.createElement('script');
+          scriptEl.src = "https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js";
+          
+          scriptEl.onload = function() {
+            try {
+              const opt = {
+                margin:       10,
+                filename:     `Invoice-${invoiceId}.pdf`,
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { 
+                  scale: 2, 
+                  useCORS: true,
+                  logging: false,
+                  letterRendering: true
+                },
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+              };
+
+              const targetElement = doc.getElementById('invoice-root');
+
+              if (iframe.contentWindow && iframe.contentWindow.html2pdf) {
+                iframe.contentWindow.html2pdf().set(opt).from(targetElement).save()
+                  .then(() => {
+                    showToast("ইনভয়েস পিডিএফ সফলভাবে ডাউনলোড হয়েছে!", "success");
+                    if (document.body.contains(iframe)) {
+                      document.body.removeChild(iframe);
+                    }
+                  })
+                  .catch(err => {
+                    console.error("PDF generation error inside iframe: ", err);
+                    showToast("পিডিএফ তৈরিতে কিছু সমস্যা হয়েছে! সাধারণ পদ্ধতিতে প্রিন্ট করা হচ্ছে...", "warning");
+                    window.print();
+                    if (document.body.contains(iframe)) {
+                      document.body.removeChild(iframe);
+                    }
+                  });
+              } else {
+                throw new Error("html2pdf library could not be resolved inside iframe");
+              }
+            } catch (err) {
+              console.error("PDF rendering error: ", err);
+              showToast("ইনভয়েস প্রিন্ট উইন্ডো চালু করা হচ্ছে...", "warning");
+              window.print();
+              if (document.body.contains(iframe)) {
+                document.body.removeChild(iframe);
+              }
+            }
+          };
+
+          scriptEl.onerror = function() {
+            showToast("পিডিএফ ইঞ্জিন লোড করা যায়নি! সাধারণ পদ্ধতিতে প্রিন্ট উইন্ডো চালু করা হচ্ছে...", "warning");
+            window.print();
+            if (document.body.contains(iframe)) {
+              document.body.removeChild(iframe);
+            }
+          };
+
+          doc.head.appendChild(scriptEl);
+
+        } catch (ex) {
+          console.error("PDF setup exception: ", ex);
+          showToast("ইনভয়েস জেনারেট করা যায়নি! ব্রাউজারের প্রিন্ট উইন্ডো ওপেন করা হচ্ছে...", "warning");
+          window.print();
+        }
+      };
+
+      // Function to dynamically manage cascaded address lists
+      function setupAddressSelectors() {
+        const divSelect = document.getElementById('cust-division');
+        const distSelect = document.getElementById('cust-district');
+        const upSelect = document.getElementById('cust-upazila');
+
+        // 1. Populate divisions
+        divSelect.innerHTML = `<option value="">বিভাগ বাছাই করুন</option>` + 
+          Object.keys(DIVISION_DATA).map(div => `<option value="${div}">${div}</option>`).join('');
+
+        // On Division Select Change
+        divSelect.addEventListener('change', (e) => {
+          const divVal = e.target.value;
+          distSelect.innerHTML = `<option value="">জেলা নির্বাচন করুন</option>`;
+          upSelect.innerHTML = `<option value="">থানা নির্বাচন করুন</option>`;
+
+          if (divVal && DIVISION_DATA[divVal]) {
+            const districts = Object.keys(DIVISION_DATA[divVal]);
+            distSelect.innerHTML += districts.map(dst => `<option value="${dst}">${dst}</option>`).join('');
+            
+            // Automatic Area Selection behavior matches:
+            // if we select non-Dhaka division, dynamically toggle delivery area selection to outside
+            if (divVal !== 'Dhaka (Dhaka)') {
+              selectDeliveryArea('outside');
+            } else {
+              selectDeliveryArea('inside');
+            }
+          }
+        });
+
+        // On District Select Change
+        distSelect.addEventListener('change', (e) => {
+          const divVal = divSelect.value;
+          const distVal = e.target.value;
+          upSelect.innerHTML = `<option value="">থানা নির্বাচন করুন</option>`;
+
+          if (divVal && distVal && DIVISION_DATA[divVal][distVal]) {
+            const upazilas = DIVISION_DATA[divVal][distVal];
+            upSelect.innerHTML += upazilas.map(up => `<option value="${up}">${up}</option>`).join('');
+          }
+        });
+      }
+
+      function saveCustomerInfoToLocalStorage() {
+        try {
+          const info = {
+            name: document.getElementById('cust-name')?.value || '',
+            phone: document.getElementById('cust-phone')?.value || '',
+            email: document.getElementById('cust-email')?.value || '',
+            division: document.getElementById('cust-division')?.value || '',
+            district: document.getElementById('cust-district')?.value || '',
+            upazila: document.getElementById('cust-upazila')?.value || '',
+            address: document.getElementById('cust-address')?.value || '',
+            note: document.getElementById('cust-note')?.value || ''
+          };
+          localStorage.setItem('savedCustomerInfo', JSON.stringify(info));
+        } catch (err) {
+          console.error("Error saving customer info to localStorage:", err);
+        }
+      }
+
+      function loadSavedCustomerInfo() {
+        let info = null;
+        try {
+          const stored = localStorage.getItem('savedCustomerInfo');
+          if (stored) {
+            info = JSON.parse(stored);
+          }
+        } catch (e) {
+          console.error("Error reading saved customer info:", e);
+        }
+
+        // Fallback to currently logged in user if there's no saved local details
+        if (!info && currentUser) {
+          info = {
+            name: currentUser.name || '',
+            phone: currentUser.phone || '',
+            email: currentUser.email || '',
+            address: currentUser.address || '',
+            division: currentUser.division || '',
+            district: currentUser.district || '',
+            upazila: currentUser.upazila || '',
+            note: ''
+          };
+        }
+
+        if (info) {
+          if (document.getElementById('cust-name')) document.getElementById('cust-name').value = info.name || '';
+          if (document.getElementById('cust-phone')) document.getElementById('cust-phone').value = info.phone || '';
+          if (document.getElementById('cust-email')) document.getElementById('cust-email').value = info.email || '';
+          if (document.getElementById('cust-address')) document.getElementById('cust-address').value = info.address || '';
+          if (document.getElementById('cust-note')) document.getElementById('cust-note').value = info.note || '';
+
+          const divSelect = document.getElementById('cust-division');
+          const distSelect = document.getElementById('cust-district');
+          const upSelect = document.getElementById('cust-upazila');
+
+          if (info.division && divSelect) {
+            divSelect.value = info.division;
+            
+            // Populate district select
+            const divVal = info.division;
+            distSelect.innerHTML = `<option value="">জেলা নির্বাচন করুন</option>`;
+            upSelect.innerHTML = `<option value="">থানা নির্বাচন করুন</option>`;
+
+            if (DIVISION_DATA[divVal]) {
+              const districts = Object.keys(DIVISION_DATA[divVal]);
+              distSelect.innerHTML += districts.map(dst => `<option value="${dst}">${dst}</option>`).join('');
+              
+              if (divVal !== 'Dhaka (Dhaka)') {
+                selectDeliveryArea('outside');
+              } else {
+                selectDeliveryArea('inside');
+              }
+
+              if (info.district) {
+                distSelect.value = info.district;
+                
+                // Populate upazila options based on district
+                if (DIVISION_DATA[divVal][info.district]) {
+                  const upazilas = DIVISION_DATA[divVal][info.district];
+                  upSelect.innerHTML = `<option value="">থানা নির্বাচন করুন</option>` + 
+                    upazilas.map(up => `<option value="${up}">${up}</option>`).join('');
+                  
+                  if (info.upazila) {
+                    upSelect.value = info.upazila;
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+
+      // Render checkout summary active products list
+      function renderCheckoutCart() {
+        const tray = document.getElementById('checkout-items-tray');
+        if (!tray) return;
+
+        tray.innerHTML = cart.map(item => `
+          <div class="flex items-center gap-3 pb-3 border-b border-gray-100 last:border-none last:pb-0 font-sans">
+            <img src="${item.image}" referrerPolicy="no-referrer" class="w-11 h-11 object-cover rounded-xl border border-gray-100 flex-shrink-0">
+            <div class="flex-grow text-left">
+              <h6 class="text-[12px] font-bold text-slate-800 line-clamp-1 b-f leading-tight">${item.name}</h6>
+              <p class="text-[10px] text-slate-400 mt-1 font-mono">৳${item.discountPrice || item.price} × ${item.qty}</p>
+            </div>
+            <span class="text-xs font-bold text-slate-800 font-mono">৳${(item.discountPrice || item.price) * item.qty}</span>
+          </div>
+        `).join('');
+      }
+
+      // Delivery Area Card Click Handler with exact UI radio simulation
+      function selectDeliveryArea(area) {
+        selectedArea = area;
+        
+        const cardInside = document.getElementById('card-inside-dhaka');
+        const cardOutside = document.getElementById('card-outside-dhaka');
+
+        const radioInside = document.getElementById('radio-inside');
+        const radioOutside = document.getElementById('radio-outside');
+
+        const labelDelivery = document.getElementById('label-delivery');
+
+        if (area === 'inside') {
+          // Inside Dhaka active
+          deliveryCharge = 80;
+          labelDelivery.textContent = 'ডেলিভারি চার্জ (ঢাকা):';
+          
+          if (cardInside) cardInside.className = "border-2 border-orange-500 bg-white hover:border-emerald-600 rounded-2xl p-4 flex items-center justify-between cursor-pointer select-none transition shadow-sm";
+          if (cardOutside) cardOutside.className = "border border-gray-250 bg-white hover:border-emerald-600 rounded-2xl p-4 flex items-center justify-between cursor-pointer select-none transition";
+
+          if (radioInside) {
+            radioInside.innerHTML = `<div class="w-2.5 h-2.5 rounded-full bg-orange-700"></div>`;
+            radioInside.className = "w-5 h-5 rounded-full border-2 border-orange-700 flex items-center justify-center bg-white";
+          }
+
+          if (radioOutside) {
+            radioOutside.innerHTML = ``;
+            radioOutside.className = "w-5 h-5 rounded-full border border-gray-300 flex items-center justify-center bg-white";
+          }
+        } else {
+          // Outside Dhaka active
+          deliveryCharge = 100;
+          labelDelivery.textContent = 'ডেলিভারি চার্জ (ঢাকার বাইরে):';
+
+          if (cardInside) cardInside.className = "border border-gray-250 bg-white hover:border-emerald-600 rounded-2xl p-4 flex items-center justify-between cursor-pointer select-none transition";
+          if (cardOutside) cardOutside.className = "border-2 border-orange-500 bg-white hover:border-emerald-600 rounded-2xl p-4 flex items-center justify-between cursor-pointer select-none transition shadow-sm";
+
+          if (radioInside) {
+            radioInside.innerHTML = ``;
+            radioInside.className = "w-5 h-5 rounded-full border border-gray-300 flex items-center justify-center bg-white";
+          }
+
+          if (radioOutside) {
+            radioOutside.innerHTML = `<div class="w-2.5 h-2.5 rounded-full bg-orange-700"></div>`;
+            radioOutside.className = "w-5 h-5 rounded-full border-2 border-orange-700 flex items-center justify-center bg-white";
+          }
+        }
+
+        // Dynamic Calculation Refresh
+        recalculateGrandTotal();
+      }
+      window.selectDeliveryArea = selectDeliveryArea;
+
+      // Live computation total pricing logic with delivery charge added
+      function recalculateGrandTotal() {
+        const subtotal = cart.reduce((sum, item) => sum + ((item.discountPrice || item.price) * item.qty), 0);
+        
+        // Final math grandtotal = subtotal + selected delivery charge - discount
+        const grandtotal = subtotal + deliveryCharge - activeDiscount;
+
+        document.getElementById('checkout-subtotal').textContent = `৳${subtotal}`;
+        document.getElementById('checkout-delivery').textContent = `৳${deliveryCharge}`;
+        document.getElementById('checkout-grandtotal').textContent = `৳${grandtotal < 0 ? 0 : grandtotal}`;
+      }
+
+      // Promo coupon apply handler inside checkout
+      window.applyPromoCoupon = function() {
+        const codeInput = document.getElementById('coupon-code-input');
+        const msgEl = document.getElementById('coupon-status-msg');
+        if (!codeInput) return;
+
+        const typedCode = codeInput.value.trim().toUpperCase();
+        if (!typedCode) {
+          showToast("দয়া করে একটি কুপন কোড লিখুন!", "warning");
+          return;
+        }
+
+        const coupons = JSON.parse(localStorage.getItem('coupons') || '[]');
+        const targetCoupon = coupons.find(c => c.code === typedCode);
+
+        if (targetCoupon) {
+          sessionStorage.setItem('activeCouponCode', targetCoupon.code);
+          if (targetCoupon.type === 'percentage') {
+            sessionStorage.setItem('activeCouponPercent', targetCoupon.value);
+            sessionStorage.removeItem('activeCouponFlat');
+            calculateCouponDiscount(targetCoupon.value, 0);
+          } else {
+            sessionStorage.setItem('activeCouponFlat', targetCoupon.value);
+            sessionStorage.removeItem('activeCouponPercent');
+            calculateCouponDiscount(0, targetCoupon.value);
+          }
+
+          msgEl.textContent = `🎯 সফল: ${targetCoupon.description}`;
+          msgEl.className = "text-[10px] font-black text-emerald-700 block text-left mt-1.5";
+          showToast("কুপন ডিসকাউন্ট সফলভাবে প্রয়োগ হয়েছে!", "success");
+          
+          recalculateGrandTotal();
+        } else {
+          msgEl.textContent = "❌ দুঃখিত: কুপন কোডটি সঠিক নয়!";
+          msgEl.className = "text-[10px] font-black text-red-500 block text-left mt-1.5";
+          showToast("অবৈধ কুপন কোড!", "danger");
+        }
+      }
+
+      // Calculate coupon discount absolute amounts
+      function calculateCouponDiscount(pct, flat) {
+        const subtotal = cart.reduce((sum, item) => sum + ((item.discountPrice || item.price) * item.qty), 0);
+        
+        if (pct > 0) {
+          activeDiscount = Math.round(subtotal * (pct / 100));
+        } else if (flat > 0) {
+          activeDiscount = flat;
+        } else {
+          activeDiscount = 0;
+        }
+
+        const discRow = document.getElementById('discount-calc-row');
+        const discText = document.getElementById('checkout-discount');
+        if (activeDiscount > 0) {
+          discRow.classList.remove('hidden');
+          discText.textContent = `-৳${activeDiscount}`;
+        } else {
+          discRow.classList.add('hidden');
+        }
+      }
+
+      // Form submission handler with exact DB insertions
+      window.handleSubmitCheckout = function() {
+        try {
+        const nameVal = document.getElementById('cust-name')?.value?.trim() || '';
+        const phoneVal = document.getElementById('cust-phone')?.value?.trim() || '';
+        const divisionVal = document.getElementById('cust-division')?.value || '';
+        const districtVal = document.getElementById('cust-district')?.value || '';
+        const upazilaVal = document.getElementById('cust-upazila')?.value || '';
+        const addressVal = document.getElementById('cust-address')?.value?.trim() || '';
+        const noteVal = document.getElementById('cust-note')?.value?.trim() || '';
+
+        // Hard checks
+        if (!nameVal || !phoneVal || !divisionVal || !districtVal || !upazilaVal || !addressVal) {
+          showToast("দয়া করে লাল তারকা (*) চিহ্নিত সব তথ্য নিশ্চিত করুন!", "danger");
+          return;
+        }
+
+        if (phoneVal.length < 11) {
+          showToast("একটি ১১ ডিজিটের সঠিক মোবাইল নম্বর প্রদান করুন!", "danger");
+          return;
+        }
+
+        // Math totals
+        const filteredCart = (cart || []).filter(Boolean);
+        const subtotal = filteredCart.reduce((sum, item) => {
+          const priceVal = Number(item.discountPrice || item.price || 0);
+          const qtyVal = Number(item.qty || 1);
+          return sum + (priceVal * qtyVal);
+        }, 0);
+        const grandtotal = subtotal + Number(deliveryCharge || 0) - Number(activeDiscount || 0);
+
+        // Build elegant unique order string like ORD-2026-X77A
+        const randSeed = Math.random().toString(16).substr(2, 4).toUpperCase();
+        const orderId = `ORD-2026-${randSeed}`;
+        const customerEmail = document.getElementById('cust-email')?.value?.trim() || '';
+
+        const newOrder = {
+          orderId: orderId,
+          date: new Date().toLocaleDateString('bn-BD'),
+          customerName: nameVal,
+          customerPhone: phoneVal,
+          customerEmail: customerEmail,
+          division: divisionVal,
+          district: districtVal,
+          area: upazilaVal,
+          address: addressVal,
+          note: noteVal,
+          items: filteredCart,
+          subtotal: subtotal,
+          discount: activeDiscount,
+          deliveryFee: deliveryCharge,
+          totalPrice: grandtotal < 0 ? 0 : grandtotal,
+          paymentMethod: 'COD',
+          status: 'Pending'
+        };
+
+        // Insert into localStorage db
+        const currentOrders = JSON.parse(localStorage.getItem('orders') || '[]');
+        currentOrders.push(newOrder);
+        localStorage.setItem('orders', JSON.stringify(currentOrders));
+
+        // Save to Supabase (asynchronous, non-blocking fallback flow)
+        saveOrderToSupabase(newOrder).then(isSaved => {
+          if (isSaved) {
+            const updatedOrders = JSON.parse(localStorage.getItem('orders') || '[]');
+            const idx = updatedOrders.findIndex(o => o.orderId === newOrder.orderId);
+            if (idx > -1) {
+              updatedOrders[idx].isSupabaseSynced = true;
+              localStorage.setItem('orders', JSON.stringify(updatedOrders));
+              console.log("Order synced to Supabase instantly!");
+            }
+          }
+        }).catch(err => console.error("Immediate Supabase sync error:", err));
+
+        // Automatic Account Creation and auto login
+        const users = JSON.parse(localStorage.getItem('users') || '[]');
+        let matchedUser = users.find(u => (customerEmail && u.email === customerEmail) || u.phone === phoneVal);
+        let createdNewAccount = false;
+
+        if (!matchedUser) {
+          matchedUser = {
+            name: nameVal,
+            phone: phoneVal,
+            email: customerEmail || `${phoneVal}@grocery.com`,
+            password: phoneVal, // Phone number as the default password
+            address: `${addressVal}, ${upazilaVal}, ${districtVal}, ${divisionVal}`
+          };
+          users.push(matchedUser);
+          localStorage.setItem('users', JSON.stringify(users));
+          createdNewAccount = true;
+        }
+
+        // Set current user session to automatically login
+        localStorage.setItem('currentUser', JSON.stringify(matchedUser));
+
+        // Flush applied sessions
+        sessionStorage.removeItem('activeCouponCode');
+        sessionStorage.removeItem('activeCouponPercent');
+        sessionStorage.removeItem('activeCouponFlat');
+
+        // Reset state cart
+        clearCart();
+
+        // Hide checkout grid and titles safely
+        document.getElementById('checkout-main-grid')?.classList.add('hidden');
+        document.querySelector('h1')?.parentElement?.classList.add('hidden');
+        document.querySelector('.grid-cols-4')?.classList.add('hidden');
+
+        // Reveal order details receipt modal
+        const receiptOverlay = document.getElementById('success-receipt-overlay');
+        if (receiptOverlay) {
+          receiptOverlay.classList.remove('hidden');
+        }
+
+        // 1. Populate datetime & Site Metadata
+        const recDatetimeVal = document.getElementById('rec-datetime');
+        if (recDatetimeVal) {
+          recDatetimeVal.textContent = "তারিখ ও সময়: " + new Date().toLocaleString('bn-BD');
+        }
+        const recSitenameVal = document.getElementById('rec-sitename-dyn');
+        if (recSitenameVal) {
+          recSitenameVal.textContent = siteSettings.siteName || "Organic Bazar";
+        }
+        const recInvNumVal = document.getElementById('rec-inv-num');
+        if (recInvNumVal) {
+          const suffixNum = orderId.split('-').pop();
+          recInvNumVal.textContent = "ইনভয়েস নং: INV-" + suffixNum;
+        }
+        const recIdVal = document.getElementById('rec-id-val-dyn');
+        if (recIdVal) {
+          recIdVal.textContent = orderId;
+        }
+
+        // 2. Populate Customer Shipping & Area badge
+        const recCustNameVal = document.getElementById('rec-cust-name-dyn');
+        if (recCustNameVal) {
+          recCustNameVal.textContent = newOrder.customerName;
+        }
+        const recCustPhoneVal = document.getElementById('rec-cust-phone-dyn');
+        if (recCustPhoneVal) {
+          recCustPhoneVal.textContent = newOrder.customerPhone;
+        }
+        const recCustAddrVal = document.getElementById('rec-cust-addr-dyn');
+        if (recCustAddrVal) {
+          recCustAddrVal.textContent = `${newOrder.address}, ${newOrder.area}, ${newOrder.district}, ${newOrder.division}`;
+        }
+        const recZoneBadgeVal = document.getElementById('rec-zone-badge');
+        if (recZoneBadgeVal) {
+          recZoneBadgeVal.textContent = selectedArea === 'inside' ? "জোনের নাম: Inside Dhaka" : "জোনের নাম: Outside Dhaka";
+        }
+
+        // 3. Dynamic Products ordered table builder
+        const recItemsTbodyVal = document.getElementById('rec-items-tbody');
+        if (recItemsTbodyVal) {
+          recItemsTbodyVal.innerHTML = newOrder.items.map(item => {
+            const unitPrice = item.discountPrice || item.price;
+            const lineTotal = unitPrice * item.qty;
+            return `
+              <tr class="border-b border-gray-100 text-slate-700">
+                <td class="py-3 pr-2 font-semibold text-left">
+                  <p class="font-bold text-slate-800 text-xs">${item.name}</p>
+                </td>
+                <td class="py-3 text-center font-bold text-slate-600 font-mono">${item.qty}</td>
+                <td class="py-3 text-center font-semibold text-slate-600 font-mono">৳${unitPrice}</td>
+                <td class="py-3 text-right font-bold text-emerald-700 font-mono">৳${lineTotal}</td>
+              </tr>
+            `;
+          }).join('');
+        }
+
+        // 4. Mathematical sums displaying details
+        const recCalcSubtotalVal = document.getElementById('rec-calc-subtotal');
+        if (recCalcSubtotalVal) {
+          recCalcSubtotalVal.textContent = "৳" + newOrder.subtotal;
+        }
+        const recDiscountRowVal = document.getElementById('rec-discount-row');
+        const recCalcDiscountVal = document.getElementById('rec-calc-discount');
+        if (newOrder.discount > 0) {
+          if (recDiscountRowVal) recDiscountRowVal.classList.remove('hidden');
+          if (recCalcDiscountVal) recCalcDiscountVal.textContent = "-৳" + newOrder.discount;
+        } else {
+          if (recDiscountRowVal) recDiscountRowVal.classList.add('hidden');
+        }
+        const recCalcDeliveryVal = document.getElementById('rec-calc-delivery');
+        if (recCalcDeliveryVal) {
+          recCalcDeliveryVal.textContent = "৳" + newOrder.deliveryFee;
+        }
+        const recCalcGrandtotalVal = document.getElementById('rec-calc-grandtotal');
+        if (recCalcGrandtotalVal) {
+          recCalcGrandtotalVal.textContent = "৳" + newOrder.totalPrice;
+        }
+
+        // 5. Success buttons redirection routes
+        const trackDynVal = document.getElementById('success-track-btn-dyn');
+        if (trackDynVal) {
+          trackDynVal.href = `/order-tracking.html?id=${orderId}`;
+        }
+
+        // 6. Prefilled WhatsApp API order dispatcher template
+        const userPhoneToUse = siteSettings.phone || "01789-123456";
+        const cleanPhoneDigits = userPhoneToUse.replace(/[^0-9]/g, "");
+        // Prepend 88 prefix if clean digit starts with standard mobile 01
+        let waFormattedNumber = cleanPhoneDigits;
+        if (cleanPhoneDigits.startsWith("01")) {
+          waFormattedNumber = "88" + cleanPhoneDigits;
+        } else if (cleanPhoneDigits.startsWith("1")) {
+          waFormattedNumber = "880" + cleanPhoneDigits;
+        }
+        
+        const waMessageBody = `আসসালামু আলাইকুম!\nআমি আপনার শপ থেকে একটি অর্ডার সম্পন্ন করেছি।\n\n🔹 অর্ডার আইডি: ${orderId}\n🔹 নাম: ${newOrder.customerName}\n🔹 মোবাইল: ${newOrder.customerPhone}\n🔹 ঠিকানা: ${newOrder.address}, ${newOrder.area}, ${newOrder.district}\n\n💵 মোট বিল: ৳${newOrder.totalPrice}\n\nদয়া করে অর্ডারটি দ্রুত কনফার্ম করে পাঠিয়ে দিন। ধন্যবাদ!`;
+        const waLinkSelector = document.getElementById('success-whatsapp-btn');
+        if (waLinkSelector) {
+          waLinkSelector.href = `https://wa.me/${waFormattedNumber}?text=${encodeURIComponent(waMessageBody)}`;
+        }
+
+        // Display auto account alert notice if newly created
+        if (createdNewAccount) {
+          const alertEl = document.getElementById('auto-account-alert');
+          if (alertEl) {
+            alertEl.classList.remove('hidden');
+          }
+          showToast("অর্ডার সফল এবং স্বয়ংক্রিয়ভাবে অ্যাকাউন্ট তৈরি হয়েছে!", "success");
+        } else {
+          showToast("আপনার অর্ডারটি সফলভাবে সম্পন্ন হয়েছে!", "success");
+        }
+        } catch (err) {
+          console.error("Critical error inside handleSubmitCheckout:", err);
+          showToast("অর্ডার সম্পন্ন করার সময় কোনো সমস্যা হয়েছে। দয়া করে আবার চেষ্টা করুন!", "danger");
+        }
+      }
+    </script>
+  </body>
+</html>

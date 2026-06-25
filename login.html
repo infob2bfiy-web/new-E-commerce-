@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Customer Access - Green Grocery</title>
+    <link rel="stylesheet" href="/src/style.css">
+    <script type="module" src="/src/app.js"></script>
+  </head>
+  <body class="bg-gray-50/50 pb-20 sm:pb-0">
+    <!-- Dynamic Header -->
+    <header id="shared-header"></header>
+
+    <!-- Login/Register Main Frame -->
+    <main class="max-w-md mx-auto px-4 py-16 font-sans">
+      <div class="bg-white border border-gray-100 shadow-xl rounded-3xl p-6 sm:p-8 text-center select-none">
+        
+        <!-- Tab selector headers -->
+        <div class="flex border-b border-gray-150 pb-3 mb-6 font-bold text-sm select-none gap-6 justify-center">
+          <button id="tab-login-btn" class="text-emerald-700 border-b-2 border-emerald-600 pb-1.5 focus:outline-none transition cursor-pointer">লগইন (Sign In)</button>
+          <button id="tab-register-btn" class="text-gray-400 hover:text-emerald-700 pb-1.5 focus:outline-none transition cursor-pointer">নিবন্ধন (Register)</button>
+        </div>
+
+        <!-- 1. LOGIN FORM WRAPPER -->
+        <form id="login-form" class="flex flex-col gap-4 text-left">
+          <div>
+            <label class="block text-xs text-gray-500 font-bold mb-1.5">মোবাইল অথবা ইমেইল *</label>
+            <input type="text" id="login-id" required placeholder="017xxxxxxxx বা name@test.com" class="w-full bg-gray-50 focus:bg-white border border-gray-200 focus:border-emerald-500 rounded-xl px-3.5 py-2.5 text-sm outline-none transition">
+          </div>
+          <div>
+            <label class="block text-xs text-gray-500 font-bold mb-1.5">পাসওয়ার্ড *</label>
+            <input type="password" id="login-pass" required placeholder="••••••••" class="w-full bg-gray-50 focus:bg-white border border-gray-200 focus:border-emerald-500 rounded-xl px-3.5 py-2.5 text-sm outline-none transition">
+          </div>
+          <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-xl transition shadow mt-3 cursor-pointer">প্রবেশ করুন</button>
+          <p class="text-[11px] text-gray-400 text-center mt-1">টেস্ট লগইন: <span class="font-bold underline text-gray-500">user@test.com</span> পাসওয়ার্ড: <span class="font-bold underline text-gray-500">123</span></p>
+        </form>
+
+        <!-- 2. REGISTER FORM WRAPPER -->
+        <form id="register-form" class="flex flex-col gap-4 text-left hidden">
+          <div>
+            <label class="block text-xs text-gray-500 font-bold mb-1.5">নাম (Full Name) *</label>
+            <input type="text" id="reg-name" required placeholder="আব্দুল আলিম" class="w-full bg-gray-50 focus:bg-white border border-gray-200 focus:border-emerald-500 rounded-xl px-3.5 py-2.5 text-sm outline-none transition">
+          </div>
+          <div>
+            <label class="block text-xs text-gray-500 font-bold mb-1.5">মোবাইল নম্বর (Phone) *</label>
+            <input type="tel" id="reg-phone" required placeholder="যেমন: 017xxxxxxxx" class="w-full bg-gray-50 focus:bg-white border border-gray-200 focus:border-emerald-500 rounded-xl px-3.5 py-2.5 text-sm outline-none transition">
+          </div>
+          <div>
+            <label class="block text-xs text-gray-500 font-bold mb-1.5 font-sans">ইমেইল (Email) *</label>
+            <input type="email" id="reg-email" required placeholder="name@test.com" class="w-full bg-gray-50 focus:bg-white border border-gray-200 focus:border-emerald-500 rounded-xl px-3.5 py-2.5 text-sm outline-none transition">
+          </div>
+          <div class="grid grid-cols-2 gap-3.5">
+            <div>
+              <label class="block text-xs text-gray-500 font-bold mb-1.5">পাসওয়ার্ড *</label>
+              <input type="password" id="reg-pass" required placeholder="••••••••" class="w-full bg-gray-50 focus:bg-white border border-gray-200 focus:border-emerald-500 rounded-xl px-3.5 py-2.5 text-sm outline-none transition">
+            </div>
+            <div>
+              <label class="block text-xs text-gray-500 font-bold mb-1.5">নিশ্চিত করুন *</label>
+              <input type="password" id="reg-confirm-pass" required placeholder="••••••••" class="w-full bg-gray-50 focus:bg-white border border-gray-200 focus:border-emerald-500 rounded-xl px-3.5 py-2.5 text-sm outline-none transition">
+            </div>
+          </div>
+          <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-xl transition shadow mt-3 cursor-pointer">নিবন্ধন সম্পন্ন করুন</button>
+        </form>
+
+      </div>
+    </main>
+
+    <!-- Mobile Navigation Bar -->
+    <div id="shared-mobile-nav"></div>
+
+    <!-- Dynamic Footer -->
+    <footer id="shared-footer" class="mt-auto"></footer>
+
+    <!-- Script triggers for register or logins -->
+    <script type="module">
+      import { showToast } from './src/app.js';
+
+      function initLoginPage() {
+        const tabLoginBtn = document.getElementById('tab-login-btn');
+        const tabRegisterBtn = document.getElementById('tab-register-btn');
+
+        const loginForm = document.getElementById('login-form');
+        const registerForm = document.getElementById('register-form');
+
+        // Tab Switching logic
+        tabLoginBtn?.addEventListener('click', () => {
+          tabLoginBtn.className = "text-emerald-700 border-b-2 border-emerald-600 pb-1.5 focus:outline-none transition cursor-pointer";
+          tabRegisterBtn.className = "text-gray-400 hover:text-emerald-700 pb-1.5 focus:outline-none transition cursor-pointer";
+          loginForm.classList.remove('hidden');
+          registerForm.classList.add('hidden');
+        });
+
+        tabRegisterBtn?.addEventListener('click', () => {
+          tabRegisterBtn.className = "text-emerald-700 border-b-2 border-emerald-600 pb-1.5 focus:outline-none transition cursor-pointer";
+          tabLoginBtn.className = "text-gray-400 hover:text-emerald-700 pb-1.5 focus:outline-none transition cursor-pointer";
+          registerForm.classList.remove('hidden');
+          loginForm.classList.add('hidden');
+        });
+
+        // Login Handler
+        loginForm?.addEventListener('submit', (e) => {
+          e.preventDefault();
+          const username = document.getElementById('login-id').value.trim();
+          const pass = document.getElementById('login-pass').value.trim();
+
+          const users = JSON.parse(localStorage.getItem('users') || '[]');
+          
+          // Match by Email or Phone
+          const matchedUser = users.find(u => (u.email === username || u.phone === username) && u.password === pass);
+
+          if (matchedUser) {
+            localStorage.setItem('currentUser', JSON.stringify(matchedUser));
+            showToast("সাফল্যের সাথে লগইন হয়েছে!", "success");
+            setTimeout(() => {
+              window.location.href = '/dashboard.html';
+            }, 600);
+          } else {
+            showToast("ভুল মোবাইল নম্বর বা পাসওয়ার্ড!", "danger");
+          }
+        });
+
+        // Register Handler
+        registerForm?.addEventListener('submit', (e) => {
+          e.preventDefault();
+          const name = document.getElementById('reg-name').value.trim();
+          const phone = document.getElementById('reg-phone').value.trim();
+          const email = document.getElementById('reg-email').value.trim();
+          const pass = document.getElementById('reg-pass').value.trim();
+          const confirmPass = document.getElementById('reg-confirm-pass').value.trim();
+
+          if (pass !== confirmPass) {
+            showToast("দুটি পাসওয়ার্ড মিলছে না!", "danger");
+            return;
+          }
+
+          const users = JSON.parse(localStorage.getItem('users') || '[]');
+          
+          // Check uniqueness
+          if (users.some(u => u.email === email || u.phone === phone)) {
+            showToast("এই ফোন বা ইমেইল দিয়ে অলরেডি অ্যাকাউন্ট খোলা রয়েছে!", "danger");
+            return;
+          }
+
+          // Register
+          const newUser = { name, phone, email, password: pass, address: "" };
+          users.push(newUser);
+          localStorage.setItem('users', JSON.stringify(users));
+          localStorage.setItem('currentUser', JSON.stringify(newUser));
+
+          showToast("নিবন্ধন এবং স্বয়ংক্রিয় লগইন সম্পন্ন হয়েছে!", "success");
+          setTimeout(() => {
+            window.location.href = '/dashboard.html';
+          }, 600);
+        });
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initLoginPage);
+      } else {
+        initLoginPage();
+      }
+    </script>
+  </body>
+</html>

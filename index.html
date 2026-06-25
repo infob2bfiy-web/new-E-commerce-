@@ -1,0 +1,284 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Green Grocery - ১০০% খাঁটি ও অর্গ্যানিক গ্রোসারি শপ</title>
+    <link rel="stylesheet" href="/src/style.css">
+    <script type="module" src="/src/app.js"></script>
+  </head>
+  <body class="bg-gray-50/50 pb-20 sm:pb-0">
+    <!-- Dynamic Header -->
+    <header id="shared-header"></header>
+
+    <!-- Hero Slideshow Carousel -->
+    <div class="max-w-7xl mx-auto px-4 md:px-8 pt-6">
+      <section class="relative bg-emerald-900 overflow-hidden h-[170px] min-[400px]:h-[210px] min-[500px]:h-[260px] sm:h-[350px] md:h-[420px] lg:h-[450px] rounded-2xl shadow-sm">
+        <div id="home-carousel" class="w-full h-full relative flex whitespace-nowrap transition-transform duration-700 ease-in-out">
+          <!-- Will be dynamically generated from banners -->
+        </div>
+        <!-- Dots indicator -->
+        <div id="carousel-dots" class="absolute bottom-2 sm:bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5 sm:gap-2 z-10"></div>
+      </section>
+    </div>
+
+    <!-- Top Categories -->
+    <section class="max-w-7xl mx-auto px-4 md:px-8 py-10 text-center select-none relative group/cat">
+      <div class="flex items-center justify-between mb-6">
+        <h2 class="text-xl md:text-2xl font-extrabold text-gray-800 bengali-font">শীর্ষ ক্যাটাগরি সমূহ</h2>
+        <a href="/shop.html" class="text-xs md:text-sm font-bold text-emerald-700 hover:text-emerald-800 transition">সকল শপ দেখুন →</a>
+      </div>
+      
+      <div class="relative px-2">
+        <!-- Left Arrow -->
+        <button id="cat-scroll-left" class="absolute -left-1 sm:-left-3 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-orange-500 hover:bg-orange-600 text-white flex items-center justify-center shadow-lg transition-all hover:scale-105 active:scale-95 focus:outline-none cursor-pointer md:hidden">
+          <svg class="w-5 h-5 stroke-white" fill="none" stroke="currentColor" stroke-width="3.5" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+          </svg>
+        </button>
+
+        <!-- Scrollable Wrapper -->
+        <div id="top-category-container" class="w-full overflow-x-auto scroll-smooth snap-x snap-mandatory flex pb-2 relative no-scrollbar" style="scrollbar-width: none; -ms-overflow-style: none;">
+          <div id="top-category-grid" class="flex md:grid md:grid-cols-6 lg:grid-cols-11 gap-3 font-bengali w-full">
+            <!-- Will be dynamically injected -->
+          </div>
+        </div>
+
+        <!-- Right Arrow -->
+        <button id="cat-scroll-right" class="absolute -right-1 sm:-right-3 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-orange-500 hover:bg-orange-600 text-white flex items-center justify-center shadow-lg transition-all hover:scale-105 active:scale-95 focus:outline-none cursor-pointer md:hidden">
+          <svg class="w-5 h-5 stroke-white" fill="none" stroke="currentColor" stroke-width="3.5" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+          </svg>
+        </button>
+      </div>
+    </section>
+
+    <!-- Flash Sale Products with Countdown -->
+    <section class="bg-orange-50/40 py-10 border-y border-orange-100 mb-10">
+      <div class="max-w-7xl mx-auto px-4 md:px-8">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 text-center sm:text-left">
+          <div class="flex items-center gap-3 justify-center sm:justify-start">
+            <h2 class="text-xl md:text-2xl font-extrabold text-orange-850 bengali-font">ফ্ল্যাশ সেল ⚡</h2>
+            <div class="bg-orange-600 text-white text-xs font-bold px-3 py-1 rounded-full animate-bounce">Flash Sale</div>
+          </div>
+          <!-- Real-time countdown timer -->
+          <div class="flex items-center gap-2 justify-center font-mono">
+            <span class="text-xs font-bold text-gray-500 uppercase font-sans mr-1">Time Remaining:</span>
+            <div class="bg-gray-900 text-white rounded px-2.5 py-1 text-sm font-bold shadow" id="timer-hour">02</div>
+            <span class="text-gray-900 font-bold">:</span>
+            <div class="bg-gray-900 text-white rounded px-2.5 py-1 text-sm font-bold shadow" id="timer-min">59</div>
+            <span class="text-gray-900 font-bold">:</span>
+            <div class="bg-gray-900 text-white rounded px-2.5 py-1 text-sm font-bold shadow" id="timer-sec">45</div>
+          </div>
+        </div>
+        <div id="flash-sale-grid" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
+          <!-- Flash sale cards -->
+        </div>
+      </div>
+    </section>
+
+    <!-- Dynamic Category-wise Product Sections -->
+    <section class="max-w-7xl mx-auto px-4 md:px-8 py-4 mb-10">
+      <div id="category-sections" class="flex flex-col gap-12">
+        <!-- Populated via Javascript -->
+      </div>
+    </section>
+
+    <!-- All Products Grid -->
+    <section class="bg-gray-50 py-12 border-t border-gray-100">
+      <div class="max-w-7xl mx-auto px-4 md:px-8">
+        <h2 class="text-xl md:text-2xl font-extrabold text-gray-800 bengali-font mb-6 text-center">আমাদের সব অর্গ্যানিক পণ্যের কালেকশন</h2>
+        <div id="all-products-grid" class="grid grid-cols-2 lg:grid-cols-5 gap-4">
+          <!-- All products -->
+        </div>
+      </div>
+    </section>
+
+    <!-- Trust Badges Section -->
+    <section class="max-w-7xl mx-auto px-4 md:px-8 py-10 grid grid-cols-1 md:grid-cols-3 gap-6 select-none border-t border-gray-100 text-center font-bengali">
+      <div class="bg-white rounded-2xl p-6 border border-emerald-50 flex items-center gap-4 flex-col text-center">
+        <div class="w-12 h-12 bg-emerald-50 text-emerald-800 rounded-full flex items-center justify-center text-xl font-bold">🚚</div>
+        <div>
+          <h4 class="font-bold text-gray-800 mb-1">ঢাকায় ফ্রি ডেলিভারি</h4>
+          <p class="text-xs text-gray-400">৳৫০০+ অর্ডারে সম্পূর্ণ ফ্রি ও নিরাপদ ডেলিভারি অফার।</p>
+        </div>
+      </div>
+      <div class="bg-white rounded-2xl p-6 border border-emerald-50 flex items-center gap-4 flex-col text-center">
+        <div class="w-12 h-12 bg-emerald-50 text-emerald-800 rounded-full flex items-center justify-center text-xl font-bold">⏱️</div>
+        <div>
+          <h4 class="font-bold text-gray-800 mb-1">২৪/৭ কাস্টমার সার্ভিস</h4>
+          <p class="text-xs text-gray-400">যেকোনো সমস্যায় আমাদের হেল্পলাইন ২৪ ঘণ্টা খোলা থাকে।</p>
+        </div>
+      </div>
+      <div class="bg-white rounded-2xl p-6 border border-emerald-50 flex items-center gap-4 flex-col text-center">
+        <div class="w-12 h-12 bg-emerald-50 text-emerald-800 rounded-full flex items-center justify-center text-xl font-bold">🛡️</div>
+        <div>
+          <h4 class="font-bold text-gray-800 mb-1">পারফেক্ট রিটার্ন পলিসি</h4>
+          <p class="text-xs text-gray-400">পণ্য পছন্দ না হলে ৭ দিনের মধ্যে নিশ্চিত ফেরত ও ক্যাশ রিফান্ড।</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Mobile Screen Bottom Nav Bar -->
+    <div id="shared-mobile-nav"></div>
+
+    <!-- Dynamic Footer -->
+    <footer id="shared-footer" class="mt-auto"></footer>
+
+    <!-- Script for Dynamic Content population -->
+    <script type="module">
+      import { getProducts, getCategories, createProductCardHTML, getSettings } from './src/app.js';
+      
+      function initIndexPage() {
+        const products = getProducts();
+        const categories = getCategories();
+        const settings = getSettings();
+
+        // 1. Render Carousel
+        const banners = JSON.parse(localStorage.getItem('banners') || '[]');
+        const carousel = document.getElementById('home-carousel');
+        const dotsContainer = document.getElementById('carousel-dots');
+        if (carousel && banners.length > 0) {
+          carousel.innerHTML = banners.map((ban, index) => `
+            <div class="w-full h-full flex-shrink-0 relative inline-block overflow-hidden">
+              <img src="${ban.imageUrl}" class="w-full h-full object-cover opacity-60 mix-blend-multiply filter contrast-125" alt="${ban.title}">
+              <div class="absolute inset-0 bg-gradient-to-r from-emerald-950/85 via-emerald-950/45 to-transparent flex flex-col justify-center px-5 min-[400px]:px-6 md:px-16 text-white text-left break-words">
+                <h1 class="text-base min-[400px]:text-lg min-[500px]:text-xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold bengali-font mb-1.5 sm:mb-3 text-emerald-100 tracking-tight select-none slide-in-top">${ban.title}</h1>
+                <p class="text-[10px] min-[400px]:text-xs sm:text-sm md:text-base lg:text-lg text-emerald-50/80 mb-2.5 sm:mb-6 font-sans select-none max-w-xl line-clamp-2 md:line-clamp-none">${ban.text}</p>
+                <div>
+                  <a href="/shop.html" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[9px] min-[400px]:text-[11px] sm:text-sm px-3 py-1.5 min-[400px]:px-4 min-[400px]:py-2 sm:px-6 sm:py-2.5 rounded-lg transition-transform inline-block hover:scale-105 shadow shadow-emerald-950">শপ করুন (Shop New)</a>
+                </div>
+              </div>
+            </div>
+          `).join('');
+
+          dotsContainer.innerHTML = banners.map((_, i) => `
+            <button class="w-2.5 h-2.5 rounded-full bg-emerald-700 hover:bg-emerald-500 transition-colors ${i === 0 ? '!bg-white' : ''}" onclick="window.selectSlideCarousel(${i})"></button>
+          `).join('');
+
+          let currentSlide = 0;
+          window.selectSlideCarousel = (slideIndex) => {
+            currentSlide = slideIndex;
+            carousel.style.transform = `translateX(-${currentSlide * 100}%)`;
+            const dots = dotsContainer.querySelectorAll('button');
+            dots.forEach((dot, idx) => {
+              if (idx === currentSlide) dot.classList.add('!bg-white');
+              else dot.classList.remove('!bg-white');
+            });
+          };
+
+          // Autocycle slider
+          setInterval(() => {
+            currentSlide = (currentSlide + 1) % banners.length;
+            window.selectSlideCarousel(currentSlide);
+          }, 6000);
+        }
+
+        // 2. Render Top Categories Icons
+        const topCatGrid = document.getElementById('top-category-grid');
+        if (topCatGrid) {
+          // List of generic beautiful vegetable/fruits emojis for visual styling
+          const emojis = {
+            "mango": "🥭", "oil-ghee": "🧉", "honey": "🍯", "dates": "🌴", "spices": "🌶️", 
+            "nuts-seeds": "🌰", "beverage": "☕", "flours-lentils": "🌾", "pickle": "🏺", 
+            "lichi": "🍒", "rice": "🍚"
+          };
+          topCatGrid.innerHTML = categories.map(cat => `
+            <a href="/shop.html?category=${cat.id}" class="category-card bg-white p-3.5 rounded-2xl flex flex-col items-center justify-center gap-2 cursor-pointer flex-shrink-0 w-24 md:w-auto h-24 md:h-auto shadow-sm hover:shadow hover:scale-[1.02] transition-all border border-gray-100/60 snap-start">
+              <span class="text-3xl">${emojis[cat.id] || "🍇"}</span>
+              <span class="text-xs font-bold text-gray-750 text-center truncate w-full line-clamp-1 bengali-font">${cat.name.split(' ')[0]}</span>
+            </a>
+          `).join('');
+
+          // Bind Category Slider Arrow actions
+          const topCatContainer = document.getElementById('top-category-container');
+          const scrollLeftBtn = document.getElementById('cat-scroll-left');
+          const scrollRightBtn = document.getElementById('cat-scroll-right');
+          
+          if (topCatContainer && scrollLeftBtn && scrollRightBtn) {
+            scrollLeftBtn.addEventListener('click', () => {
+              topCatContainer.scrollBy({ left: -200, behavior: 'smooth' });
+            });
+            scrollRightBtn.addEventListener('click', () => {
+              topCatContainer.scrollBy({ left: 200, behavior: 'smooth' });
+            });
+          }
+        }
+
+        // 3. Render Flash Sale Grid
+        const flashSaleGrid = document.getElementById('flash-sale-grid');
+        if (flashSaleGrid) {
+          const fsProducts = products.filter(p => p.tag === "Flash Sale");
+          if (fsProducts.length > 0) {
+            flashSaleGrid.innerHTML = fsProducts.slice(0, 5).map(p => createProductCardHTML(p)).join('');
+          } else {
+            flashSaleGrid.innerHTML = `<p class="col-span-full text-center text-sm text-gray-500 py-6">বর্তমানে কোনো ফ্ল্যাশ সেল আইটেম নেই।</p>`;
+          }
+        }
+
+        // Real-time Timer simulation
+        let hours = 2, minutes = 59, seconds = 45;
+        setInterval(() => {
+          seconds--;
+          if (seconds < 0) {
+            seconds = 59;
+            minutes--;
+            if (minutes < 0) {
+              minutes = 59;
+              hours--;
+              if (hours < 0) {
+                hours = 2; // Loop
+              }
+            }
+          }
+          const tHour = document.getElementById('timer-hour');
+          const tMin = document.getElementById('timer-min');
+          const tSec = document.getElementById('timer-sec');
+          if (tHour) tHour.textContent = String(hours).padStart(2, '0');
+          if (tMin) tMin.textContent = String(minutes).padStart(2, '0');
+          if (tSec) tSec.textContent = String(seconds).padStart(2, '0');
+        }, 1000);
+
+        // 4. Render category-wise sections
+        const catSections = document.getElementById('category-sections');
+        if (catSections) {
+          // Render top 3 categories showing 4 items
+          const showCats = ["mango", "oil-ghee", "honey"];
+          catSections.innerHTML = showCats.map(catUniqueId => {
+            const catObj = categories.find(c => c.id === catUniqueId);
+            if (!catObj) return '';
+            const filteredProds = products.filter(p => p.category === catUniqueId);
+            if (filteredProds.length === 0) return '';
+            
+            return `
+              <div>
+                <div class="flex items-baseline justify-between border-b border-gray-100 pb-3 mb-6">
+                  <h3 class="text-xl font-bold text-gray-800 bengali-font flex items-center gap-2">
+                    <span class="w-1.5 h-6 bg-emerald-600 rounded-full"></span>
+                    <span>${catObj.name}</span>
+                  </h3>
+                  <a href="/shop.html?category=${catUniqueId}" class="text-xs md:text-sm font-bold text-emerald-700 hover:text-emerald-800 transition">আরো দেখুন →</a>
+                </div>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  ${filteredProds.slice(0, 4).map(p => createProductCardHTML(p)).join('')}
+                </div>
+              </div>
+            `;
+          }).join('');
+        }
+
+        // 5. Render All products grid
+        const allProdsGrid = document.getElementById('all-products-grid');
+        if (allProdsGrid) {
+          allProdsGrid.innerHTML = products.map(p => createProductCardHTML(p)).join('');
+        }
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initIndexPage);
+      } else {
+        initIndexPage();
+      }
+    </script>
+  </body>
+</html>

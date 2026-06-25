@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Wishlist - Green Grocery Organic Store</title>
+    <link rel="stylesheet" href="/src/style.css">
+    <script type="module" src="/src/app.js"></script>
+  </head>
+  <body class="bg-gray-50/50 pb-20 sm:pb-0">
+    <!-- Dynamic Header -->
+    <header id="shared-header"></header>
+
+    <!-- Wishlist wrapper -->
+    <main class="max-w-7xl mx-auto px-4 md:px-8 py-10 font-sans">
+      <h1 class="text-2xl font-extrabold text-gray-800 bengali-font mb-8 flex items-center gap-2 select-none">
+        <span>❤️ আমার পছন্দের প্রোডাক্টস (Wishlist)</span>
+      </h1>
+
+      <!-- Product cards list grid -->
+      <section id="wishlist-grid" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-5">
+        <!-- Re-populated dynamically inside app.js -->
+      </section>
+    </main>
+
+    <!-- Mobile Navigation Bar -->
+    <div id="shared-mobile-nav"></div>
+
+    <!-- Dynamic Footer -->
+    <footer id="shared-footer" class="mt-auto"></footer>
+  </body>
+</html>

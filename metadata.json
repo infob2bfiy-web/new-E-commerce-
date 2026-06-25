@@ -1,0 +1,8 @@
+{
+  "name": "Bangladeshi Organic Grocery",
+  "description": "A complete Bangladeshi organic grocery e-commerce website built with pure HTML, CSS, and Vanilla JavaScript, featuring a hidden admin dashboard and complete local storage data integration.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Shopping Cart - Green Grocery Organic Store</title>
+    <link rel="stylesheet" href="/src/style.css">
+    <script type="module" src="/src/app.js"></script>
+  </head>
+  <body class="bg-gray-50/50 pb-20 sm:pb-0">
+    <!-- Dynamic Header -->
+    <header id="shared-header"></header>
+
+    <!-- Shopping Cart Container -->
+    <main class="max-w-7xl mx-auto px-4 md:px-8 py-10 font-sans">
+      <h1 class="text-2xl font-extrabold text-gray-800 bengali-font mb-8 flex items-center gap-2">
+        <span>🛒 আপনার শপিং কার্ট (Your Cart)</span>
+      </h1>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        
+        <!-- Cart Items List (2 Columns) -->
+        <section class="lg:col-span-2">
+          <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 sm:p-6" id="cart-items-container">
+            <!-- Will be dynamically generated from app.js -->
+          </div>
+        </section>
+
+        <!-- Order Summary (1 Column) -->
+        <aside class="w-full" id="cart-summary-block">
+          <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 flex flex-col gap-5 sticky top-24">
+            <h3 class="font-extrabold text-gray-800 text-md border-b border-gray-100 pb-3 bengali-font">অর্ডার সামারি (Order Summary)</h3>
+
+            <!-- Details list -->
+            <div class="flex flex-col gap-3 font-sans text-sm pb-4 border-b border-gray-100 select-none">
+              <div class="flex justify-between text-gray-500">
+                <span>পণ্য উপ-মোট (Subtotal)</span>
+                <span id="cart-subtotal" class="font-bold text-gray-800">৳০</span>
+              </div>
+              <div class="flex justify-between text-gray-500">
+                <span>কুপন ডিসকাউন্ট (Discount)</span>
+                <span id="cart-discount" class="font-bold text-emerald-700">-৳০</span>
+              </div>
+              <div class="flex justify-between text-gray-500">
+                <span>ডেলিভারি চার্জ (Shipping)</span>
+                <span class="text-xs font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded">অর্ডারে ফ্রি!</span>
+              </div>
+            </div>
+
+            <!-- Coupon Code Form -->
+            <div>
+              <label class="block text-xs text-gray-500 font-bold mb-1.5 font-sans">প্রোমোশনাল কুপন কোড (যেমন: EID20) :</label>
+              <div class="flex gap-2">
+                <input type="text" id="coupon-input" placeholder="কুপন কোড লিখুন..." class="bg-gray-50 border border-gray-200 focus:border-emerald-500 focus:bg-white rounded-xl px-3 py-2 text-xs w-full outline-none uppercase font-bold transition">
+                <button id="apply-coupon-btn" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs px-4 py-2 rounded-xl transition cursor-pointer select-none">প্রয়োগ</button>
+              </div>
+              <div id="coupon-message" class="text-xs font-bold font-sans mt-2 hidden"></div>
+            </div>
+
+            <!-- Grand Total -->
+            <div class="flex justify-between items-baseline py-2 bg-gray-50/50 rounded-xl px-3 border border-gray-100 select-none">
+              <span class="text-sm font-bold text-gray-700 font-sans">সর্বমোট (Total)</span>
+              <span id="cart-total" class="text-xl font-black text-emerald-800 font-sans">৳০</span>
+            </div>
+
+            <!-- Checkout Proceed Button -->
+            <a href="/checkout.html" class="block w-full bg-emerald-600 hover:bg-emerald-700 text-white text-center font-bold text-sm h-11 rounded-xl flex items-center justify-center transition shadow select-none">
+              চেকআউটে যান (Proceed to Checkout) →
+            </a>
+          </div>
+        </aside>
+
+      </div>
+    </main>
+
+    <!-- Mobile Navigation Bar -->
+    <div id="shared-mobile-nav"></div>
+
+    <!-- Dynamic Footer -->
+    <footer id="shared-footer" class="mt-auto"></footer>
+
+    <!-- Script triggers for Cart -->
+    <script type="module">
+      import { getCart, updateCartBadges, showToast } from './src/app.js';
+
+      function initCartPage() {
+        // Redraw cart table contents
+        updateCartBadges();
+
+        // 1. Coupon handler
+        const applyBtn = document.getElementById('apply-coupon-btn');
+        const couponInp = document.getElementById('coupon-input');
+        const couponMsg = document.getElementById('coupon-message');
+
+        // Check if there is already an active coupon
+        const cachedCode = sessionStorage.getItem('activeCouponCode');
+        if (cachedCode && couponInp) {
+          couponInp.value = cachedCode;
+          couponInp.disabled = true;
+          if (applyBtn) {
+            applyBtn.textContent = 'সরান';
+            applyBtn.classList.replace('bg-emerald-600', 'bg-red-500');
+            applyBtn.classList.replace('hover:bg-emerald-700', 'hover:bg-red-650');
+          }
+        }
+
+        applyBtn?.addEventListener('click', () => {
+          const code = couponInp.value.trim().toUpperCase();
+          
+          // Clear case
+          if (applyBtn.textContent === 'সরান') {
+            sessionStorage.removeItem('activeCouponCode');
+            sessionStorage.removeItem('activeCouponPercent');
+            sessionStorage.removeItem('activeCouponFlat');
+            couponInp.value = '';
+            couponInp.disabled = false;
+            applyBtn.textContent = 'প্রয়োগ';
+            applyBtn.classList.replace('bg-red-500', 'bg-emerald-600');
+            applyBtn.classList.replace('hover:bg-red-650', 'hover:bg-emerald-700');
+            
+            if (couponMsg) {
+              couponMsg.classList.add('hidden');
+            }
+            updateCartBadges();
+            showToast("কুপন কোড মুছে ফেলা হয়েছে।", "danger");
+            return;
+          }
+
+          if (!code) {
+            showToast("অনুগ্রহ করে সঠিক কুপন কোড লিখুন।", "danger");
+            return;
+          }
+
+          // Validate from local storage
+          const coupons = JSON.parse(localStorage.getItem('coupons') || '[]');
+          const validCoupon = coupons.find(c => c.code === code);
+
+          if (validCoupon) {
+            sessionStorage.setItem('activeCouponCode', validCoupon.code);
+            if (validCoupon.type === 'percentage') {
+              sessionStorage.setItem('activeCouponPercent', validCoupon.value);
+            } else {
+              sessionStorage.setItem('activeCouponFlat', validCoupon.value);
+            }
+
+            couponInp.disabled = true;
+            applyBtn.textContent = 'সরান';
+            applyBtn.classList.replace('bg-emerald-600', 'bg-red-500');
+            applyBtn.classList.replace('hover:bg-emerald-700', 'hover:bg-red-650');
+
+            if (couponMsg) {
+              couponMsg.textContent = `🎯 ${validCoupon.description}`;
+              couponMsg.className = "text-xs font-bold text-emerald-700 mt-2 block";
+            }
+            updateCartBadges();
+            showToast("কুপন সফলভাবে প্রয়োগ করা হয়েছে!", "success");
+          } else {
+            showToast("দুঃখিত, কুপনটি অবৈধ বা মেয়াদ শেষ!", "danger");
+            if (couponMsg) {
+              couponMsg.textContent = "❌ অবৈধ কুপন কোড!";
+              couponMsg.className = "text-xs font-bold text-red-500 mt-2 block";
+            }
+          }
+        });
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initCartPage);
+      } else {
+        initCartPage();
+      }
+    </script>
+  </body>
+</html>

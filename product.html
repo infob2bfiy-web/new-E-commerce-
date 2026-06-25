@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Product Details - Green Grocery Organic Store</title>
+    <link rel="stylesheet" href="/src/style.css">
+    <script type="module" src="/src/app.js"></script>
+  </head>
+  <body class="bg-gray-50/50 pb-20 sm:pb-0">
+    <!-- Dynamic Header -->
+    <header id="shared-header"></header>
+
+    <!-- Product Detail Container -->
+    <main class="max-w-7xl mx-auto px-4 md:px-8 py-10 font-sans">
+      <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 sm:p-8 mb-12">
+        <div id="product-detail-layout" class="grid grid-cols-1 lg:grid-cols-2 gap-10">
+          <!-- Dynamically populated detail blocks -->
+        </div>
+      </div>
+
+      <!-- Related Products Section -->
+      <section class="mt-14 mb-8">
+        <h3 class="text-xl font-bold text-gray-800 bengali-font mb-6 flex items-center gap-2">
+          <span class="w-1.5 h-6 bg-emerald-600 rounded-full"></span>
+          <span>সম্পর্কিত কিছু প্রোডাক্ট (Related Products)</span>
+        </h3>
+        <div id="related-grid" class="grid grid-cols-2 md:grid-cols-4 gap-5">
+          <!-- Related elements -->
+        </div>
+      </section>
+    </main>
+
+    <!-- Mobile Navigation Bar -->
+    <div id="shared-mobile-nav"></div>
+
+    <!-- Dynamic Footer -->
+    <footer id="shared-footer" class="mt-auto"></footer>
+
+    <!-- Script triggers for Detail View -->
+    <script type="module">
+      import { getProducts, addToCart, toggleWishlist, getWishlist, createProductCardHTML } from './src/app.js';
+
+      function initProductDetailPage() {
+        const products = getProducts();
+        
+        // Retrieve Product ID from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const productId = urlParams.get('id') || products[0]?.id; // Fallback to first item
+
+        const product = products.find(p => p.id === productId);
+        const container = document.getElementById('product-detail-layout');
+
+        if (!product) {
+          container.innerHTML = `
+            <div class="col-span-full py-12 text-center">
+              <h2 class="text-xl font-bold text-gray-700 mb-2 font-bengali">দুঃখিত, প্রোডাক্টটি খুঁজে পাওয়া যায়নি!</h2>
+              <a href="/shop.html" class="bg-emerald-600 text-white rounded-lg px-6 py-2.5 font-bold mt-4 inline-block shadow">শপ পেইজে ফিরে যান</a>
+            </div>
+          `;
+          return;
+        }
+
+        // Set page document title dynamically
+        document.title = `${product.name} - Green Grocery`;
+
+        const isWishlisted = getWishlist().some(item => item.id === product.id);
+
+        // Setup gallery images thumbnail buttons
+        const galleryImages = product.images && product.images.length > 0 
+          ? product.images.filter(img => img && img.trim().length > 0)
+          : [product.image];
+
+        const thumbnailsHTML = galleryImages.map((img, idx) => {
+          const borderClass = idx === 0 
+            ? "border-2 border-emerald-600 shadow" 
+            : "border border-gray-100 hover:border-emerald-300 opacity-80 hover:opacity-100";
+          return `
+            <button class="gallery-thumb-btn ${borderClass} rounded-xl overflow-hidden aspect-square p-0.5 bg-white cursor-pointer select-none transition" onclick="changeMainDetailImage(this, '${img}')">
+              <img src="${img}" class="w-full h-full object-cover rounded-lg" referrerPolicy="no-referrer">
+            </button>
+          `;
+        }).join('');
+
+        window.changeMainDetailImage = function(btnElement, url) {
+          const mainImg = document.getElementById('main-detail-img');
+          if (mainImg) {
+            mainImg.src = url;
+          }
+          document.querySelectorAll('.gallery-thumb-btn').forEach(b => {
+            b.className = "gallery-thumb-btn border border-gray-100 hover:border-emerald-300 opacity-80 hover:opacity-100 rounded-xl overflow-hidden aspect-square p-0.5 bg-white cursor-pointer select-none transition";
+          });
+          btnElement.className = "gallery-thumb-btn border-2 border-emerald-600 shadow rounded-xl overflow-hidden aspect-square p-0.5 bg-white cursor-pointer select-none transition";
+        };
+
+        // Render Product Content
+        container.innerHTML = `
+          <!-- Left side gallery thumbs -->
+          <div>
+            <div class="border border-gray-100 rounded-2xl bg-gray-50 overflow-hidden aspect-square flex items-center justify-center p-2 mb-4">
+              <img id="main-detail-img" src="${product.image}" class="w-full h-full object-cover transition duration-300" alt="${product.name}" referrerPolicy="no-referrer">
+            </div>
+            <!-- Thumbnails loops -->
+            <div class="grid grid-cols-5 gap-2">
+              ${thumbnailsHTML}
+            </div>
+          </div>
+
+          <!-- Right side information list -->
+          <div class="flex flex-col text-left">
+            <span class="text-xs uppercase tracking-wider text-emerald-700 font-extrabold font-mono mb-2">${product.category}</span>
+            <h1 class="text-xl sm:text-2xl font-bold text-gray-800 font-sans tracking-tight mb-3 leading-snug">${product.name}</h1>
+            
+            <!-- Ratings and category info -->
+            <div class="flex items-center gap-3 mb-4 select-none">
+              <div class="flex items-center gap-1">
+                <span class="text-amber-400 text-sm">★★★★★</span>
+                <span class="text-xs font-bold text-gray-500 font-sans">4.8 (26 Reviews)</span>
+              </div>
+              <span class="text-gray-200">|</span>
+              <span class="text-xs font-bold font-sans text-gray-500">ব্যান্ড: <span class="text-emerald-700">খাস গ্রোসারি</span></span>
+            </div>
+
+            <!-- Discount block -->
+            <div class="flex items-baseline gap-3.5 mb-6 py-4 px-5 bg-emerald-50/50 rounded-2xl w-fit">
+              <span class="text-3xl font-extrabold text-emerald-800 font-sans">৳${product.discountPrice || product.price}</span>
+              ${product.discountPrice && product.discountPrice < product.price ? `
+                <span class="text-base line-through text-gray-400 font-sans">৳${product.price}</span>
+                <span class="bg-red-500 text-white text-[10px] font-extrabold px-2 py-0.5 rounded-full select-none shadow">-${Math.round(((product.price - product.discountPrice) / product.price) * 100)}% ছাড়!</span>
+              ` : ''}
+            </div>
+
+            <!-- Stock checklist -->
+            <div class="mb-6 flex flex-wrap gap-4 text-xs font-bold">
+              <div class="flex items-center gap-1.5 py-1 px-3 border border-emerald-100 rounded-full bg-emerald-50 text-emerald-800">
+                <span class="w-2 h-2 rounded-full bg-emerald-600 animate-pulse"></span>
+                <span>অর্গ্যানিক গ্যারান্টি</span>
+              </div>
+              <div class="flex items-center gap-1.5 py-1 px-3 border border-emerald-100 rounded-full bg-emerald-50 text-emerald-800">
+                <span>📦 স্টক স্ট্যাটাস:</span>
+                <span class="${product.stock > 0 ? 'text-emerald-700' : 'text-red-650'}">${product.stock > 0 ? `ইন স্টক (${product.stock} কেজি/পিস)` : 'স্টক শেষ'}</span>
+              </div>
+              ${product.tag ? `
+                <div class="flex items-center gap-1.5 py-1 px-3 border border-orange-100 rounded-full bg-orange-50 text-orange-850">
+                  <span>💡 ট্যাগ:</span>
+                  <span>${product.tag}</span>
+                </div>
+              ` : ''}
+            </div>
+
+            <!-- Description -->
+            <p class="text-sm text-gray-500 font-sans leading-relaxed mb-6 border-b border-gray-100 pb-6">${product.description || '১০০% পুষ্টিকর এবং সম্পূর্ণ নির্ভেজাল সোর্স থেকে আমাদের নিজস্ব তত্ত্বাবধানে সংগৃহীত খাদ্য উপাদান।'}</p>
+
+            <!-- Quantity & Actions block -->
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 mb-6">
+              <div class="flex items-center border border-gray-200 rounded-xl bg-gray-50 h-10.5 overflow-hidden">
+                <button id="qty-minus" class="px-4 text-gray-500 hover:bg-gray-100 font-bold focus:outline-none transition select-none">-</button>
+                <input type="text" id="qty-input" value="1" readonly class="w-12 text-center text-sm font-bold bg-transparent border-none outline-none">
+                <button id="qty-plus" class="px-4 text-gray-500 hover:bg-gray-100 font-bold focus:outline-none transition select-none">+</button>
+              </div>
+
+              <!-- Cart/Buy actions buttons -->
+              <div class="grid grid-cols-2 gap-3 flex-grow max-w-md">
+                <button id="detail-add-cart-btn" class="bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 select-none cursor-pointer h-10.5 rounded-xl font-bold text-xs sm:text-sm transition flex items-center justify-center gap-2">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+                  <span>কার্ট করুন</span>
+                </button>
+                <button id="detail-buy-now-btn" class="bg-emerald-600 hover:bg-emerald-700 text-white select-none cursor-pointer h-10.5 rounded-xl font-bold text-xs sm:text-sm transition flex items-center justify-center shadow">
+                  <span>কিনুন (Order Now)</span>
+                </button>
+              </div>
+
+              <!-- Inline wishlist action -->
+              <button id="detail-wishlist-btn" class="border border-gray-200 hover:border-red-300 hover:bg-red-50 text-gray-400 hover:text-red-500 p-2.5 rounded-xl transition cursor-pointer select-none">
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="${isWishlisted ? 'red' : 'none'}" stroke="${isWishlisted ? 'red' : 'currentColor'}" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+              </button>
+            </div>
+            
+            <!-- Delivery Info highlights -->
+            <div class="bg-gray-50 rounded-2xl p-4 grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs text-gray-500 leading-relaxed font-sans mt-auto">
+              <div>🚚 <span class="font-bold text-gray-700">ঢাকায় ফ্রি ডেলিভারী</span> : ৫০০ টাকার উপরে অর্ডারে ২৪-৪৮ ঘণ্টায় ডেলিভারি।</div>
+              <div>🔄 <span class="font-bold text-gray-700">রিপ্লেসমেন্ট গ্যারান্টি</span> : ড্যামেজ বা পচা প্রোডাক্টে ৭ দিনে রিপ্লেসমেন্ট।</div>
+            </div>
+          </div>
+        `;
+
+        // 1. Quantity control increments
+        const qtyInp = document.getElementById('qty-input');
+        const qtyPlus = document.getElementById('qty-minus');
+        const qtyMin = document.getElementById('qty-plus');
+        
+        let qtyVal = 1;
+        qtyPlus?.addEventListener('click', () => {
+          if (qtyVal > 1) {
+            qtyVal--;
+            qtyInp.value = qtyVal;
+          }
+        });
+        qtyMin?.addEventListener('click', () => {
+          if (qtyVal < product.stock) {
+            qtyVal++;
+            qtyInp.value = qtyVal;
+          }
+        });
+
+        // 2. Add to cart button trigger
+        document.getElementById('detail-add-cart-btn')?.addEventListener('click', () => {
+          addToCart(productId, qtyVal);
+        });
+
+        // 3. Buy now trigger direct redirect
+        document.getElementById('detail-buy-now-btn')?.addEventListener('click', () => {
+          addToCart(productId, qtyVal, true);
+        });
+
+        // 4. Wishlist action toggle
+        document.getElementById('detail-wishlist-btn')?.addEventListener('click', (e) => {
+          toggleWishlist(productId);
+          const hasIt = getWishlist().some(item => item.id === productId);
+          e.currentTarget.querySelector('svg').setAttribute('fill', hasIt ? 'red' : 'none');
+          e.currentTarget.querySelector('svg').setAttribute('stroke', hasIt ? 'red' : 'currentColor');
+        });
+
+        // 5. Render Related Products
+        const relatedGrid = document.getElementById('related-grid');
+        if (relatedGrid) {
+          const related = products.filter(p => p.category === product.category && p.id !== product.id);
+          if (related.length > 0) {
+            relatedGrid.innerHTML = related.slice(0, 4).map(p => createProductCardHTML(p)).join('');
+          } else {
+            // Render non category list fallback
+            relatedGrid.innerHTML = products.filter(p => p.id !== product.id).slice(0, 4).map(p => createProductCardHTML(p)).join('');
+          }
+        }
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initProductDetailPage);
+      } else {
+        initProductDetailPage();
+      }
+    </script>
+  </body>
+</html>

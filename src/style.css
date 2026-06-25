@@ -1,0 +1,159 @@
+@import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", "Hind Siliguri", sans-serif;
+  --font-bengali: "Hind Siliguri", sans-serif;
+}
+
+:root {
+  --primary: #2e7d32;
+  --primary-hover: #1b5e20;
+  --primary-light: #e8f5e9;
+  --accent: #ff9800;
+  --accent-hover: #f57c00;
+  --accent-light: #fff3e0;
+  --danger: #d32f2f;
+  --danger-light: #ffebee;
+  --text-dark: #1f2937;
+  --text-light: #6b7280;
+  --bg-light: #f9fafb;
+  --border: #e5e7eb;
+}
+
+/* Base custom styles */
+html, body {
+  max-width: 100%;
+  overflow-x: hidden;
+  width: 100%;
+}
+
+body {
+  font-family: var(--font-sans);
+  color: var(--text-dark);
+  background-color: #ffffff;
+  scroll-behavior: smooth;
+}
+
+.bengali-font {
+  font-family: var(--font-bengali);
+}
+
+/* Hide scrollbar utility */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+/* Sticky top navigation shadow transition */
+.sticky-nav {
+  transition: all 0.3s ease-in-out;
+}
+.sticky-nav.scrolled {
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  background-color: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(8px);
+}
+
+/* Toast Notifications styling */
+#toast-container {
+  pointer-events: none;
+}
+.toast {
+  pointer-events: auto;
+  animation: slideInRight 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+.toast.hide {
+  animation: fadeOut 0.3s forwards;
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+}
+
+/* Hover effects */
+.hover-zoom img {
+  transition: transform 0.5s ease;
+}
+.hover-zoom:hover img {
+  transform: scale(1.05);
+}
+
+/* Category card pulse */
+.category-card {
+  transition: all 0.3s ease;
+  border: 1px solid var(--border);
+}
+.category-card:hover {
+  border-color: var(--primary);
+  transform: translateY(-4px);
+  box-shadow: 0 10px 15px -3px rgba(46, 125, 50, 0.1);
+}
+
+/* Accordion transition */
+.accordion-content {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease-out;
+}
+.accordion-content.active {
+  max-height: 500px;
+  transition: max-height 0.3s ease-in;
+}
+
+/* Active bottom nav logic */
+.bottom-nav-item.active {
+  color: var(--primary);
+}
+.bottom-nav-item.active svg {
+  transform: translateY(-2px);
+  stroke: var(--primary);
+}
+
+/* Mega menu drop */
+.group:hover .mega-menu {
+  display: block;
+}
+
+/* Progress timelines */
+.step-line {
+  height: 4px;
+  background-color: var(--border);
+  position: relative;
+}
+.step-line.active {
+  background-color: var(--primary);
+}
+.step-dot {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background-color: #fff;
+  border: 3px solid var(--border);
+  transition: all 0.3s ease;
+}
+.step-dot.active {
+  border-color: var(--primary);
+  background-color: var(--primary);
+}

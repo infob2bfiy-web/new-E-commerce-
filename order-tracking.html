@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Order Tracking - Green Grocery Organic Store</title>
+    <link rel="stylesheet" href="/src/style.css">
+    <script type="module" src="/src/app.js"></script>
+  </head>
+  <body class="bg-gray-50/50 pb-20 sm:pb-0">
+    <!-- Dynamic Header -->
+    <header id="shared-header"></header>
+
+    <!-- Tracking Container -->
+    <main class="max-w-4xl mx-auto px-4 md:px-8 py-12 text-center font-sans">
+      <div class="bg-white border border-gray-100 shadow-sm rounded-3xl p-6 sm:p-10">
+        <h1 class="text-xl sm:text-2xl font-extrabold text-gray-800 bengali-font mb-2">অর্ডার ট্র্যাকিং সিস্টেম (Order Tracking)</h1>
+        <p class="text-xs text-gray-400 mb-8 max-w-md mx-auto">নির্দিষ্ট অর্ডার আইডি বা মোবাইল নম্বর টাইপ করে আপনার পণ্যের বর্তমান সংগ্রহ বা ডেলিভারি ধাপ দেখে নিন নিরাপদে।</p>
+
+        <!-- Search Order Bar -->
+        <div class="flex flex-col sm:flex-row gap-3 max-w-lg mx-auto mb-10 select-none">
+          <input type="text" id="track-input" placeholder="অর্ডার আইডি (যেমন: ORD-2026-X47A) বা ফোন নম্বর লিখুন..." class="flex-grow bg-gray-50 border border-gray-200 focus:border-emerald-500 rounded-xl px-4 py-2.5 font-bold text-sm outline-none transition uppercase">
+          <button id="track-btn" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm px-6 py-2.5 rounded-xl transition shadow cursor-pointer">খুঁজুন (Track)</button>
+        </div>
+
+        <!-- Stepper Tracker Container -->
+        <div id="tracker-display" class="hidden text-left border-t border-gray-100 pt-8 animate-fade-in">
+          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-8 bg-emerald-50/50 border border-emerald-100/50 p-4 rounded-2xl select-none">
+            <div>
+              <p class="text-xs text-gray-400">Order Reference:</p>
+              <h4 class="text-base font-black text-emerald-800 font-mono tracking-wide" id="track-id-disp">ORD-2026-XXXX</h4>
+            </div>
+            <div class="sm:text-right">
+              <p class="text-xs text-gray-400">অর্ডারের তারিখ ও সময়:</p>
+              <h5 class="text-xs font-bold text-gray-700 font-sans" id="track-date-disp">-</h5>
+            </div>
+            <div class="sm:text-right">
+              <p class="text-xs text-gray-400">আইটেম সংখ্যা ও সর্বমোট:</p>
+              <h5 class="text-xs font-bold text-gray-700 font-sans" id="track-total-disp">-</h5>
+            </div>
+          </div>
+
+          <!-- Stepper UI -->
+          <div class="relative py-4 flex flex-col md:flex-row justify-between items-center gap-6 md:gap-2 mb-10">
+            <!-- Background bar line -->
+            <div class="absolute left-1/2 md:left-4 md:right-4 top-0 md:top-6 -translate-x-1/2 md:translate-x-0 h-full md:h-1 w-1 md:w-auto bg-gray-200 z-0">
+              <div id="progress-indicator-line" class="bg-emerald-600 h-0 md:h-full w-full md:w-0 transition-all duration-700"></div>
+            </div>
+
+            <!-- Steps buttons -->
+            <div class="flex flex-row md:flex-col items-center gap-3.5 z-10 w-full md:w-fit text-left md:text-center px-4" id="step-pending">
+              <div class="step-dot active select-none flex items-center justify-center font-bold text-xs">P</div>
+              <div>
+                <h5 class="text-sm font-bold text-gray-800 bengali-font leading-3">পেন্ডিং (Pending)</h5>
+                <p class="text-[10px] text-gray-400 font-sans mt-0.5">অর্ডার পেন্ডিং রয়েছে</p>
+              </div>
+            </div>
+
+            <div class="flex flex-row md:flex-col items-center gap-3.5 z-10 w-full md:w-fit text-left md:text-center px-4" id="step-confirmed">
+              <div class="step-dot select-none flex items-center justify-center font-bold text-xs">C</div>
+              <div>
+                <h5 class="text-sm font-bold text-gray-900 bengali-font leading-3">কনফার্ম (Confirmed)</h5>
+                <p class="text-[10px] text-gray-400 font-sans mt-0.5">অর্ডারটি কনফার্ম হয়েছে</p>
+              </div>
+            </div>
+
+            <div class="flex flex-row md:flex-col items-center gap-3.5 z-10 w-full md:w-fit text-left md:text-center px-4" id="step-processing">
+              <div class="step-dot select-none flex items-center justify-center font-bold text-xs font-mono">Pr</div>
+              <div>
+                <h5 class="text-sm font-bold text-gray-800 bengali-font leading-3">প্যাকেজিং (Processing)</h5>
+                <p class="text-[10px] text-gray-400 font-sans mt-0.5">সংগ্রহ ও প্যাকেজিং কার্যক্রম</p>
+              </div>
+            </div>
+
+            <div class="flex flex-row md:flex-col items-center gap-3.5 z-10 w-full md:w-fit text-left md:text-center px-4" id="step-shipped">
+              <div class="step-dot select-none flex items-center justify-center font-bold text-xs">S</div>
+              <div>
+                <h5 class="text-sm font-bold text-gray-800 bengali-font leading-3">শিফট (Shipped)</h5>
+                <p class="text-[10px] text-gray-400 font-sans mt-0.5">কুরিয়ারে হস্তান্তর করা হয়েছে</p>
+              </div>
+            </div>
+
+            <div class="flex flex-row md:flex-col items-center gap-3.5 z-10 w-full md:w-fit text-left md:text-center px-4" id="step-delivered">
+              <div class="step-dot select-none flex items-center justify-center font-bold text-xs">D</div>
+              <div>
+                <h5 class="text-sm font-bold text-gray-800 bengali-font leading-3">ডেলিভারড (Delivered)</h5>
+                <p class="text-[10px] text-gray-400 font-sans mt-0.5">গ্রাহক হাতে পণ্য বুঝে পেয়েছেন</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Customer Address copy section -->
+          <div class="border-t border-gray-100 pt-6 flex flex-col sm:flex-row gap-5 text-xs text-gray-500 font-sans">
+            <div>
+              <p class="font-bold text-gray-800">ডেলিভারি ঠিকানা :</p>
+              <p class="mt-1" id="track-addr-disp">-</p>
+            </div>
+            <div>
+              <p class="font-bold text-gray-800">পেমেন্ট মেথড ও স্থিতি :</p>
+              <p class="mt-1" id="track-pay-disp">-</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Empty status fallback prompt -->
+        <div id="tracker-error" class="hidden p-6 border-t border-gray-100 text-center text-sm font-bold text-red-500">
+          ❌ দুঃখিত, প্রদানকৃত অর্ডার আইডি বা ফোন নম্বরে কোনো অর্ডার খুঁজে পাওয়া যায়নি!
+        </div>
+      </div>
+    </main>
+
+    <!-- Mobile Navigation Bar -->
+    <div id="shared-mobile-nav"></div>
+
+    <!-- Dynamic Footer -->
+    <footer id="shared-footer" class="mt-auto"></footer>
+
+    <!-- Script processes for Order Tracking -->
+    <script type="module">
+      import { showToast } from './src/app.js';
+
+      function initOrderTrackingPage() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const orderIdParam = urlParams.get('id');
+
+        const trackInp = document.getElementById('track-input');
+        const trackBtn = document.getElementById('track-btn');
+        const displayBox = document.getElementById('tracker-display');
+        const errorBox = document.getElementById('tracker-error');
+
+        if (orderIdParam) {
+          trackInp.value = orderIdParam;
+          performTrack(orderIdParam);
+        }
+
+        trackBtn?.addEventListener('click', () => {
+          const val = trackInp.value.trim().toUpperCase();
+          if (!val) {
+            showToast("দয়া করে একটি সঠিক অর্ডার আইডি লিখুন!", "danger");
+            return;
+          }
+          performTrack(val);
+        });
+
+        function performTrack(searchValue) {
+          const orders = JSON.parse(localStorage.getItem('orders') || '[]');
+          
+          // Match by either exact Order ID or Customer Phone
+          const order = orders.find(o => o.orderId === searchValue || o.customerPhone === searchValue);
+
+          if (!order) {
+            displayBox.classList.add('hidden');
+            errorBox.classList.remove('hidden');
+            showToast("অর্ডারটি আমাদের তালিকায় খুঁজে পাওয়া যায়নি।", "danger");
+            return;
+          }
+
+          errorBox.classList.add('hidden');
+          
+          // Populate details
+          document.getElementById('track-id-disp').textContent = order.orderId;
+          document.getElementById('track-date-disp').textContent = order.date;
+          document.getElementById('track-total-disp').textContent = `${order.items.length}টি আইটেম, সর্বমোট ৳${order.totalPrice}`;
+          document.getElementById('track-addr-disp').textContent = `${order.customerName}, ${order.address}, ${order.area}, ${order.district}`;
+          document.getElementById('track-pay-disp').textContent = `${order.paymentMethod.toUpperCase()} (${order.status === 'Cancelled' ? 'অর্ডার বাতিল' : 'পরিশোধ প্রক্রিয়া চলমান'})`;
+
+          // Handle multi progress steps
+          const steps = ["Pending", "Confirmed", "Processing", "Shipped", "Delivered"];
+          const currentIdx = steps.indexOf(order.status);
+
+          // Render active classes inside steps dots
+          const dotPend = document.getElementById('step-pending').querySelector('.step-dot');
+          const dotConf = document.getElementById('step-confirmed').querySelector('.step-dot');
+          const dotProc = document.getElementById('step-processing').querySelector('.step-dot');
+          const dotShip = document.getElementById('step-shipped').querySelector('.step-dot');
+          const dotDelv = document.getElementById('step-delivered').querySelector('.step-dot');
+
+          const allDots = [dotPend, dotConf, dotProc, dotShip, dotDelv];
+          
+          allDots.forEach((dot, idx) => {
+            if (idx <= currentIdx && currentIdx > -1) {
+              dot.classList.add('active', 'bg-emerald-600', 'text-white');
+              dot.style.borderColor = 'var(--primary)';
+            } else {
+              dot.classList.remove('active', 'bg-emerald-600', 'text-white');
+              dot.style.borderColor = 'var(--border)';
+            }
+          });
+
+          // Animate line progress width
+          const line = document.getElementById('progress-indicator-line');
+          if (line) {
+            let percentage = 0;
+            if (currentIdx > 0) percentage = (currentIdx / 4) * 100;
+            
+            // Handle horizontal for desktop, vertical for mobile triggers if wanted
+            line.style.width = `${percentage}%`;
+          }
+
+          displayBox.classList.remove('hidden');
+          showToast("অर्डर স্ট্যাটাস সফলভাবে লোড হয়েছে!", "success");
+        }
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initOrderTrackingPage);
+      } else {
+        initOrderTrackingPage();
+      }
+    </script>
+  </body>
+</html>

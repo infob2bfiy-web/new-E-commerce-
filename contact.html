@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>যোগাযোগ করুন (Contact) - Green Grocery</title>
+    <link rel="stylesheet" href="/src/style.css">
+    <script type="module" src="/src/app.js"></script>
+  </head>
+  <body class="bg-gray-50/50 pb-20 sm:pb-0">
+    <!-- Dynamic Header -->
+    <header id="shared-header"></header>
+
+    <main class="max-w-5xl mx-auto px-4 py-16 font-sans text-left">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        
+        <!-- Left Side Form Info Content -->
+        <div class="bg-white rounded-3xl border border-gray-100 shadow-sm p-6 sm:p-8">
+          <h1 class="text-2xl font-extrabold text-emerald-800 mb-6 bengali-font">যোগাযোগ করুন (Contact Us)</h1>
+          <p class="text-gray-500 text-sm mb-6 leading-relaxed">পণ্য সংক্রান্ত কোনো জিজ্ঞাসা, কাস্টমাইজড অর্ডার অথবা কোনো সমস্যার ক্ষেত্রে সরাসরি আমাদের নিচে ফর্মটি পূরণ করে পাঠান অথবা মোবাইল হেল্পলাইনে যোগাযোগ করুন।</p>
+          
+          <form id="contact-form" class="flex flex-col gap-4">
+            <div>
+              <label class="block text-xs text-gray-500 font-bold mb-1.5">আপনার নাম *</label>
+              <input type="text" required placeholder="আব্দুল্লাহ আল মাসুম" class="w-full bg-gray-50 focus:bg-white border border-gray-200 focus:border-emerald-500 rounded-xl px-3.5 py-2.5 text-xs outline-none transition">
+            </div>
+            <div>
+              <label class="block text-xs text-gray-500 font-bold mb-1.5">মোবাইল নম্বর *</label>
+              <input type="tel" required placeholder="017xxxxxxxx" class="w-full bg-gray-50 focus:bg-white border border-gray-200 focus:border-emerald-500 rounded-xl px-3.5 py-2.5 text-xs outline-none transition font-semibold text-gray-700">
+            </div>
+            <div>
+              <label class="block text-xs text-gray-500 font-bold mb-1.5">বার্তার বিষয়/প্রশ্ন *</label>
+              <textarea required rows="4" placeholder="আপনার প্রশ্ন বা মতামত এখানে বিস্তারিত লিখুন..." class="w-full bg-gray-50 focus:bg-white border border-gray-200 focus:border-emerald-500 rounded-xl px-3.5 py-2.5 text-xs outline-none transition resize-none"></textarea>
+            </div>
+            <button type="submit" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs h-10 w-fit px-6 rounded-xl transition shadow cursor-pointer select-none">বার্তা পাঠান</button>
+          </form>
+        </div>
+
+        <!-- Right Side Location details info -->
+        <div class="bg-white rounded-3xl border border-gray-100 shadow-sm p-6 sm:p-8 flex flex-col justify-between">
+          <div>
+            <h3 class="font-extrabold text-emerald-800 text-lg mb-5 bengali-font">আমাদের কার্যালয় (Office Address)</h3>
+            
+            <div class="flex flex-col gap-5 text-sm font-sans text-gray-600">
+              <div>
+                <p class="font-bold text-gray-800 mb-1">📍 প্রধান কার্যালয় ও ওয়্যারহাউজ:</p>
+                <p>হাউজ নং-৫, রোড নং-২, ব্লক-সি, মিরপুর-১১, ঢাকা-১২১৬, বাংলাদেশ।</p>
+              </div>
+              <div>
+                <p class="font-bold text-gray-800 mb-1">📞 ফোন ও হোয়াটস্যাপ সাপোর্ট:</p>
+                <p>কাস্টমার কেয়ার: <span class="text-emerald-700 font-bold">০১৭৮৯-১২৩৪৫৬</span> (সকাল ৯টা - রাত ১০টা)</p>
+              </div>
+              <div>
+                <p class="font-bold text-gray-800 mb-1">✉️ ইমেইল যোগাযোগ:</p>
+                <p>support@greengrocery.com.bd</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick trust notification badges -->
+          <div class="bg-emerald-50/50 rounded-2xl p-4 border border-emerald-100 mt-6 select-none">
+            <span class="font-bold text-emerald-800 text-xs block font-sans">📌 পাইকারি ও ডিলার অফার:</span>
+            <p class="text-[11px] text-gray-400 font-sans mt-0.5 leading-relaxed">পাইকারি আম, ঘি কিংবা ফ্রেশ মধু বিক্রয় বা ব্যবসার প্রয়োজনে আমাদের হেল্পলাইন নম্বরে সরাসরি কল করুন। আমরা আকর্ষনীয় কমিশনে লার্জ অর্ডার ভলিউমে পণ্য সরবরাহ করি।</p>
+          </div>
+        </div>
+
+      </div>
+    </main>
+
+    <!-- Mobile Navigation Bar -->
+    <div id="shared-mobile-nav"></div>
+
+    <!-- Dynamic Footer -->
+    <footer id="shared-footer" class="mt-auto"></footer>
+
+    <!-- Script triggers contact submit feedback -->
+    <script type="module">
+      import { showToast } from './src/app.js';
+      document.getElementById('contact-form')?.addEventListener('submit', (e) => {
+        e.preventDefault();
+        showToast("আপনার বার্তাটি সফলভাবে পাঠানো হয়েছে! শীঘ্রই আমরা যোগাযোগ করব।", "success");
+        e.target.reset();
+      });
+    </script>
+  </body>
+</html>
