@@ -224,7 +224,7 @@ export async function saveCategoriesToSupabase(categories) {
   const config = getSupabaseConfig();
   if (!config.enabled) return;
   try {
-    await fetch(`${config.supabaseUrl}/rest/v1/categories`, {
+    await fetch(`${config.supabaseUrl}/rest/v1/categories?id=not.is.null`, {
       method: 'DELETE',
       headers: {
         'apikey': config.supabaseKey,
@@ -261,7 +261,7 @@ export async function saveProductsToSupabase(products) {
   const config = getSupabaseConfig();
   if (!config.enabled) return;
   try {
-    await fetch(`${config.supabaseUrl}/rest/v1/products`, {
+    await fetch(`${config.supabaseUrl}/rest/v1/products?id=not.is.null`, {
       method: 'DELETE',
       headers: {
         'apikey': config.supabaseKey,
@@ -305,7 +305,7 @@ export async function saveBannersToSupabase(banners) {
   const config = getSupabaseConfig();
   if (!config.enabled) return;
   try {
-    await fetch(`${config.supabaseUrl}/rest/v1/banners`, {
+    await fetch(`${config.supabaseUrl}/rest/v1/banners?id=not.is.null`, {
       method: 'DELETE',
       headers: {
         'apikey': config.supabaseKey,
@@ -343,7 +343,7 @@ export async function saveCouponsToSupabase(coupons) {
   const config = getSupabaseConfig();
   if (!config.enabled) return;
   try {
-    await fetch(`${config.supabaseUrl}/rest/v1/coupons`, {
+    await fetch(`${config.supabaseUrl}/rest/v1/coupons?code=not.is.null`, {
       method: 'DELETE',
       headers: {
         'apikey': config.supabaseKey,
