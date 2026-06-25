@@ -892,8 +892,17 @@ function renderWishlistPageInside() {
 }
 
 // Trigger initializations on loaded safely
-function startMainApplication() {
+async function startMainApplication() {
   initDB();
+  
+  // Try to sync/fetch all data from Supabase if configured
+  try {
+    const { syncAllDataFromSupabase } = await import('./supabase.js');
+    await syncAllDataFromSupabase();
+  } catch (e) {
+    console.error("Failed to load and sync data from Supabase:", e);
+  }
+
   injectSharedLayouts();
   updateCartBadges();
   updateWishlistBadges();

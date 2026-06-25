@@ -15,10 +15,12 @@ export function getSupabaseConfig() {
     console.error("Error reading Supabase settings from localStorage", e);
   }
 
+  const cleanUrl = url?.trim().replace(/\/$/, "") || '';
+
   return {
-    supabaseUrl: url?.trim() || '',
+    supabaseUrl: cleanUrl,
     supabaseKey: key?.trim() || '',
-    enabled: !!(url && key)
+    enabled: !!(cleanUrl && key)
   };
 }
 
@@ -213,4 +215,282 @@ export async function syncLocalOrdersToSupabase() {
     count: syncCount, 
     message: `${syncCount}টি অর্ডার সফলভাবে সুপাবেসে সিঙ্ক করা হয়েছে!` 
   };
+}
+
+/**
+ * Save categories array to Supabase
+ */
+export async function saveCategoriesToSupabase(categories) {
+  const config = getSupabaseConfig();
+  if (!config.enabled) return;
+  try {
+    await fetch(`${config.supabaseUrl}/rest/v1/categories`, {
+      method: 'DELETE',
+      headers: {
+        'apikey': config.supabaseKey,
+        'Authorization': `Bearer ${config.supabaseKey}`
+      }
+    });
+
+    if (categories.length > 0) {
+      const payload = categories.map(c => ({
+        id: c.id,
+        name: c.name,
+        subcategories: c.subcategories || []
+      }));
+      await fetch(`${config.supabaseUrl}/rest/v1/categories`, {
+        method: 'POST',
+        headers: {
+          'apikey': config.supabaseKey,
+          'Authorization': `Bearer ${config.supabaseKey}`,
+          'Content-Type': 'application/json',
+          'Prefer': 'return=minimal'
+        },
+        body: JSON.stringify(payload)
+      });
+    }
+  } catch (e) {
+    console.error("Error saving categories to Supabase", e);
+  }
+}
+
+/**
+ * Save products array to Supabase
+ */
+export async function saveProductsToSupabase(products) {
+  const config = getSupabaseConfig();
+  if (!config.enabled) return;
+  try {
+    await fetch(`${config.supabaseUrl}/rest/v1/products`, {
+      method: 'DELETE',
+      headers: {
+        'apikey': config.supabaseKey,
+        'Authorization': `Bearer ${config.supabaseKey}`
+      }
+    });
+
+    if (products.length > 0) {
+      const payload = products.map(p => ({
+        id: p.id,
+        name: p.name,
+        category: p.category || '',
+        subcategory: p.subcategory || '',
+        price: Number(p.price || 0),
+        discountPrice: p.discountPrice !== undefined ? Number(p.discountPrice) : null,
+        stock: Number(p.stock || 0),
+        description: p.description || '',
+        image: p.image || '',
+        tag: p.tag || ''
+      }));
+      await fetch(`${config.supabaseUrl}/rest/v1/products`, {
+        method: 'POST',
+        headers: {
+          'apikey': config.supabaseKey,
+          'Authorization': `Bearer ${config.supabaseKey}`,
+          'Content-Type': 'application/json',
+          'Prefer': 'return=minimal'
+        },
+        body: JSON.stringify(payload)
+      });
+    }
+  } catch (e) {
+    console.error("Error saving products to Supabase", e);
+  }
+}
+
+/**
+ * Save banners array to Supabase
+ */
+export async function saveBannersToSupabase(banners) {
+  const config = getSupabaseConfig();
+  if (!config.enabled) return;
+  try {
+    await fetch(`${config.supabaseUrl}/rest/v1/banners`, {
+      method: 'DELETE',
+      headers: {
+        'apikey': config.supabaseKey,
+        'Authorization': `Bearer ${config.supabaseKey}`
+      }
+    });
+
+    if (banners.length > 0) {
+      const payload = banners.map(b => ({
+        id: b.id,
+        imageUrl: b.imageUrl || '',
+        title: b.title || '',
+        text: b.text || ''
+      }));
+      await fetch(`${config.supabaseUrl}/rest/v1/banners`, {
+        method: 'POST',
+        headers: {
+          'apikey': config.supabaseKey,
+          'Authorization': `Bearer ${config.supabaseKey}`,
+          'Content-Type': 'application/json',
+          'Prefer': 'return=minimal'
+        },
+        body: JSON.stringify(payload)
+      });
+    }
+  } catch (e) {
+    console.error("Error saving banners to Supabase", e);
+  }
+}
+
+/**
+ * Save coupons array to Supabase
+ */
+export async function saveCouponsToSupabase(coupons) {
+  const config = getSupabaseConfig();
+  if (!config.enabled) return;
+  try {
+    await fetch(`${config.supabaseUrl}/rest/v1/coupons`, {
+      method: 'DELETE',
+      headers: {
+        'apikey': config.supabaseKey,
+        'Authorization': `Bearer ${config.supabaseKey}`
+      }
+    });
+
+    if (coupons.length > 0) {
+      const payload = coupons.map(c => ({
+        code: c.code,
+        type: c.type || 'percentage',
+        value: Number(c.value || 0),
+        description: c.description || ''
+      }));
+      await fetch(`${config.supabaseUrl}/rest/v1/coupons`, {
+        method: 'POST',
+        headers: {
+          'apikey': config.supabaseKey,
+          'Authorization': `Bearer ${config.supabaseKey}`,
+          'Content-Type': 'application/json',
+          'Prefer': 'return=minimal'
+        },
+        body: JSON.stringify(payload)
+      });
+    }
+  } catch (e) {
+    console.error("Error saving coupons to Supabase", e);
+  }
+}
+
+/**
+ * Save site settings object to Supabase
+ */
+export async function saveSiteSettingsToSupabase(settings) {
+  const config = getSupabaseConfig();
+  if (!config.enabled) return;
+  try {
+    const payload = {
+      id: 'default',
+      siteName: settings.siteName || '',
+      tagline: settings.tagline || '',
+      logoUrl: settings.logoUrl || '',
+      favicon: settings.favicon || '',
+      phone: settings.phone || '',
+      bkash: settings.bkash || '',
+      nagad: settings.nagad || '',
+      announcement: settings.announcement || '',
+      footerText: settings.footerText || '',
+      footerLogoUrl: settings.footerLogoUrl || '',
+      footerLogoText: settings.footerLogoText || ''
+    };
+
+    await fetch(`${config.supabaseUrl}/rest/v1/site_settings`, {
+      method: 'POST',
+      headers: {
+        'apikey': config.supabaseKey,
+        'Authorization': `Bearer ${config.supabaseKey}`,
+        'Content-Type': 'application/json',
+        'Prefer': 'resolution=merge-duplicates'
+      },
+      body: JSON.stringify(payload)
+    });
+  } catch (e) {
+    console.error("Error saving site settings to Supabase", e);
+  }
+}
+
+/**
+ * Fetches all dynamic data tables from Supabase and updates localStorage.
+ * If tables are empty on Supabase, seeds them with current local defaults.
+ */
+export async function syncAllDataFromSupabase() {
+  const config = getSupabaseConfig();
+  if (!config.enabled) return;
+
+  console.log("Supabase is enabled. Checking cloud data collections...");
+
+  const fetchTable = async (tableName) => {
+    try {
+      const res = await fetch(`${config.supabaseUrl}/rest/v1/${tableName}?select=*`, {
+        headers: {
+          'apikey': config.supabaseKey,
+          'Authorization': `Bearer ${config.supabaseKey}`
+        }
+      });
+      if (res.ok) return await res.json();
+    } catch (e) {
+      console.error(`Error fetching table ${tableName} from Supabase:`, e);
+    }
+    return null;
+  };
+
+  // 1. Categories
+  const catData = await fetchTable('categories');
+  if (catData !== null) {
+    if (catData.length === 0) {
+      const defaults = JSON.parse(localStorage.getItem('categories') || '[]');
+      if (defaults.length > 0) await saveCategoriesToSupabase(defaults);
+    } else {
+      localStorage.setItem('categories', JSON.stringify(catData));
+    }
+  }
+
+  // 2. Products
+  const prodData = await fetchTable('products');
+  if (prodData !== null) {
+    if (prodData.length === 0) {
+      const defaults = JSON.parse(localStorage.getItem('products') || '[]');
+      if (defaults.length > 0) await saveProductsToSupabase(defaults);
+    } else {
+      localStorage.setItem('products', JSON.stringify(prodData));
+    }
+  }
+
+  // 3. Banners
+  const banData = await fetchTable('banners');
+  if (banData !== null) {
+    if (banData.length === 0) {
+      const defaults = JSON.parse(localStorage.getItem('banners') || '[]');
+      if (defaults.length > 0) await saveBannersToSupabase(defaults);
+    } else {
+      localStorage.setItem('banners', JSON.stringify(banData));
+    }
+  }
+
+  // 4. Coupons
+  const coupData = await fetchTable('coupons');
+  if (coupData !== null) {
+    if (coupData.length === 0) {
+      const defaults = JSON.parse(localStorage.getItem('coupons') || '[]');
+      if (defaults.length > 0) await saveCouponsToSupabase(defaults);
+    } else {
+      localStorage.setItem('coupons', JSON.stringify(coupData));
+    }
+  }
+
+  // 5. Site Settings
+  const settingsData = await fetchTable('site_settings');
+  if (settingsData !== null) {
+    if (settingsData.length === 0) {
+      const defaults = JSON.parse(localStorage.getItem('siteSettings') || '{}');
+      if (Object.keys(defaults).length > 0) await saveSiteSettingsToSupabase(defaults);
+    } else {
+      const remoteSettings = settingsData.find(s => s.id === 'default') || settingsData[0] || {};
+      delete remoteSettings.id;
+      delete remoteSettings.updated_at;
+      localStorage.setItem('siteSettings', JSON.stringify(remoteSettings));
+    }
+  }
 }
