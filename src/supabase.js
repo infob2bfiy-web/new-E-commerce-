@@ -393,7 +393,8 @@ export async function saveSiteSettingsToSupabase(settings) {
       announcement: settings.announcement || '',
       footerText: settings.footerText || '',
       footerLogoUrl: settings.footerLogoUrl || '',
-      footerLogoText: settings.footerLogoText || ''
+      footerLogoText: settings.footerLogoText || '',
+      fbPixel: settings.fbPixel || ''
     };
 
     await fetch(`${config.supabaseUrl}/rest/v1/site_settings`, {

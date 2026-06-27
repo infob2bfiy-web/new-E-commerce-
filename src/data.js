@@ -312,7 +312,8 @@ export const DEFAULT_SITE_SETTINGS = {
   announcement: "💥 ফ্রি ডেলিভারি সারা বাংলাদেশে ৫০০+ টাকার অর্ডারে bKash/Nagad কুপনে!",
   footerText: "Premium Organic grocery directly from local farmers of Bangladesh to your dining table safely.",
   footerLogoUrl: "",
-  footerLogoText: ""
+  footerLogoText: "",
+  fbPixel: ""
 };
 
 export const INITIAL_BANNERS = [

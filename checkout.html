@@ -438,7 +438,7 @@
 
     <!-- Script processes for Checkout Logic -->
     <script type="module">
-      import { getCart, getSettings, clearCart, showToast, getCurrentUser } from './src/app.js';
+      import { getCart, getSettings, clearCart, showToast, getCurrentUser, trackPixelEvent } from './src/app.js';
       import { saveOrderToSupabase } from './src/supabase.js';
 
       // Bangladesh Address Hierarchy Dictionary matching elegant dynamic selector design
@@ -1226,6 +1226,19 @@
         const currentOrders = JSON.parse(localStorage.getItem('orders') || '[]');
         currentOrders.push(newOrder);
         localStorage.setItem('orders', JSON.stringify(currentOrders));
+
+        // Track Purchase event on Facebook Pixel
+        try {
+          trackPixelEvent('Purchase', {
+            content_ids: filteredCart.map(item => item.id),
+            content_type: 'product',
+            value: newOrder.totalPrice,
+            currency: 'BDT',
+            num_items: filteredCart.length
+          });
+        } catch (err) {
+          console.error("Facebook Pixel Purchase tracking error:", err);
+        }
 
         // Save to Supabase (asynchronous, non-blocking fallback flow)
         saveOrderToSupabase(newOrder).then(isSaved => {

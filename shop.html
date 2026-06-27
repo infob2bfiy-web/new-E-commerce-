@@ -310,6 +310,9 @@
       } else {
         initShopPage();
       }
+
+      // Re-run init when Supabase syncs database updates
+      window.addEventListener('supabaseDataSynced', initShopPage);
     </script>
   </body>
 </html>

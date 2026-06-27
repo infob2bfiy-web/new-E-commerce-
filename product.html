@@ -239,6 +239,9 @@
       } else {
         initProductDetailPage();
       }
+
+      // Re-run init when Supabase syncs database updates
+      window.addEventListener('supabaseDataSynced', initProductDetailPage);
     </script>
   </body>
 </html>

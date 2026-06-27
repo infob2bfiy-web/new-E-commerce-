@@ -129,6 +129,19 @@ export function addToCart(productId, quantity = 1, forceRedirect = false) {
   localStorage.setItem('cart', JSON.stringify(cart));
   showToast("আইটেমটি কার্টে যুক্ত হয়েছে।", "success");
   updateCartBadges();
+
+  // Track AddToCart in Facebook Pixel
+  try {
+    trackPixelEvent('AddToCart', {
+      content_name: prod.name,
+      content_ids: [prod.id],
+      content_type: 'product',
+      value: (prod.discountPrice || prod.price) * Number(quantity),
+      currency: 'BDT'
+    });
+  } catch (err) {
+    console.error("Facebook Pixel tracking error (AddToCart):", err);
+  }
   
   if (forceRedirect) {
     setTimeout(() => {
@@ -399,13 +412,13 @@ export function injectSharedLayouts() {
       <!-- Bottom Dark Green Category Navigation dynamically loaded -->
       <div class="bg-[#021c15] text-white/95 select-none w-full border-b border-emerald-950/40 relative z-30">
         <div class="max-w-7xl mx-auto px-4 md:px-8">
-          <div class="flex items-center gap-x-5 lg:gap-x-7 py-3 overflow-x-auto lg:overflow-visible no-scrollbar whitespace-nowrap scroll-smooth font-sans justify-start lg:justify-center w-full">
+          <div class="flex items-center gap-x-5 lg:gap-x-7 py-2.5 overflow-x-auto lg:overflow-visible no-scrollbar whitespace-nowrap scroll-smooth font-sans justify-start lg:justify-center w-full">
             ${categories.map(cat => {
               const hasSubs = cat.subcategories && cat.subcategories.length > 0;
               if (hasSubs) {
                 return `
                   <div class="relative group py-1 border-b-2 border-transparent hover:border-emerald-500/80 flex-shrink-0">
-                    <a href="/shop.html?category=${cat.id}" class="text-white hover:text-emerald-300 font-medium text-[13.5px] transition flex items-center gap-1 cursor-pointer">
+                    <a href="/shop.html?category=${cat.id}" class="text-white hover:text-emerald-300 font-medium text-[13.5px] transition flex items-center gap-1 cursor-pointer whitespace-nowrap">
                       <span>${cat.name}</span>
                       <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="transition-transform duration-200 group-hover:rotate-180 opacity-80"><polyline points="6 9 12 15 18 9"></polyline></svg>
                     </a>
@@ -422,7 +435,7 @@ export function injectSharedLayouts() {
               } else {
                 return `
                   <div class="py-1 border-b-2 border-transparent hover:border-emerald-500/80 flex-shrink-0 font-sans">
-                    <a href="/shop.html?category=${cat.id}" class="text-white hover:text-emerald-300 font-medium text-[13.5px] transition cursor-pointer">${cat.name}</a>
+                    <a href="/shop.html?category=${cat.id}" class="text-white hover:text-emerald-300 font-medium text-[13.5px] transition cursor-pointer whitespace-nowrap">${cat.name}</a>
                   </div>
                 `;
               }
@@ -735,7 +748,7 @@ export function createProductCardHTML(p) {
 
       <!-- Thumb -->
       <a href="/product.html?id=${p.id}" class="block relative aspect-square overflow-hidden bg-gray-50 flex-shrink-0 cursor-pointer">
-        <img src="${p.image}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out" alt="${p.name}">
+        <img src="${p.image}" loading="lazy" decoding="async" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out" alt="${p.name}">
       </a>
 
       <!-- Content -->
@@ -891,22 +904,124 @@ function renderWishlistPageInside() {
   container.innerHTML = wishlist.map(p => createProductCardHTML(p)).join('');
 }
 
+// Facebook Pixel Dynamic Tracking System
+export function initFacebookPixel() {
+  const settings = getSettings();
+  const pixelId = settings.fbPixel ? settings.fbPixel.trim() : '';
+  if (!pixelId) {
+    console.log("Facebook Pixel tracking is disabled or not configured.");
+    return;
+  }
+
+  if (window.fbq) {
+    console.log("Facebook Pixel is already loaded.");
+    return;
+  }
+
+  // Inject Meta Pixel standard loading script
+  !function(f,b,e,v,n,t,s)
+  {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+  n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+  if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+  n.queue=[];t=b.createElement(e);t.async=!0;
+  t.src=v;s=b.getElementsByTagName(e)[0];
+  s.parentNode.insertBefore(t,s)}(window, document,'script',
+  'https://connect.facebook.net/en_US/fbevents.js');
+
+  fbq('init', pixelId);
+  fbq('track', 'PageView');
+  console.log(`Facebook Pixel initialized successfully with ID: ${pixelId}`);
+  
+  // Track additional page-specific standard pixel actions
+  try {
+    trackSpecificPagePixelEvents();
+  } catch (err) {
+    console.error("Facebook Pixel path tracking error:", err);
+  }
+}
+
+// Track events based on the current page path automatically
+export function trackSpecificPagePixelEvents() {
+  const path = window.location.pathname;
+  if (path.includes('product.html')) {
+    const urlParams = new URLSearchParams(window.location.search);
+    const prodId = urlParams.get('id');
+    if (prodId) {
+      const products = getProducts();
+      const p = products.find(prod => prod.id === prodId);
+      if (p) {
+        trackPixelEvent('ViewContent', {
+          content_name: p.name,
+          content_ids: [p.id],
+          content_type: 'product',
+          value: p.discountPrice || p.price,
+          currency: 'BDT'
+        });
+      }
+    }
+  } else if (path.includes('checkout.html')) {
+    const cart = getCart();
+    const totalVal = cart.reduce((acc, item) => acc + ((item.discountPrice || item.price) * item.qty), 0);
+    trackPixelEvent('InitiateCheckout', {
+      content_ids: cart.map(item => item.id),
+      num_items: cart.length,
+      value: totalVal,
+      currency: 'BDT'
+    });
+  }
+}
+
+export function trackPixelEvent(eventName, params = {}) {
+  if (window.fbq) {
+    fbq('track', eventName, params);
+    console.log(`Facebook Pixel Tracked: ${eventName}`, params);
+  } else {
+    // Queue tracking if pixel not initialized yet
+    console.log(`Facebook Pixel not active, queued event [${eventName}]`);
+  }
+}
+
 // Trigger initializations on loaded safely
 async function startMainApplication() {
   initDB();
   
-  // Try to sync/fetch all data from Supabase if configured
+  // 1. Render layout and badges immediately using cached data (instant 0ms loading!)
+  try {
+    injectSharedLayouts();
+    updateCartBadges();
+    updateWishlistBadges();
+    bindGlobalProductButtons();
+  } catch (err) {
+    console.error("Initial layout injection failed:", err);
+  }
+
+  // 2. Try to sync/fetch all data from Supabase asynchronously
   try {
     const { syncAllDataFromSupabase } = await import('./supabase.js');
     await syncAllDataFromSupabase();
+    
+    // Dispatch custom event so pages can optionally re-render if data updated
+    window.dispatchEvent(new CustomEvent('supabaseDataSynced'));
   } catch (e) {
     console.error("Failed to load and sync data from Supabase:", e);
   }
 
-  injectSharedLayouts();
-  updateCartBadges();
-  updateWishlistBadges();
-  bindGlobalProductButtons();
+  // 3. Re-render layouts to reflect any updated settings, products or categories
+  try {
+    injectSharedLayouts();
+    updateCartBadges();
+    updateWishlistBadges();
+    bindGlobalProductButtons();
+  } catch (err) {
+    console.error("Layout re-injection after sync failed:", err);
+  }
+
+  // Initialize facebook pixel dynamically after downloading settings
+  try {
+    initFacebookPixel();
+  } catch(e) {
+    console.error("Facebook Pixel init failed:", e);
+  }
 }
 
 if (document.readyState === 'loading') {

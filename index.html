@@ -279,6 +279,9 @@
       } else {
         initIndexPage();
       }
+
+      // Re-run init when Supabase syncs database updates
+      window.addEventListener('supabaseDataSynced', initIndexPage);
     </script>
   </body>
 </html>
