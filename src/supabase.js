@@ -245,7 +245,8 @@ export async function saveCategoriesToSupabase(categories) {
       const payload = categories.map(c => ({
         id: c.id,
         name: c.name,
-        subcategories: c.subcategories || []
+        subcategories: c.subcategories || [],
+        image: c.image || ''
       }));
       await fetch(`${config.supabaseUrl}/rest/v1/categories`, {
         method: 'POST',
@@ -397,8 +398,12 @@ export async function saveSiteSettingsToSupabase(settings) {
       logoUrl: settings.logoUrl || '',
       favicon: settings.favicon || '',
       phone: settings.phone || '',
+      whatsapp: settings.whatsapp || '',
+      email: settings.email || '',
       bkash: settings.bkash || '',
       nagad: settings.nagad || '',
+      rocket: settings.rocket || '',
+      cod: settings.cod !== false,
       announcement: settings.announcement || '',
       footerText: settings.footerText || '',
       footerLogoUrl: settings.footerLogoUrl || '',

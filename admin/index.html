@@ -1143,13 +1143,18 @@ create table if not exists public.site_settings (
   "logoUrl" text,
   favicon text,
   phone text,
+  whatsapp text,
+  email text,
   bkash text,
   nagad text,
+  rocket text,
+  cod boolean default true,
   announcement text,
   "footerText" text,
   "footerLogoUrl" text,
   "footerLogoText" text,
   "fbPixel" text,
+  "adminNotifyEmail" text,
   updated_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
 
