@@ -1,17 +1,17 @@
 // Bangladeshi Organic Grocery E-commerce - Sample Datasets
 
 export const INITIAL_CATEGORIES = [
-  { id: "mango", name: "আম (Mango)", subcategories: ["Amrapali", "Himsagor", "Lengra"] },
-  { id: "oil-ghee", name: "তেল ও ঘি (Oil & Ghee)", subcategories: ["Mustard Oil", "Virgin Coconut Oil", "Ghee"] },
-  { id: "honey", name: "মধু (Honey)", subcategories: ["Sundarban", "Litchi Flower", "Black Seed"] },
-  { id: "dates", name: "খেজুর (Dates)", subcategories: ["Ajwa", "Medjool", "Kalmi"] },
-  { id: "spices", name: "মসলা (Spices)", subcategories: ["Whole Spices", "Mixed Spices"] },
-  { id: "nuts-seeds", name: "বাদাম ও বীজ (Nuts & Seeds)", subcategories: ["Nuts", "Seeds"] },
-  { id: "beverage", name: "পানীয় (Beverage)", subcategories: ["Tea", "Coffee"] },
-  { id: "flours-lentils", name: "আটা ও ডাল (Flours & Lentils)", subcategories: ["Atta", "Lentils"] },
-  { id: "pickle", name: "আচার (Pickle)", subcategories: ["Mango Pickle", "Garlic Pickle", "Tamarind Pickle"] },
-  { id: "lichi", name: "লিচু (Lichi)", subcategories: ["Dinajpur", "China-3", "Local"] },
-  { id: "rice", name: "চাল (Rice)", subcategories: ["Nazirshail", "Kalizira", "Brown Rice"] }
+  { id: "mango", name: "আম", subcategories: ["Amrapali", "Himsagor", "Lengra"] },
+  { id: "oil-ghee", name: "তেল ও ঘি", subcategories: ["Mustard Oil", "Virgin Coconut Oil", "Ghee"] },
+  { id: "honey", name: "মধু", subcategories: ["Sundarban", "Litchi Flower", "Black Seed"] },
+  { id: "dates", name: "খেজুর", subcategories: ["Ajwa", "Medjool", "Kalmi"] },
+  { id: "spices", name: "মসলা", subcategories: ["Whole Spices", "Mixed Spices"] },
+  { id: "nuts-seeds", name: "বাদাম ও বীজ", subcategories: ["Nuts", "Seeds"] },
+  { id: "beverage", name: "পানীয়", subcategories: ["Tea", "Coffee"] },
+  { id: "flours-lentils", name: "আটা ও ডাল", subcategories: ["Atta", "Lentils"] },
+  { id: "pickle", name: "আচার", subcategories: ["Mango Pickle", "Garlic Pickle", "Tamarind Pickle"] },
+  { id: "lichi", name: "লিচু", subcategories: ["Dinajpur", "China-3", "Local"] },
+  { id: "rice", name: "চাল", subcategories: ["Nazirshail", "Kalizira", "Brown Rice"] }
 ];
 
 export const INITIAL_PRODUCTS = [

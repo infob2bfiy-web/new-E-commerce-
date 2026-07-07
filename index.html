@@ -29,9 +29,9 @@
         <a href="/shop.html" class="text-xs md:text-sm font-bold text-emerald-700 hover:text-emerald-800 transition">সকল শপ দেখুন →</a>
       </div>
       
-      <div class="relative px-2">
+      <div class="relative px-2 sm:px-6">
         <!-- Left Arrow -->
-        <button id="cat-scroll-left" class="absolute -left-1 sm:-left-3 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-orange-500 hover:bg-orange-600 text-white flex items-center justify-center shadow-lg transition-all hover:scale-105 active:scale-95 focus:outline-none cursor-pointer md:hidden">
+        <button id="cat-scroll-left" class="absolute -left-2 md:-left-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-orange-500 hover:bg-orange-600 text-white flex items-center justify-center shadow-md transition-all hover:scale-105 active:scale-95 focus:outline-none cursor-pointer">
           <svg class="w-5 h-5 stroke-white" fill="none" stroke="currentColor" stroke-width="3.5" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
           </svg>
@@ -39,13 +39,13 @@
 
         <!-- Scrollable Wrapper -->
         <div id="top-category-container" class="w-full overflow-x-auto scroll-smooth snap-x snap-mandatory flex pb-2 relative no-scrollbar" style="scrollbar-width: none; -ms-overflow-style: none;">
-          <div id="top-category-grid" class="flex md:grid md:grid-cols-6 lg:grid-cols-11 gap-3 font-bengali w-full">
+          <div id="top-category-grid" class="flex items-center gap-4 md:gap-5 pb-3 font-bengali w-max">
             <!-- Will be dynamically injected -->
           </div>
         </div>
 
         <!-- Right Arrow -->
-        <button id="cat-scroll-right" class="absolute -right-1 sm:-right-3 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-orange-500 hover:bg-orange-600 text-white flex items-center justify-center shadow-lg transition-all hover:scale-105 active:scale-95 focus:outline-none cursor-pointer md:hidden">
+        <button id="cat-scroll-right" class="absolute -right-2 md:-right-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-orange-500 hover:bg-orange-600 text-white flex items-center justify-center shadow-md transition-all hover:scale-105 active:scale-95 focus:outline-none cursor-pointer">
           <svg class="w-5 h-5 stroke-white" fill="none" stroke="currentColor" stroke-width="3.5" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
           </svg>
@@ -177,18 +177,31 @@
         // 2. Render Top Categories Icons
         const topCatGrid = document.getElementById('top-category-grid');
         if (topCatGrid) {
-          // List of generic beautiful vegetable/fruits emojis for visual styling
-          const emojis = {
-            "mango": "🥭", "oil-ghee": "🧉", "honey": "🍯", "dates": "🌴", "spices": "🌶️", 
-            "nuts-seeds": "🌰", "beverage": "☕", "flours-lentils": "🌾", "pickle": "🏺", 
-            "lichi": "🍒", "rice": "🍚"
+          const categoryImages = {
+            "mango": "/src/assets/images/cat_mango.jpg",
+            "oil-ghee": "/src/assets/images/cat_oil_ghee.jpg",
+            "honey": "/src/assets/images/cat_honey.jpg",
+            "dates": "/src/assets/images/cat_dates.jpg",
+            "spices": "/src/assets/images/cat_spices.jpg",
+            "nuts-seeds": "/src/assets/images/cat_nuts.jpg",
+            "beverage": "/src/assets/images/cat_beverage.jpg",
+            "flours-lentils": "/src/assets/images/cat_flours.jpg",
+            "pickle": "/src/assets/images/cat_pickle.jpg",
+            "lichi": "/src/assets/images/cat_lichi.jpg",
+            "rice": "/src/assets/images/cat_rice.jpg"
           };
-          topCatGrid.innerHTML = categories.map(cat => `
-            <a href="/shop.html?category=${cat.id}" class="category-card bg-white p-3.5 rounded-2xl flex flex-col items-center justify-center gap-2 cursor-pointer flex-shrink-0 w-24 md:w-auto h-24 md:h-auto shadow-sm hover:shadow hover:scale-[1.02] transition-all border border-gray-100/60 snap-start">
-              <span class="text-3xl">${emojis[cat.id] || "🍇"}</span>
-              <span class="text-xs font-bold text-gray-750 text-center truncate w-full line-clamp-1 bengali-font">${cat.name.split(' ')[0]}</span>
-            </a>
-          `).join('');
+
+          topCatGrid.innerHTML = categories.map(cat => {
+            const imgUrl = cat.image || categoryImages[cat.id] || 'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&q=80&w=150';
+            return `
+              <a href="/shop.html?category=${cat.id}" class="category-card flex flex-col items-center gap-2.5 cursor-pointer flex-shrink-0 snap-start group">
+                <div class="w-[105px] h-[105px] md:w-[120px] md:h-[120px] rounded-[1.8rem] bg-white border border-gray-100/80 shadow-[0_8px_20px_rgba(0,0,0,0.02)] hover:shadow-[0_12px_28px_rgba(0,0,0,0.05)] hover:scale-[1.03] transition-all flex items-center justify-center overflow-hidden p-3 relative">
+                  <img src="${imgUrl}" alt="${cat.name}" class="w-full h-full object-contain mix-blend-multiply rounded-2xl" referrerpolicy="no-referrer">
+                </div>
+                <span class="text-xs md:text-[13.5px] font-bold text-slate-700 group-hover:text-emerald-700 transition-colors text-center truncate w-24 md:w-28 bengali-font">${cat.name}</span>
+              </a>
+            `;
+          }).join('');
 
           // Bind Category Slider Arrow actions
           const topCatContainer = document.getElementById('top-category-container');

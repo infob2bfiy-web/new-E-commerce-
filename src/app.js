@@ -40,7 +40,13 @@ export function getProducts() {
   return JSON.parse(localStorage.getItem('products') || '[]');
 }
 export function getCategories() {
-  return JSON.parse(localStorage.getItem('categories') || '[]');
+  const data = JSON.parse(localStorage.getItem('categories') || '[]');
+  return data.map(c => {
+    if (c && c.name) {
+      c.name = c.name.replace(/\s*\([A-Za-z\s&\/-]+\)/g, "").trim();
+    }
+    return c;
+  });
 }
 export function getSettings() {
   return JSON.parse(localStorage.getItem('siteSettings') || '{}');
@@ -416,7 +422,7 @@ export function injectSharedLayouts() {
       <!-- Bottom Dark Green Category Navigation dynamically loaded -->
       <div class="bg-[#021c15] text-white/95 select-none w-full border-b border-emerald-950/40 relative z-30">
         <div class="max-w-7xl mx-auto px-4 md:px-8">
-          <div class="flex items-center gap-x-5 lg:gap-x-7 py-2.5 overflow-x-auto lg:overflow-visible no-scrollbar whitespace-nowrap scroll-smooth font-sans justify-start lg:justify-center w-full">
+          <div class="flex items-center gap-x-4 md:gap-x-5 lg:gap-x-6 lg:gap-y-2 py-2.5 overflow-x-auto lg:overflow-visible lg:flex-wrap lg:whitespace-normal lg:justify-center no-scrollbar whitespace-nowrap scroll-smooth font-sans justify-start w-full">
             ${categories.map(cat => {
               const hasSubs = cat.subcategories && cat.subcategories.length > 0;
               if (hasSubs) {
