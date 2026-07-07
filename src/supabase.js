@@ -12,15 +12,24 @@ export function getSupabaseConfig() {
     if (savedConfig.supabaseUrl) url = savedConfig.supabaseUrl;
     if (savedConfig.supabaseKey) key = savedConfig.supabaseKey;
   } catch (e) {
-    console.error("Error reading Supabase settings from localStorage", e);
+    console.log("Error reading Supabase settings from localStorage:", e);
   }
 
   const cleanUrl = url?.trim().replace(/\/$/, "") || '';
+  const cleanKey = key?.trim() || '';
+
+  // Validate URL format and ensure no placeholders or dummy keys are used
+  const isValidUrl = cleanUrl.startsWith('http://') || cleanUrl.startsWith('https://');
+  const isPlaceholder = cleanUrl.includes('placeholder') || cleanUrl.includes('your-') || cleanUrl.includes('example.com') ||
+                        cleanKey.includes('placeholder') || cleanKey.includes('your-') ||
+                        cleanKey.length < 40; // A real Supabase anon key is a very long JWT token (usually >100 characters)
+
+  const enabled = !!(cleanUrl && cleanKey && isValidUrl && !isPlaceholder);
 
   return {
     supabaseUrl: cleanUrl,
-    supabaseKey: key?.trim() || '',
-    enabled: !!(cleanUrl && key)
+    supabaseKey: cleanKey,
+    enabled: enabled
   };
 }
 
@@ -81,7 +90,7 @@ export async function saveOrderToSupabase(order) {
     // Mark order as synced in local copy
     return true;
   } catch (err) {
-    console.error("Failed to save order to Supabase:", err);
+    console.log("Failed to save order to Supabase:", err);
     return false;
   }
 }
@@ -134,7 +143,7 @@ export async function getOrdersFromSupabase() {
       supabaseId: item.id
     }));
   } catch (err) {
-    console.error("Failed to fetch orders from Supabase:", err);
+    console.log("Failed to fetch orders from Supabase:", err);
     return null;
   }
 }
@@ -250,7 +259,7 @@ export async function saveCategoriesToSupabase(categories) {
       });
     }
   } catch (e) {
-    console.error("Error saving categories to Supabase", e);
+    console.warn("Error saving categories to Supabase", e);
   }
 }
 
@@ -294,7 +303,7 @@ export async function saveProductsToSupabase(products) {
       });
     }
   } catch (e) {
-    console.error("Error saving products to Supabase", e);
+    console.warn("Error saving products to Supabase", e);
   }
 }
 
@@ -332,7 +341,7 @@ export async function saveBannersToSupabase(banners) {
       });
     }
   } catch (e) {
-    console.error("Error saving banners to Supabase", e);
+    console.warn("Error saving banners to Supabase", e);
   }
 }
 
@@ -370,7 +379,7 @@ export async function saveCouponsToSupabase(coupons) {
       });
     }
   } catch (e) {
-    console.error("Error saving coupons to Supabase", e);
+    console.warn("Error saving coupons to Supabase", e);
   }
 }
 
@@ -394,7 +403,8 @@ export async function saveSiteSettingsToSupabase(settings) {
       footerText: settings.footerText || '',
       footerLogoUrl: settings.footerLogoUrl || '',
       footerLogoText: settings.footerLogoText || '',
-      fbPixel: settings.fbPixel || ''
+      fbPixel: settings.fbPixel || '',
+      adminNotifyEmail: settings.adminNotifyEmail || ''
     };
 
     await fetch(`${config.supabaseUrl}/rest/v1/site_settings`, {
@@ -408,7 +418,7 @@ export async function saveSiteSettingsToSupabase(settings) {
       body: JSON.stringify(payload)
     });
   } catch (e) {
-    console.error("Error saving site settings to Supabase", e);
+    console.log("Error saving site settings to Supabase:", e);
   }
 }
 
@@ -432,7 +442,7 @@ export async function syncAllDataFromSupabase() {
       });
       if (res.ok) return await res.json();
     } catch (e) {
-      console.error(`Error fetching table ${tableName} from Supabase:`, e);
+      console.log(`Note: Supabase table ${tableName} fetch omitted/offline. Using cached local fallback.`, e);
     }
     return null;
   };

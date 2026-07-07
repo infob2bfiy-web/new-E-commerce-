@@ -313,7 +313,8 @@ export const DEFAULT_SITE_SETTINGS = {
   footerText: "Premium Organic grocery directly from local farmers of Bangladesh to your dining table safely.",
   footerLogoUrl: "",
   footerLogoText: "",
-  fbPixel: ""
+  fbPixel: "",
+  adminNotifyEmail: "info.b2bfiy@gmail.com"
 };
 
 export const INITIAL_BANNERS = [

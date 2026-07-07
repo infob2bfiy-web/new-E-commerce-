@@ -183,7 +183,7 @@
   <!-- ================= 1. LOGIN SCREEN (Full Screen Overlay) ================= -->
   <div id="login-screen" class="fixed inset-0 login-glow-bg flex items-center justify-center p-4 z-[9990]">
     <div class="glass-card rounded-3xl border border-emerald-500/10 p-8 w-full max-w-md shadow-2xl relative">
-      <div class="flex flex-col items-center mb-6 text-center">
+      <div class="flex flex-col items-center mb-6 text-center" id="login-brand-container">
         <span class="text-4xl mb-2">🌿</span>
         <h2 class="text-2xl font-extrabold text-emerald-500 font-sans">অ্যাডমিন প্রবেশদ্বার</h2>
         <p class="text-slate-400 text-xs mt-1 font-sans">Green Grocery Standalone Administrator Secure Login</p>
@@ -209,7 +209,7 @@
 
   <!--Header for Mobile Navigation with Menu Icon -->
   <header class="bg-[#1e293b] border-b border-slate-800 lg:hidden flex justify-between items-center px-4 py-3 sticky top-0 z-[1000]">
-    <div class="flex items-center gap-2 select-none">
+    <div class="flex items-center gap-2 select-none" id="mobile-brand-container">
       <span class="text-2xl">🌱</span>
       <span class="font-extrabold text-sm tracking-tight text-slate-150">গ্রীন গ্রোসারি অ্যাডমিন</span>
     </div>
@@ -229,7 +229,7 @@
       <div class="flex flex-col">
         <!-- Brand banner -->
         <div class="p-6 border-b border-slate-800 flex items-center justify-between select-none">
-          <div class="flex items-center gap-3">
+          <div class="flex items-center gap-3" id="sidebar-brand-container">
             <span class="text-3xl">🌿</span>
             <div>
               <h3 class="font-black text-sm text-emerald-500 tracking-wider">Green Grocery</h3>
@@ -660,6 +660,14 @@
               </label>
               <input type="text" id="set-main-fb-pixel" placeholder="যেমন: 123456789012345 (ফাঁকা রাখলে পিক্সেল ট্র্যাক বন্ধ থাকবে)" class="w-full bg-[#0f172a] border border-slate-700 text-slate-100 rounded-lg p-2.5 font-mono">
               <p class="text-[10px] text-slate-500 mt-1">পিক্সেল আইডি সেট করলে ওয়েবসাইট ভিজিটরদের গতিবিধি ও কেনাকাটা (PageView, AddToCart, Purchase) ট্র্যাকিং শুরু হবে।</p>
+            </div>
+            <div>
+              <label class="block font-bold text-teal-400 mb-1.5 flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="text-teal-400"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                <span>অর্ডার নোটিফিকেশন ইমেইল (Order Notification Admin Email)</span>
+              </label>
+              <input type="email" id="set-main-admin-notify-email" placeholder="যেমন: info.b2bfiy@gmail.com" class="w-full bg-[#0f172a] border border-slate-700 text-slate-100 rounded-lg p-2.5 font-sans">
+              <p class="text-[10px] text-slate-500 mt-1">গ্রাহক নতুন অর্ডার দিলে এই ইমেইল ঠিকানায় বিস্তারিত অর্ডার রিসিট নোটিফিকেশন মেইল পাঠানো হবে।</p>
             </div>
             <button type="submit" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 px-6 rounded-lg transition">সেটিংস সেভ করুন (Save)</button>
           </form>
@@ -1553,6 +1561,7 @@ create policy "Enable delete for everyone" on public.coupons for delete using (t
       siteName: "আম্রপালি",
       tagline: "🚚 ঢাকায় ফ্রি ডেলিভারি ৳৫০০+ অর্ডারে!",
       logoUrl: "https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&q=80&w=150",
+      favicon: "https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&q=80&w=150",
       phone: "01789-123456",
       bkash: "01789-123456",
       nagad: "01823-654321",
@@ -1561,7 +1570,8 @@ create policy "Enable delete for everyone" on public.coupons for delete using (t
       announcement: "💥 ফ্রি ডেলিভারি সারা বাংলাদেশে ৫০০+ টাকার অর্ডারে bKash/Nagad কুপনে!",
       footerText: "Premium Organic grocery directly from local farmers of Bangladesh.",
       footerLogoUrl: "",
-      footerLogoText: ""
+      footerLogoText: "",
+      adminNotifyEmail: "info.b2bfiy@gmail.com"
     };
 
     const INITIAL_BANNERS = [
@@ -2863,6 +2873,7 @@ Grand Total Payable Amount: ৳${activeOrderDetailObj.totalPrice}
       document.getElementById('set-main-announcement').value = settings.announcement || '';
       document.getElementById('set-main-favicon-url').value = settings.favicon || '';
       document.getElementById('set-main-fb-pixel').value = settings.fbPixel || '';
+      document.getElementById('set-main-admin-notify-email').value = settings.adminNotifyEmail || 'info.b2bfiy@gmail.com';
 
       // Contact block sync
       document.getElementById('set-c-phone').value = settings.phone || '';
@@ -2922,8 +2933,10 @@ Grand Total Payable Amount: ৳${activeOrderDetailObj.totalPrice}
       current.announcement = document.getElementById('set-main-announcement').value.trim();
       current.favicon = document.getElementById('set-main-favicon-url').value.trim();
       current.fbPixel = document.getElementById('set-main-fb-pixel').value.trim();
+      current.adminNotifyEmail = document.getElementById('set-main-admin-notify-email').value.trim();
 
       setDBItem('siteSettings', current);
+      updateAdminBranding();
       triggerToast("জেনারেল সাইট সেটিংস সফলভাবে আপডেট করা সম্পন্ন হয়েছে!", "success");
     });
 
@@ -3300,6 +3313,103 @@ Grand Total Payable Amount: ৳${activeOrderDetailObj.totalPrice}
     window.renderBannersSettingsList = renderBannersSettingsList;
     window.deleteAdminBanner = deleteAdminBanner;
 
+    function updateAdminBranding() {
+      try {
+        const settings = JSON.parse(localStorage.getItem('siteSettings') || '{}');
+        const siteName = settings.siteName || "আম্রপালি";
+        const logoUrl = settings.logoUrl;
+
+        // Update Document Title
+        document.title = `${siteName} - Admin Panel`;
+
+        // Update Favicon
+        if (settings.favicon) {
+          let link = document.querySelector("link[rel~='icon']");
+          if (!link) {
+            link = document.createElement('link');
+            link.rel = 'icon';
+            document.getElementsByTagName('head')[0].appendChild(link);
+          }
+          link.href = settings.favicon;
+        }
+
+        const isCustomLogo = logoUrl && 
+                             logoUrl.trim() !== "" && 
+                             !logoUrl.includes("images.unsplash.com/photo-1542838132");
+
+        let logoMarkup = "";
+        if (isCustomLogo) {
+          logoMarkup = `<img src="${logoUrl}" alt="${siteName}" class="h-8 md:h-9 w-auto object-contain max-w-[150px] inline-block" />`;
+        } else {
+          if (siteName === "আম্রপালি") {
+            logoMarkup = `
+              <span class="font-black text-xl md:text-2xl tracking-tight select-none font-sans flex items-center">
+                <span class="text-[#f97316]">আম্র</span><span class="text-emerald-400 font-extrabold">পালি</span>
+              </span>
+            `;
+          } else {
+            const words = siteName.trim().split(" ");
+            if (words.length > 1) {
+              logoMarkup = `
+                <span class="font-black text-lg md:text-2xl tracking-tight select-none font-sans flex items-center">
+                  <span class="text-[#f97316]">${words[0]}</span><span class="text-emerald-400 ml-1.5 font-extrabold">${words.slice(1).join(" ")}</span>
+                </span>
+              `;
+            } else {
+              const mid = Math.ceil(siteName.length / 2);
+              const first = siteName.substring(0, mid);
+              const second = siteName.substring(mid);
+              logoMarkup = `
+                <span class="font-black text-xl md:text-2xl tracking-tight select-none font-sans flex items-center">
+                  <span class="text-[#f97316]">${first}</span><span class="text-emerald-400 font-extrabold">${second}</span>
+                </span>
+              `;
+            }
+          }
+        }
+
+        // 1. Sidebar Branding Container
+        const sidebarBrandContainer = document.getElementById('sidebar-brand-container');
+        if (sidebarBrandContainer) {
+          sidebarBrandContainer.innerHTML = `
+            <div class="flex items-center gap-3 select-none">
+              ${logoMarkup}
+              <div>
+                <p class="text-[10px] text-emerald-500 font-bold tracking-widest font-sans uppercase">Control Center</p>
+              </div>
+            </div>
+          `;
+        }
+
+        // 2. Mobile Branding Container
+        const mobileBrandContainer = document.getElementById('mobile-brand-container');
+        if (mobileBrandContainer) {
+          mobileBrandContainer.innerHTML = `
+            <div class="flex items-center gap-2 select-none">
+              ${logoMarkup}
+              <span class="font-extrabold text-xs text-slate-150 font-sans ml-1">অ্যাডমিন</span>
+            </div>
+          `;
+        }
+
+        // 3. Login Branding Container
+        const loginBrandContainer = document.getElementById('login-brand-container');
+        if (loginBrandContainer) {
+          loginBrandContainer.innerHTML = `
+            <div class="flex flex-col items-center mb-6 text-center select-none">
+              <div class="mb-3">${logoMarkup}</div>
+              <h2 class="text-xl font-extrabold text-emerald-500 font-sans">অ্যাডমিন প্রবেশদ্বার</h2>
+              <p class="text-slate-400 text-xs mt-1 font-sans">Standalone Secure Control Panel</p>
+            </div>
+          `;
+        }
+      } catch (err) {
+        console.error("Error in updateAdminBranding:", err);
+      }
+    }
+
+    window.updateAdminBranding = updateAdminBranding;
+
 
     // ==========================================
     // INITIALIZATION AND EVENT ATTACHMENTS
@@ -3311,6 +3421,9 @@ Grand Total Payable Amount: ৳${activeOrderDetailObj.totalPrice}
         // Seed first time defaults
         console.log("Initializing database state...");
         initializeDatabaseState();
+
+        // Update local admin branding instantly on load
+        updateAdminBranding();
 
         // Clear session safety
         console.log("Checking authenticated session...");
@@ -3324,10 +3437,10 @@ Grand Total Payable Amount: ৳${activeOrderDetailObj.totalPrice}
           syncAllDataFromSupabase().then(() => {
             console.log("Supabase collection tables synchronized successfully.");
             // Re-render panels with the freshly downloaded cloud data
+            updateAdminBranding();
             renderActiveDashboardMetrics();
-            try { renderProductsTable(); } catch(e){}
-            try { renderCategoriesTable(); } catch(e){}
-            try { renderCouponsList(); } catch(e){}
+            try { renderProductsPanelTable(); } catch(e){}
+            try { renderCategoriesPanelTable(); } catch(e){}
             try { renderBannersSettingsList(); } catch(e){}
             try { populateActiveSettingsForm(); } catch(e){}
           }).catch(err => {

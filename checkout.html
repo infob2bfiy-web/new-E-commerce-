@@ -1253,6 +1253,25 @@
           }
         }).catch(err => console.error("Immediate Supabase sync error:", err));
 
+        // Send Email Notification to Admin via custom full-stack Express API
+        fetch('/api/notify-order', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            order: newOrder,
+            adminEmail: siteSettings.adminNotifyEmail || 'info.b2bfiy@gmail.com'
+          })
+        })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            console.log("Admin email notification status:", data.message);
+          } else {
+            console.error("Admin notification failed:", data.error);
+          }
+        })
+        .catch(err => console.error("Error dispatching email notification API:", err));
+
         // Automatic Account Creation and auto login
         const users = JSON.parse(localStorage.getItem('users') || '[]');
         let matchedUser = users.find(u => (customerEmail && u.email === customerEmail) || u.phone === phoneVal);

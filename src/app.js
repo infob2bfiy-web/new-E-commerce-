@@ -250,7 +250,11 @@ export function injectSharedLayouts() {
   const categories = getCategories();
   const currentUser = getCurrentUser();
 
-  // Dynamically Inject Favicon
+  // Dynamically Inject Favicon and Page Title
+  if (settings.siteName) {
+    document.title = `${settings.siteName} - ${settings.tagline || '১০০% খাঁটি ও অর্গ্যানিক গ্রোসারি শপ'}`;
+  }
+
   if (settings.favicon) {
     let link = document.querySelector("link[rel~='icon']");
     if (!link) {
