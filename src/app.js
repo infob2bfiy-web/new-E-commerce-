@@ -287,8 +287,11 @@ export function injectSharedLayouts() {
                          settings.logoUrl.trim() !== "" && 
                          !settings.logoUrl.includes("images.unsplash.com/photo-1542838132");
 
+    // headerLogoType can be 'image' or 'text'
+    const showHeaderImage = (settings.headerLogoType !== 'text') && isCustomLogo;
+
     let logoMarkup = "";
-    if (isCustomLogo) {
+    if (showHeaderImage) {
       logoMarkup = `<img src="${settings.logoUrl}" alt="${settings.siteName || 'আম্রপালি'}" class="h-9 md:h-11 w-auto object-contain max-w-[200px]" />`;
     } else {
       const name = settings.siteName || "আম্রপালি";
@@ -589,12 +592,17 @@ export function injectSharedLayouts() {
     const checkCopyright = settings.footerCopyright || "&copy; 2026 [siteName]. All Rights Reserved. Crafted for Healthy Lifestyle.";
     const processedCopyright = checkCopyright.replace('[siteName]', settings.siteName || "আম্রপালি");
 
+    const showFooterImage = (settings.footerLogoType !== 'text') && (settings.footerLogoUrl || settings.logoUrl);
+    const footerLogoMarkup = showFooterImage 
+      ? `<img src="${settings.footerLogoUrl || settings.logoUrl}" class="w-8 h-8 rounded-full">`
+      : "";
+
     footer.innerHTML = `
       <section class="bg-gray-900 text-gray-300 pt-14 pb-8 border-t border-gray-800 bengali-font">
         <div class="max-w-7xl mx-auto px-4 md:px-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
           <div>
             <h4 class="font-bold text-xl text-white mb-4 flex items-center gap-2">
-              <img src="${settings.footerLogoUrl || settings.logoUrl}" class="w-8 h-8 rounded-full">
+              ${footerLogoMarkup}
               <span>${settings.footerLogoText || settings.siteName}</span>
             </h4>
             <p class="text-sm text-gray-400 leading-relaxed mb-4">${settings.footerText}</p>

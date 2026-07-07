@@ -644,6 +644,16 @@
               </div>
             </div>
 
+            <!-- Header Logo Display Type Selection -->
+            <div class="bg-[#0f172a]/20 p-4 rounded-xl border border-slate-800 space-y-2">
+              <label class="block font-bold text-slate-300 text-xs mb-1.5 font-sans">হেডার লোগো প্রদর্শন মোড (Header Logo Display Mode)</label>
+              <select id="set-header-logo-type" class="w-full bg-[#0f172a] border border-slate-700 text-slate-150 p-2.5 rounded-lg font-sans">
+                <option value="image">ইমেজ লোগো প্রদর্শন করুন (Show Image Logo)</option>
+                <option value="text">টেক্সট নাম প্রদর্শন করুন (Show Text / Name Logo)</option>
+              </select>
+              <p class="text-[10px] text-slate-400 leading-normal">হেডারে কি আপনার ব্র্যান্ড লোগো ইমেজ দেখাবেন নাকি টেক্সট নাম দেখাবেন তা নির্বাচন করুন।</p>
+            </div>
+
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label class="block font-bold text-slate-400 mb-1.5">ওয়েবসাইট ট্যাগলাইন / শর্ট টেক্সট *</label>
@@ -869,6 +879,16 @@
                 <input type="text" id="set-foot-logo-text" class="w-full bg-[#0f172a] border border-slate-700 text-slate-100 p-2.5 rounded-lg font-sans" placeholder="খালি রাখলে মেইন সাইটের নামই প্রদর্শিত হবে">
                 <p class="text-[10px] text-slate-400 mt-2 leading-normal font-sans">খালি রাখলে মেইন বা মূল সাইটের নামই ফুটারে লোগো টেক্সট হিসেবে প্রদর্শিত হবে।</p>
               </div>
+            </div>
+
+            <!-- Footer Logo Display Type Selection -->
+            <div class="bg-[#0f172a]/20 p-4 rounded-xl border border-slate-800 space-y-2">
+              <label class="block font-bold text-slate-300 text-xs mb-1.5 font-sans">ফুটার লোগো প্রদর্শন মোড (Footer Logo Display Mode)</label>
+              <select id="set-footer-logo-type" class="w-full bg-[#0f172a] border border-slate-700 text-slate-150 p-2.5 rounded-lg font-sans">
+                <option value="image">ইমেজ লোগো প্রদর্শন করুন (Show Image Logo)</option>
+                <option value="text">টেক্সট নাম প্রদর্শন করুন (Show Text / Name Logo)</option>
+              </select>
+              <p class="text-[10px] text-slate-400 leading-normal">ফুটারে কি আপনার ব্র্যান্ড লোগো ইমেজ দেখাবেন নাকি টেক্সট নাম দেখাবেন তা নির্বাচন করুন।</p>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -1155,6 +1175,8 @@ create table if not exists public.site_settings (
   "footerLogoText" text,
   "fbPixel" text,
   "adminNotifyEmail" text,
+  "headerLogoType" text default 'image',
+  "footerLogoType" text default 'image',
   updated_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
 
@@ -2993,6 +3015,7 @@ Grand Total Payable Amount: ৳${activeOrderDetailObj.totalPrice}
       document.getElementById('set-main-favicon-url').value = settings.favicon || '';
       document.getElementById('set-main-fb-pixel').value = settings.fbPixel || '';
       document.getElementById('set-main-admin-notify-email').value = settings.adminNotifyEmail || 'info.b2bfiy@gmail.com';
+      document.getElementById('set-header-logo-type').value = settings.headerLogoType || 'image';
 
       // Contact block sync
       document.getElementById('set-c-phone').value = settings.phone || '';
@@ -3010,6 +3033,7 @@ Grand Total Payable Amount: ৳${activeOrderDetailObj.totalPrice}
       // Footer block sync
       document.getElementById('set-foot-logo-url').value = settings.footerLogoUrl || '';
       document.getElementById('set-foot-logo-text').value = settings.footerLogoText || '';
+      document.getElementById('set-footer-logo-type').value = settings.footerLogoType || 'image';
       document.getElementById('set-foot-text').value = settings.footerText || "Premium Organic grocery directly from local farmers of Bangladesh.";
       document.getElementById('set-foot-copyright').value = settings.footerCopyright || "&copy; 2026 [siteName]. All Rights Reserved. Crafted for Healthy Lifestyle.";
       document.getElementById('set-foot-col1-title').value = settings.footerCol1Title || "গুরুত্বপূর্ণ লিংকসমূহ";
@@ -3053,6 +3077,7 @@ Grand Total Payable Amount: ৳${activeOrderDetailObj.totalPrice}
       current.favicon = document.getElementById('set-main-favicon-url').value.trim();
       current.fbPixel = document.getElementById('set-main-fb-pixel').value.trim();
       current.adminNotifyEmail = document.getElementById('set-main-admin-notify-email').value.trim();
+      current.headerLogoType = document.getElementById('set-header-logo-type').value;
 
       setDBItem('siteSettings', current);
       updateAdminBranding();
@@ -3095,6 +3120,7 @@ Grand Total Payable Amount: ৳${activeOrderDetailObj.totalPrice}
 
       current.footerLogoUrl = document.getElementById('set-foot-logo-url').value.trim();
       current.footerLogoText = document.getElementById('set-foot-logo-text').value.trim();
+      current.footerLogoType = document.getElementById('set-footer-logo-type').value;
       current.footerText = document.getElementById('set-foot-text').value.trim();
       current.footerCopyright = document.getElementById('set-foot-copyright').value.trim();
       current.footerCol1Title = document.getElementById('set-foot-col1-title').value.trim();

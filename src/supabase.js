@@ -409,7 +409,9 @@ export async function saveSiteSettingsToSupabase(settings) {
       footerLogoUrl: settings.footerLogoUrl || '',
       footerLogoText: settings.footerLogoText || '',
       fbPixel: settings.fbPixel || '',
-      adminNotifyEmail: settings.adminNotifyEmail || ''
+      adminNotifyEmail: settings.adminNotifyEmail || '',
+      headerLogoType: settings.headerLogoType || 'image',
+      footerLogoType: settings.footerLogoType || 'image'
     };
 
     await fetch(`${config.supabaseUrl}/rest/v1/site_settings`, {
