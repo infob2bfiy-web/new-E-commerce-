@@ -389,7 +389,7 @@ export async function saveCouponsToSupabase(coupons) {
  */
 export async function saveSiteSettingsToSupabase(settings) {
   const config = getSupabaseConfig();
-  if (!config.enabled) return;
+  if (!config.enabled) return { success: false, message: 'Supabase is not enabled' };
   try {
     const payload = {
       id: 'default',
@@ -414,7 +414,7 @@ export async function saveSiteSettingsToSupabase(settings) {
       footerLogoType: settings.footerLogoType || 'image'
     };
 
-    await fetch(`${config.supabaseUrl}/rest/v1/site_settings`, {
+    const response = await fetch(`${config.supabaseUrl}/rest/v1/site_settings`, {
       method: 'POST',
       headers: {
         'apikey': config.supabaseKey,
@@ -424,8 +424,26 @@ export async function saveSiteSettingsToSupabase(settings) {
       },
       body: JSON.stringify(payload)
     });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error("Supabase site_settings save error:", errorText);
+      if (window.triggerToast) {
+        if (errorText.includes("column") && (errorText.includes("headerLogoType") || errorText.includes("footerLogoType"))) {
+          window.triggerToast("সুপাবেস ডেটাবেসে নতুন লোগো প্রদর্শন অপশন কলাম (headerLogoType) খুঁজে পাওয়া যায়নি! দয়া করে নিচের SQL Schema থেকে ALTER TABLE কমান্ডটি আপনার Supabase SQL Editor-এ রান করুন।", "danger");
+        } else {
+          window.triggerToast(`সুপাবেসে সাইট সেটিংস সংরক্ষণ করা যায়নি: ${errorText}`, "danger");
+        }
+      }
+      return { success: false, message: errorText };
+    }
+    return { success: true };
   } catch (e) {
-    console.log("Error saving site settings to Supabase:", e);
+    console.error("Error saving site settings to Supabase:", e);
+    if (window.triggerToast) {
+      window.triggerToast(`সিস্টেম এরর: ${e.message}`, "danger");
+    }
+    return { success: false, message: e.message };
   }
 }
 

@@ -287,39 +287,50 @@ export function injectSharedLayouts() {
                          settings.logoUrl.trim() !== "" && 
                          !settings.logoUrl.includes("images.unsplash.com/photo-1542838132");
 
-    // headerLogoType can be 'image' or 'text'
-    const showHeaderImage = (settings.headerLogoType !== 'text') && isCustomLogo;
-
-    let logoMarkup = "";
-    if (showHeaderImage) {
-      logoMarkup = `<img src="${settings.logoUrl}" alt="${settings.siteName || 'আম্রপালি'}" class="h-9 md:h-11 w-auto object-contain max-w-[200px]" />`;
+    const name = settings.siteName || "আম্রপালি";
+    let textLogoMarkup = "";
+    if (name === "আম্রপালি") {
+      textLogoMarkup = `
+        <span class="font-black text-2xl md:text-3.5xl tracking-tight select-none font-sans flex items-center">
+          <span class="text-[#f97316]">আম্র</span><span class="text-slate-900 font-extrabold">পালি</span>
+        </span>
+      `;
     } else {
-      const name = settings.siteName || "আম্রপালি";
-      if (name === "আম্রপালি") {
-        logoMarkup = `
-          <span class="font-black text-2xl md:text-3.5xl tracking-tight select-none font-sans flex items-center">
-            <span class="text-[#f97316]">আম্র</span><span class="text-slate-900 font-extrabold">পালি</span>
+      const words = name.trim().split(" ");
+      if (words.length > 1) {
+        textLogoMarkup = `
+          <span class="font-black text-2.5xl md:text-3.5xl tracking-tight select-none font-sans flex items-center">
+            <span class="text-[#f97316]">${words[0]}</span><span class="text-slate-900 ml-1.5 font-extrabold">${words.slice(1).join(" ")}</span>
           </span>
         `;
       } else {
-        const words = name.trim().split(" ");
-        if (words.length > 1) {
-          logoMarkup = `
-            <span class="font-black text-2.5xl md:text-3.5xl tracking-tight select-none font-sans flex items-center">
-              <span class="text-[#f97316]">${words[0]}</span><span class="text-slate-900 ml-1.5 font-extrabold">${words.slice(1).join(" ")}</span>
-            </span>
-          `;
-        } else {
-          const mid = Math.ceil(name.length / 2);
-          const first = name.substring(0, mid);
-          const second = name.substring(mid);
-          logoMarkup = `
-            <span class="font-black text-2.5xl md:text-3.5xl tracking-tight select-none font-sans flex items-center">
-              <span class="text-[#f97316]">${first}</span><span class="text-slate-900 font-extrabold">${second}</span>
-            </span>
-          `;
-        }
+        const mid = Math.ceil(name.length / 2);
+        const first = name.substring(0, mid);
+        const second = name.substring(mid);
+        textLogoMarkup = `
+          <span class="font-black text-2.5xl md:text-3.5xl tracking-tight select-none font-sans flex items-center">
+            <span class="text-[#f97316]">${first}</span><span class="text-slate-900 font-extrabold">${second}</span>
+          </span>
+        `;
       }
+    }
+
+    const imageLogoMarkup = isCustomLogo 
+      ? `<img src="${settings.logoUrl}" alt="${name}" class="h-9 md:h-11 w-auto object-contain max-w-[200px]" />`
+      : "";
+
+    let logoMarkup = "";
+    if (settings.headerLogoType === 'both' && isCustomLogo) {
+      logoMarkup = `
+        <div class="flex items-center gap-2.5">
+          ${imageLogoMarkup}
+          ${textLogoMarkup}
+        </div>
+      `;
+    } else if (settings.headerLogoType === 'text' || !isCustomLogo) {
+      logoMarkup = textLogoMarkup;
+    } else {
+      logoMarkup = imageLogoMarkup;
     }
 
     header.innerHTML = `
@@ -592,18 +603,28 @@ export function injectSharedLayouts() {
     const checkCopyright = settings.footerCopyright || "&copy; 2026 [siteName]. All Rights Reserved. Crafted for Healthy Lifestyle.";
     const processedCopyright = checkCopyright.replace('[siteName]', settings.siteName || "আম্রপালি");
 
-    const showFooterImage = (settings.footerLogoType !== 'text') && (settings.footerLogoUrl || settings.logoUrl);
-    const footerLogoMarkup = showFooterImage 
-      ? `<img src="${settings.footerLogoUrl || settings.logoUrl}" class="w-8 h-8 rounded-full">`
-      : "";
+    const hasFooterImg = settings.footerLogoUrl || settings.logoUrl;
+    const footerTextVal = settings.footerLogoText || settings.siteName || "আম্রপালি";
+
+    let footerLogoHeadingMarkup = "";
+    if (settings.footerLogoType === 'both' && hasFooterImg) {
+      footerLogoHeadingMarkup = `
+        <img src="${settings.footerLogoUrl || settings.logoUrl}" class="w-8 h-8 rounded-full">
+        <span>${footerTextVal}</span>
+      `;
+    } else if (settings.footerLogoType === 'text' || !hasFooterImg) {
+      footerLogoHeadingMarkup = `<span>${footerTextVal}</span>`;
+    } else {
+      // Default to 'image'
+      footerLogoHeadingMarkup = `<img src="${settings.footerLogoUrl || settings.logoUrl}" class="w-8 h-8 rounded-full">`;
+    }
 
     footer.innerHTML = `
       <section class="bg-gray-900 text-gray-300 pt-14 pb-8 border-t border-gray-800 bengali-font">
         <div class="max-w-7xl mx-auto px-4 md:px-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
           <div>
             <h4 class="font-bold text-xl text-white mb-4 flex items-center gap-2">
-              ${footerLogoMarkup}
-              <span>${settings.footerLogoText || settings.siteName}</span>
+              ${footerLogoHeadingMarkup}
             </h4>
             <p class="text-sm text-gray-400 leading-relaxed mb-4">${settings.footerText}</p>
             <p class="text-sm text-emerald-400 font-bold">🎯 Customer Helpline: ${settings.phone}</p>

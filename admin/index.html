@@ -650,8 +650,9 @@
               <select id="set-header-logo-type" class="w-full bg-[#0f172a] border border-slate-700 text-slate-150 p-2.5 rounded-lg font-sans">
                 <option value="image">ইমেজ লোগো প্রদর্শন করুন (Show Image Logo)</option>
                 <option value="text">টেক্সট নাম প্রদর্শন করুন (Show Text / Name Logo)</option>
+                <option value="both">ইমেজ ও টেক্সট একসাথে প্রদর্শন করুন (Show Both Logo & Text)</option>
               </select>
-              <p class="text-[10px] text-slate-400 leading-normal">হেডারে কি আপনার ব্র্যান্ড লোগো ইমেজ দেখাবেন নাকি টেক্সট নাম দেখাবেন তা নির্বাচন করুন।</p>
+              <p class="text-[10px] text-slate-400 leading-normal">হেডারে কি আপনার ব্র্যান্ড লোগো ইমেজ দেখাবেন, টেক্সট নাম দেখাবেন নাকি দুটোই একসাথে দেখাবেন তা নির্বাচন করুন।</p>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -887,8 +888,9 @@
               <select id="set-footer-logo-type" class="w-full bg-[#0f172a] border border-slate-700 text-slate-150 p-2.5 rounded-lg font-sans">
                 <option value="image">ইমেজ লোগো প্রদর্শন করুন (Show Image Logo)</option>
                 <option value="text">টেক্সট নাম প্রদর্শন করুন (Show Text / Name Logo)</option>
+                <option value="both">ইমেজ ও টেক্সট একসাথে প্রদর্শন করুন (Show Both Logo & Text)</option>
               </select>
-              <p class="text-[10px] text-slate-400 leading-normal">ফুটারে কি আপনার ব্র্যান্ড লোগো ইমেজ দেখাবেন নাকি টেক্সট নাম দেখাবেন তা নির্বাচন করুন।</p>
+              <p class="text-[10px] text-slate-400 leading-normal">ফুটারে কি আপনার ব্র্যান্ড লোগো ইমেজ দেখাবেন, টেক্সট নাম দেখাবেন নাকি দুটোই একসাথে দেখাবেন তা নির্বাচন করুন।</p>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -1263,6 +1265,10 @@ create policy "Enable select for everyone" on public.coupons for select using (t
 create policy "Enable insert for everyone" on public.coupons for insert with check (true);
 create policy "Enable update for everyone" on public.coupons for update using (true);
 create policy "Enable delete for everyone" on public.coupons for delete using (true);
+
+-- 7. If you already have 'site_settings' table, run this to add the logo selection columns:
+alter table public.site_settings add column if not exists "headerLogoType" text default 'image';
+alter table public.site_settings add column if not exists "footerLogoType" text default 'image';
             </pre>
           </div>
         </div>
