@@ -11,14 +11,14 @@
     <!-- Dynamic Header -->
     <header id="shared-header"></header>
 
-    <!-- Hero Slideshow Carousel -->
+    <!-- Hero Slideshow Carousel exactly styled like Ghorer Bazar -->
     <div class="max-w-7xl mx-auto px-4 md:px-8 pt-6">
-      <section class="relative bg-emerald-900 overflow-hidden h-[170px] min-[400px]:h-[210px] min-[500px]:h-[260px] sm:h-[350px] md:h-[420px] lg:h-[450px] rounded-2xl shadow-sm">
+      <section class="relative bg-emerald-950 overflow-hidden h-[170px] min-[400px]:h-[210px] min-[500px]:h-[250px] sm:h-[320px] md:h-[360px] lg:h-[380px] rounded-2xl shadow-sm">
         <div id="home-carousel" class="w-full h-full relative flex whitespace-nowrap transition-transform duration-700 ease-in-out">
           <!-- Will be dynamically generated from banners -->
         </div>
         <!-- Dots indicator -->
-        <div id="carousel-dots" class="absolute bottom-2 sm:bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5 sm:gap-2 z-10"></div>
+        <div id="carousel-dots" class="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-2 z-10"></div>
       </section>
     </div>
 
@@ -140,16 +140,9 @@
         const dotsContainer = document.getElementById('carousel-dots');
         if (carousel && banners.length > 0) {
           carousel.innerHTML = banners.map((ban, index) => `
-            <div class="w-full h-full flex-shrink-0 relative inline-block overflow-hidden">
-              <img src="${ban.imageUrl}" class="w-full h-full object-cover opacity-60 mix-blend-multiply filter contrast-125" alt="${ban.title}">
-              <div class="absolute inset-0 bg-gradient-to-r from-emerald-950/85 via-emerald-950/45 to-transparent flex flex-col justify-center px-5 min-[400px]:px-6 md:px-16 text-white text-left break-words">
-                <h1 class="text-base min-[400px]:text-lg min-[500px]:text-xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold bengali-font mb-1.5 sm:mb-3 text-emerald-100 tracking-tight select-none slide-in-top">${ban.title}</h1>
-                <p class="text-[10px] min-[400px]:text-xs sm:text-sm md:text-base lg:text-lg text-emerald-50/80 mb-2.5 sm:mb-6 font-sans select-none max-w-xl line-clamp-2 md:line-clamp-none">${ban.text}</p>
-                <div>
-                  <a href="/shop.html" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[9px] min-[400px]:text-[11px] sm:text-sm px-3 py-1.5 min-[400px]:px-4 min-[400px]:py-2 sm:px-6 sm:py-2.5 rounded-lg transition-transform inline-block hover:scale-105 shadow shadow-emerald-950">শপ করুন (Shop New)</a>
-                </div>
-              </div>
-            </div>
+            <a href="/shop.html" class="w-full h-full flex-shrink-0 relative inline-block overflow-hidden cursor-pointer">
+              <img src="${ban.imageUrl}" class="w-full h-full object-cover select-none" alt="${ban.title || 'Organic Grocery Banner'}">
+            </a>
           `).join('');
 
           dotsContainer.innerHTML = banners.map((_, i) => `

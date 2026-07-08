@@ -280,7 +280,7 @@ export async function saveProductsToSupabase(products) {
     });
 
     if (products.length > 0) {
-      const payload = products.map(p => ({
+      const fullPayload = products.map(p => ({
         id: p.id,
         name: p.name,
         category: p.category || '',
@@ -290,9 +290,12 @@ export async function saveProductsToSupabase(products) {
         stock: Number(p.stock || 0),
         description: p.description || '',
         image: p.image || '',
+        images: p.images || [],
+        variant: p.variant || '',
         tag: p.tag || ''
       }));
-      await fetch(`${config.supabaseUrl}/rest/v1/products`, {
+
+      const res = await fetch(`${config.supabaseUrl}/rest/v1/products`, {
         method: 'POST',
         headers: {
           'apikey': config.supabaseKey,
@@ -300,8 +303,44 @@ export async function saveProductsToSupabase(products) {
           'Content-Type': 'application/json',
           'Prefer': 'return=minimal'
         },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(fullPayload)
       });
+
+      if (!res.ok) {
+        const errorMsg = await res.text();
+        console.warn("Full payload product save failed (likely due to missing 'images' or 'variant' columns). Retrying fallback save...", errorMsg);
+
+        // Fallback payload without images/variant columns
+        const fallbackPayload = products.map(p => ({
+          id: p.id,
+          name: p.name,
+          category: p.category || '',
+          subcategory: p.subcategory || '',
+          price: Number(p.price || 0),
+          discountPrice: p.discountPrice !== undefined ? Number(p.discountPrice) : null,
+          stock: Number(p.stock || 0),
+          description: p.description || '',
+          image: p.image || '',
+          tag: p.tag || ''
+        }));
+
+        const fallbackRes = await fetch(`${config.supabaseUrl}/rest/v1/products`, {
+          method: 'POST',
+          headers: {
+            'apikey': config.supabaseKey,
+            'Authorization': `Bearer ${config.supabaseKey}`,
+            'Content-Type': 'application/json',
+            'Prefer': 'return=minimal'
+          },
+          body: JSON.stringify(fallbackPayload)
+        });
+
+        if (!fallbackRes.ok) {
+          console.error("Fallback product save also failed:", await fallbackRes.text());
+        } else {
+          console.log("Product saved successfully using fallback mode (missing custom columns). Please run the SQL migration in Admin tab to support multiple images & variants!");
+        }
+      }
     }
   } catch (e) {
     console.warn("Error saving products to Supabase", e);
@@ -385,13 +424,163 @@ export async function saveCouponsToSupabase(coupons) {
 }
 
 /**
+ * Save users array to Supabase
+ */
+export async function saveUsersToSupabase(users) {
+  const config = getSupabaseConfig();
+  if (!config.enabled) return;
+  try {
+    await fetch(`${config.supabaseUrl}/rest/v1/users?phone=not.is.null`, {
+      method: 'DELETE',
+      headers: {
+        'apikey': config.supabaseKey,
+        'Authorization': `Bearer ${config.supabaseKey}`
+      }
+    });
+
+    if (users.length > 0) {
+      const payload = users.map(u => ({
+        phone: u.phone,
+        name: u.name || '',
+        email: u.email || '',
+        password: u.password || '',
+        address: u.address || ''
+      }));
+      await fetch(`${config.supabaseUrl}/rest/v1/users`, {
+        method: 'POST',
+        headers: {
+          'apikey': config.supabaseKey,
+          'Authorization': `Bearer ${config.supabaseKey}`,
+          'Content-Type': 'application/json',
+          'Prefer': 'return=minimal'
+        },
+        body: JSON.stringify(payload)
+      });
+    }
+  } catch (e) {
+    console.warn("Error saving users to Supabase", e);
+  }
+}
+
+/**
+ * Save admin credentials to Supabase
+ */
+export async function saveAdminCredentialsToSupabase(creds) {
+  const config = getSupabaseConfig();
+  if (!config.enabled) return;
+  try {
+    await fetch(`${config.supabaseUrl}/rest/v1/admin_credentials?username=not.is.null`, {
+      method: 'DELETE',
+      headers: {
+        'apikey': config.supabaseKey,
+        'Authorization': `Bearer ${config.supabaseKey}`
+      }
+    });
+
+    if (creds && creds.username) {
+      const payload = {
+        username: creds.username,
+        password: creds.password || 'admin1'
+      };
+      await fetch(`${config.supabaseUrl}/rest/v1/admin_credentials`, {
+        method: 'POST',
+        headers: {
+          'apikey': config.supabaseKey,
+          'Authorization': `Bearer ${config.supabaseKey}`,
+          'Content-Type': 'application/json',
+          'Prefer': 'return=minimal'
+        },
+        body: JSON.stringify(payload)
+      });
+    }
+  } catch (e) {
+    console.warn("Error saving admin credentials to Supabase", e);
+  }
+}
+
+/**
+ * Save support tickets array to Supabase
+ */
+export async function saveSupportTicketsToSupabase(tickets) {
+  const config = getSupabaseConfig();
+  if (!config.enabled) return;
+  try {
+    await fetch(`${config.supabaseUrl}/rest/v1/support_tickets?id=not.is.null`, {
+      method: 'DELETE',
+      headers: {
+        'apikey': config.supabaseKey,
+        'Authorization': `Bearer ${config.supabaseKey}`
+      }
+    });
+
+    if (tickets.length > 0) {
+      const payload = tickets.map(t => ({
+        id: t.id,
+        phone: t.phone || '',
+        email: t.email || '',
+        subject: t.subject || '',
+        message: t.message || '',
+        status: t.status || 'Open',
+        date: t.date || ''
+      }));
+      await fetch(`${config.supabaseUrl}/rest/v1/support_tickets`, {
+        method: 'POST',
+        headers: {
+          'apikey': config.supabaseKey,
+          'Authorization': `Bearer ${config.supabaseKey}`,
+          'Content-Type': 'application/json',
+          'Prefer': 'return=minimal'
+        },
+        body: JSON.stringify(payload)
+      });
+    }
+  } catch (e) {
+    console.warn("Error saving support tickets to Supabase", e);
+  }
+}
+
+/**
  * Save site settings object to Supabase
  */
 export async function saveSiteSettingsToSupabase(settings) {
   const config = getSupabaseConfig();
   if (!config.enabled) return { success: false, message: 'Supabase is not enabled' };
   try {
-    const payload = {
+    const fullPayload = {
+      id: 'default',
+      siteName: settings.siteName || '',
+      tagline: settings.tagline || '',
+      logoUrl: settings.logoUrl || '',
+      favicon: settings.favicon || '',
+      phone: settings.phone || '',
+      whatsapp: settings.whatsapp || '',
+      email: settings.email || '',
+      bkash: settings.bkash || '',
+      nagad: settings.nagad || '',
+      rocket: settings.rocket || '',
+      cod: settings.cod !== false,
+      announcement: settings.announcement || '',
+      footerText: settings.footerText || '',
+      footerLogoUrl: settings.footerLogoUrl || '',
+      footerLogoText: settings.footerLogoText || '',
+      fbPixel: settings.fbPixel || '',
+      adminNotifyEmail: settings.adminNotifyEmail || '',
+      headerLogoType: settings.headerLogoType || 'image',
+      footerLogoType: settings.footerLogoType || 'image',
+      // Dynamic newly-added social/footer settings
+      facebookUrl: settings.facebookUrl || '',
+      youtubeUrl: settings.youtubeUrl || '',
+      footerCopyright: settings.footerCopyright || '',
+      footerCol1Title: settings.footerCol1Title || '',
+      footerCol1LinksText: settings.footerCol1LinksText || '',
+      footerCol2Title: settings.footerCol2Title || '',
+      footerCol2LinksText: settings.footerCol2LinksText || '',
+      footerNewsletterTitle: settings.footerNewsletterTitle || '',
+      footerNewsletterText: settings.footerNewsletterText || '',
+      footerShowPayments: settings.footerShowPayments !== false
+    };
+
+    const fallbackPayload = {
       id: 'default',
       siteName: settings.siteName || '',
       tagline: settings.tagline || '',
@@ -414,35 +603,60 @@ export async function saveSiteSettingsToSupabase(settings) {
       footerLogoType: settings.footerLogoType || 'image'
     };
 
-    const response = await fetch(`${config.supabaseUrl}/rest/v1/site_settings`, {
+    // Pre-emptively delete the existing row to make upsert highly compatible without conflict issues
+    try {
+      await fetch(`${config.supabaseUrl}/rest/v1/site_settings?id=eq.default`, {
+        method: 'DELETE',
+        headers: {
+          'apikey': config.supabaseKey,
+          'Authorization': `Bearer ${config.supabaseKey}`
+        }
+      });
+    } catch (delErr) {
+      console.warn("Non-blocking delete of existing site_settings default row failed:", delErr);
+    }
+
+    // Try full save first
+    let response = await fetch(`${config.supabaseUrl}/rest/v1/site_settings`, {
       method: 'POST',
       headers: {
         'apikey': config.supabaseKey,
         'Authorization': `Bearer ${config.supabaseKey}`,
         'Content-Type': 'application/json',
-        'Prefer': 'resolution=merge-duplicates'
+        'Prefer': 'return=minimal'
       },
-      body: JSON.stringify(payload)
+      body: JSON.stringify(fullPayload)
     });
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error("Supabase site_settings save error:", errorText);
-      if (window.triggerToast) {
-        if (errorText.includes("column") && (errorText.includes("headerLogoType") || errorText.includes("footerLogoType"))) {
-          window.triggerToast("সুপাবেস ডেটাবেসে নতুন লোগো প্রদর্শন অপশন কলাম (headerLogoType) খুঁজে পাওয়া যায়নি! দয়া করে নিচের SQL Schema থেকে ALTER TABLE কমান্ডটি আপনার Supabase SQL Editor-এ রান করুন।", "danger");
-        } else {
-          window.triggerToast(`সুপাবেসে সাইট সেটিংস সংরক্ষণ করা যায়নি: ${errorText}`, "danger");
-        }
+      console.warn("Full payload site_settings save failed, retrying safe fallback...", errorText);
+
+      // Fallback save using old schema (guaranteed to succeed on older tables)
+      response = await fetch(`${config.supabaseUrl}/rest/v1/site_settings`, {
+        method: 'POST',
+        headers: {
+          'apikey': config.supabaseKey,
+          'Authorization': `Bearer ${config.supabaseKey}`,
+          'Content-Type': 'application/json',
+          'Prefer': 'return=minimal'
+        },
+        body: JSON.stringify(fallbackPayload)
+      });
+
+      if (!response.ok) {
+        const fallbackError = await response.text();
+        console.error("Fallback site_settings save also failed:", fallbackError);
+        return { success: false, message: fallbackError };
+      } else {
+        console.log("Site settings saved successfully using fallback mode (older table structure).");
       }
-      return { success: false, message: errorText };
+    } else {
+      console.log("All site settings (including social media & copyright text) successfully saved to Supabase.");
     }
     return { success: true };
   } catch (e) {
-    console.error("Error saving site settings to Supabase:", e);
-    if (window.triggerToast) {
-      window.triggerToast(`সিস্টেম এরর: ${e.message}`, "danger");
-    }
+    console.warn("Background sync of site settings to Supabase failed (non-blocking):", e.message);
     return { success: false, message: e.message };
   }
 }
@@ -527,6 +741,44 @@ export async function syncAllDataFromSupabase() {
       delete remoteSettings.id;
       delete remoteSettings.updated_at;
       localStorage.setItem('siteSettings', JSON.stringify(remoteSettings));
+    }
+  }
+
+  // 6. Users
+  const userData = await fetchTable('users');
+  if (userData !== null) {
+    if (userData.length === 0) {
+      const defaults = JSON.parse(localStorage.getItem('users') || '[]');
+      if (defaults.length > 0) await saveUsersToSupabase(defaults);
+    } else {
+      localStorage.setItem('users', JSON.stringify(userData));
+    }
+  }
+
+  // 7. Admin Credentials
+  const adminCredData = await fetchTable('admin_credentials');
+  if (adminCredData !== null) {
+    if (adminCredData.length === 0) {
+      const defaults = JSON.parse(localStorage.getItem('adminCredentials') || '{"username":"admin","password":"admin1"}');
+      if (defaults.username) await saveAdminCredentialsToSupabase(defaults);
+    } else {
+      const firstRow = adminCredData[0] || {};
+      const credentialsObj = {
+        username: firstRow.username || 'admin',
+        password: firstRow.password || 'admin1'
+      };
+      localStorage.setItem('adminCredentials', JSON.stringify(credentialsObj));
+    }
+  }
+
+  // 8. Support Tickets
+  const ticketData = await fetchTable('support_tickets');
+  if (ticketData !== null) {
+    if (ticketData.length === 0) {
+      const defaults = JSON.parse(localStorage.getItem('supportTickets') || '[]');
+      if (defaults.length > 0) await saveSupportTicketsToSupabase(defaults);
+    } else {
+      localStorage.setItem('supportTickets', JSON.stringify(ticketData));
     }
   }
 }

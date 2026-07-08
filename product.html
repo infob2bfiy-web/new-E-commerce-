@@ -48,7 +48,7 @@
         const urlParams = new URLSearchParams(window.location.search);
         const productId = urlParams.get('id') || products[0]?.id; // Fallback to first item
 
-        const product = products.find(p => p.id === productId);
+        const product = products.find(p => String(p.id) === String(productId));
         const container = document.getElementById('product-detail-layout');
 
         if (!product) {
@@ -64,7 +64,7 @@
         // Set page document title dynamically
         document.title = `${product.name} - Green Grocery`;
 
-        const isWishlisted = getWishlist().some(item => item.id === product.id);
+        const isWishlisted = getWishlist().some(item => String(item.id) === String(product.id));
 
         // Setup gallery images thumbnail buttons
         const galleryImages = product.images && product.images.length > 0 
@@ -149,7 +149,7 @@
             </div>
 
             <!-- Description -->
-            <p class="text-sm text-gray-500 font-sans leading-relaxed mb-6 border-b border-gray-100 pb-6">${product.description || '১০০% পুষ্টিকর এবং সম্পূর্ণ নির্ভেজাল সোর্স থেকে আমাদের নিজস্ব তত্ত্বাবধানে সংগৃহীত খাদ্য উপাদান।'}</p>
+            <p class="text-sm text-gray-500 font-sans leading-relaxed mb-6 border-b border-gray-100 pb-6">${(product.description || '').replace(/<!--METADATA:[\s\S]*?-->/g, '').trim() || '১০০% পুষ্টিকর এবং সম্পূর্ণ নির্ভেজাল সোর্স থেকে আমাদের নিজস্ব তত্ত্বাবধানে সংগৃহীত খাদ্য উপাদান।'}</p>
 
             <!-- Quantity & Actions block -->
             <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 mb-6">
@@ -216,7 +216,7 @@
         // 4. Wishlist action toggle
         document.getElementById('detail-wishlist-btn')?.addEventListener('click', (e) => {
           toggleWishlist(productId);
-          const hasIt = getWishlist().some(item => item.id === productId);
+          const hasIt = getWishlist().some(item => String(item.id) === String(productId));
           e.currentTarget.querySelector('svg').setAttribute('fill', hasIt ? 'red' : 'none');
           e.currentTarget.querySelector('svg').setAttribute('stroke', hasIt ? 'red' : 'currentColor');
         });
@@ -224,12 +224,12 @@
         // 5. Render Related Products
         const relatedGrid = document.getElementById('related-grid');
         if (relatedGrid) {
-          const related = products.filter(p => p.category === product.category && p.id !== product.id);
+          const related = products.filter(p => p.category === product.category && String(p.id) !== String(product.id));
           if (related.length > 0) {
             relatedGrid.innerHTML = related.slice(0, 4).map(p => createProductCardHTML(p)).join('');
           } else {
             // Render non category list fallback
-            relatedGrid.innerHTML = products.filter(p => p.id !== product.id).slice(0, 4).map(p => createProductCardHTML(p)).join('');
+            relatedGrid.innerHTML = products.filter(p => String(p.id) !== String(product.id)).slice(0, 4).map(p => createProductCardHTML(p)).join('');
           }
         }
       }

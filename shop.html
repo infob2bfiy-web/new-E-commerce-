@@ -125,6 +125,7 @@
         let activeSubcategory = null;
         let activePriceSliderValue = 2000;
         let activeSort = "featured";
+        let activeSearch = null;
 
         // Read URL params if any
         const urlParams = new URLSearchParams(window.location.search);
@@ -133,6 +134,9 @@
         }
         if (urlParams.get('subcategory')) {
           activeSubcategory = urlParams.get('subcategory');
+        }
+        if (urlParams.get('search')) {
+          activeSearch = urlParams.get('search').toLowerCase().trim();
         }
         if (urlParams.get('sort_by')) {
           activeSort = urlParams.get('sort_by');
@@ -248,6 +252,15 @@
           // 2. Filter Subcategory
           if (activeSubcategory) {
             results = results.filter(p => p.subcategory === activeSubcategory);
+          }
+
+          // 2.5 Filter Search term
+          if (activeSearch) {
+            results = results.filter(p => 
+              (p.name || '').toLowerCase().includes(activeSearch) || 
+              (p.category || '').toLowerCase().includes(activeSearch) ||
+              (p.subcategory || '').toLowerCase().includes(activeSearch)
+            );
           }
 
           // 3. Filter Price Ranges

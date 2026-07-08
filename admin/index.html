@@ -1144,6 +1144,8 @@ create table if not exists public.products (
   stock integer default 0,
   description text,
   image text,
+  images jsonb default '[]'::jsonb,
+  variant text,
   tag text,
   created_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
@@ -1179,6 +1181,16 @@ create table if not exists public.site_settings (
   "adminNotifyEmail" text,
   "headerLogoType" text default 'image',
   "footerLogoType" text default 'image',
+  "facebookUrl" text,
+  "youtubeUrl" text,
+  "footerCopyright" text,
+  "footerCol1Title" text,
+  "footerCol1LinksText" text,
+  "footerCol2Title" text,
+  "footerCol2LinksText" text,
+  "footerNewsletterTitle" text,
+  "footerNewsletterText" text,
+  "footerShowPayments" boolean default true,
   updated_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
 
@@ -1207,6 +1219,45 @@ alter table public.categories enable row level security;
 alter table public.site_settings enable row level security;
 alter table public.banners enable row level security;
 alter table public.coupons enable row level security;
+
+-- 7. Create users table
+create table if not exists public.users (
+  phone text primary key,
+  name text,
+  email text,
+  password text,
+  address text,
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null
+);
+
+-- 8. Create admin_credentials table
+create table if not exists public.admin_credentials (
+  username text primary key,
+  password text not null,
+  updated_at timestamp with time zone default timezone('utc'::text, now()) not null
+);
+
+-- Seed default admin credentials if table empty
+insert into public.admin_credentials (username, password)
+values ('admin', 'admin1')
+on conflict (username) do nothing;
+
+-- 9. Create support_tickets table
+create table if not exists public.support_tickets (
+  id text primary key,
+  phone text,
+  email text,
+  subject text,
+  message text,
+  status text default 'Open'::text,
+  date text,
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null
+);
+
+-- Enable Row Level Security (RLS) on new tables
+alter table public.users enable row level security;
+alter table public.admin_credentials enable row level security;
+alter table public.support_tickets enable row level security;
 
 -- Policies for orders
 drop policy if exists "Enable insert for everyone" on public.orders;
@@ -1266,9 +1317,43 @@ create policy "Enable insert for everyone" on public.coupons for insert with che
 create policy "Enable update for everyone" on public.coupons for update using (true);
 create policy "Enable delete for everyone" on public.coupons for delete using (true);
 
--- 7. If you already have 'site_settings' table, run this to add the logo selection columns:
+-- Policies for users
+drop policy if exists "Enable select for everyone" on public.users;
+drop policy if exists "Enable insert for everyone" on public.users;
+drop policy if exists "Enable update for everyone" on public.users;
+drop policy if exists "Enable delete for everyone" on public.users;
+create policy "Enable select for everyone" on public.users for select using (true);
+create policy "Enable insert for everyone" on public.users for insert with check (true);
+create policy "Enable update for everyone" on public.users for update using (true);
+create policy "Enable delete for everyone" on public.users for delete using (true);
+
+-- Policies for admin_credentials
+drop policy if exists "Enable select for everyone" on public.admin_credentials;
+drop policy if exists "Enable insert for everyone" on public.admin_credentials;
+drop policy if exists "Enable update for everyone" on public.admin_credentials;
+drop policy if exists "Enable delete for everyone" on public.admin_credentials;
+create policy "Enable select for everyone" on public.admin_credentials for select using (true);
+create policy "Enable insert for everyone" on public.admin_credentials for insert with check (true);
+create policy "Enable update for everyone" on public.admin_credentials for update using (true);
+create policy "Enable delete for everyone" on public.admin_credentials for delete using (true);
+
+-- Policies for support_tickets
+drop policy if exists "Enable select for everyone" on public.support_tickets;
+drop policy if exists "Enable insert for everyone" on public.support_tickets;
+drop policy if exists "Enable update for everyone" on public.support_tickets;
+drop policy if exists "Enable delete for everyone" on public.support_tickets;
+create policy "Enable select for everyone" on public.support_tickets for select using (true);
+create policy "Enable insert for everyone" on public.support_tickets for insert with check (true);
+create policy "Enable update for everyone" on public.support_tickets for update using (true);
+create policy "Enable delete for everyone" on public.support_tickets for delete using (true);
+
+-- 10. If you already have 'site_settings' table, run this to add the logo selection columns:
 alter table public.site_settings add column if not exists "headerLogoType" text default 'image';
 alter table public.site_settings add column if not exists "footerLogoType" text default 'image';
+
+-- 11. If you already have 'products' table, run this to support multi-images and product variants:
+alter table public.products add column if not exists images jsonb default '[]'::jsonb;
+alter table public.products add column if not exists variant text;
             </pre>
           </div>
         </div>
@@ -1557,7 +1642,10 @@ alter table public.site_settings add column if not exists "footerLogoType" text 
       saveCategoriesToSupabase,
       saveSiteSettingsToSupabase,
       saveBannersToSupabase,
-      saveCouponsToSupabase
+      saveCouponsToSupabase,
+      saveUsersToSupabase,
+      saveAdminCredentialsToSupabase,
+      saveSupportTicketsToSupabase
     } from '../src/supabase.js';
     console.log("--- Imports from supabase.js loaded successfully ---");
 
@@ -1809,6 +1897,33 @@ alter table public.site_settings add column if not exists "footerLogoType" text 
             return c;
           });
         }
+        if (key === 'products' && Array.isArray(data)) {
+          return data.map(p => {
+            if (!p) return p;
+            if (!p.images) p.images = [];
+            if (p.description && typeof p.description === 'string') {
+              const metaRegex = /<!--METADATA:([\s\S]*?)-->/;
+              const match = p.description.match(metaRegex);
+              if (match) {
+                try {
+                  const meta = JSON.parse(match[1]);
+                  if (meta.images && (!p.images || p.images.length === 0)) {
+                    p.images = meta.images;
+                  }
+                  if (meta.variant && !p.variant) {
+                    p.variant = meta.variant;
+                  }
+                } catch (err) {
+                  console.warn("Err metadata", err);
+                }
+              }
+            }
+            if ((!p.images || p.images.length === 0) && p.image) {
+              p.images = [p.image];
+            }
+            return p;
+          });
+        }
         return data;
       } catch (e) {
         console.error("Failed to parse local storage for key: " + key, e);
@@ -1819,21 +1934,42 @@ alter table public.site_settings add column if not exists "footerLogoType" text 
 
     function setDBItem(key, array) {
       try {
-        localStorage.setItem(key, JSON.stringify(array));
+        let serializedArray = array;
+        if (key === 'products' && Array.isArray(array)) {
+          serializedArray = array.map(p => {
+            if (!p) return p;
+            let cleanDesc = (p.description || '').replace(/<!--METADATA:[\s\S]*?-->/g, '').trim();
+            const meta = {
+              images: p.images || [],
+              variant: p.variant || ''
+            };
+            return {
+              ...p,
+              description: `${cleanDesc}\n\n<!--METADATA:${JSON.stringify(meta)}-->`
+            };
+          });
+        }
+        localStorage.setItem(key, JSON.stringify(serializedArray));
         
         // Push update to Supabase in the background if configured
         const config = getSupabaseConfig();
         if (config.enabled) {
           if (key === 'products') {
-            saveProductsToSupabase(array).then(() => updateSupabaseStats());
+            saveProductsToSupabase(serializedArray).then(() => updateSupabaseStats());
           } else if (key === 'categories') {
-            saveCategoriesToSupabase(array).then(() => updateSupabaseStats());
+            saveCategoriesToSupabase(serializedArray).then(() => updateSupabaseStats());
           } else if (key === 'siteSettings') {
-            saveSiteSettingsToSupabase(array).then(() => updateSupabaseStats());
+            saveSiteSettingsToSupabase(serializedArray).then(() => updateSupabaseStats());
           } else if (key === 'banners') {
-            saveBannersToSupabase(array).then(() => updateSupabaseStats());
+            saveBannersToSupabase(serializedArray).then(() => updateSupabaseStats());
           } else if (key === 'coupons') {
-            saveCouponsToSupabase(array).then(() => updateSupabaseStats());
+            saveCouponsToSupabase(serializedArray).then(() => updateSupabaseStats());
+          } else if (key === 'users') {
+            saveUsersToSupabase(serializedArray).then(() => updateSupabaseStats());
+          } else if (key === 'adminCredentials') {
+            saveAdminCredentialsToSupabase(serializedArray).then(() => updateSupabaseStats());
+          } else if (key === 'supportTickets') {
+            saveSupportTicketsToSupabase(serializedArray).then(() => updateSupabaseStats());
           }
         }
       } catch (e) {
@@ -2658,7 +2794,7 @@ Grand Total Payable Amount: ৳${activeOrderDetailObj.totalPrice}
         pmPrice.value = matched.price;
         pmDiscPrice.value = matched.discountPrice || "";
         pmStock.value = matched.stock;
-        pmDescription.value = matched.description || "";
+        pmDescription.value = (matched.description || "").replace(/<!--METADATA:[\s\S]*?-->/g, '').trim();
         pmImage.value = matched.image || "";
         pmVariants.value = matched.variant || matched.colorVariant || "";
 

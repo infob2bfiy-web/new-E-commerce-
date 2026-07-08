@@ -74,6 +74,7 @@
     <!-- Script triggers for register or logins -->
     <script type="module">
       import { showToast } from './src/app.js';
+      import { saveUsersToSupabase } from './src/supabase.js';
 
       function initLoginPage() {
         const tabLoginBtn = document.getElementById('tab-login-btn');
@@ -146,6 +147,13 @@
           users.push(newUser);
           localStorage.setItem('users', JSON.stringify(users));
           localStorage.setItem('currentUser', JSON.stringify(newUser));
+
+          // Sync registered users list to Supabase
+          try {
+            saveUsersToSupabase(users);
+          } catch (syncErr) {
+            console.warn("Non-blocking background user sync failed:", syncErr);
+          }
 
           showToast("নিবন্ধন এবং স্বয়ংক্রিয় লগইন সম্পন্ন হয়েছে!", "success");
           setTimeout(() => {

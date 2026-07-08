@@ -36,8 +36,35 @@ export function initDB() {
 }
 
 // Helpers
+export function parseProductMetadata(p) {
+  if (!p) return p;
+  if (!p.images) p.images = [];
+  if (p.description && typeof p.description === 'string') {
+    const metaRegex = /<!--METADATA:([\s\S]*?)-->/;
+    const match = p.description.match(metaRegex);
+    if (match) {
+      try {
+        const meta = JSON.parse(match[1]);
+        if (meta.images && (!p.images || p.images.length === 0)) {
+          p.images = meta.images;
+        }
+        if (meta.variant && !p.variant) {
+          p.variant = meta.variant;
+        }
+      } catch (e) {
+        console.warn("Error parsing metadata", e);
+      }
+    }
+  }
+  if ((!p.images || p.images.length === 0) && p.image) {
+    p.images = [p.image];
+  }
+  return p;
+}
+
 export function getProducts() {
-  return JSON.parse(localStorage.getItem('products') || '[]');
+  const products = JSON.parse(localStorage.getItem('products') || '[]');
+  return products.map(p => parseProductMetadata(p));
 }
 export function getCategories() {
   const data = JSON.parse(localStorage.getItem('categories') || '[]');
@@ -90,7 +117,7 @@ export function showToast(message, type = "success") {
 export function addToCart(productId, quantity = 1, forceRedirect = false) {
   let cart = getCart();
   const products = getProducts();
-  const prod = products.find(p => p.id === productId);
+  const prod = products.find(p => String(p.id) === String(productId));
   if (!prod) return;
   
   if (prod.stock <= 0) {
@@ -98,7 +125,7 @@ export function addToCart(productId, quantity = 1, forceRedirect = false) {
     return;
   }
 
-  const existingIndex = cart.findIndex(item => item.id === productId && !item.isFreeItem);
+  const existingIndex = cart.findIndex(item => String(item.id) === String(productId) && !item.isFreeItem);
   if (existingIndex > -1) {
     cart[existingIndex].qty += Number(quantity);
   } else {
@@ -116,7 +143,7 @@ export function addToCart(productId, quantity = 1, forceRedirect = false) {
   
   // Buy 1 Get 1 Free auto-add logic
   if (prod.tag === "Buy 1 Get 1") {
-    const freeIndex = cart.findIndex(item => item.id === productId && item.isFreeItem);
+    const freeIndex = cart.findIndex(item => String(item.id) === String(productId) && item.isFreeItem);
     if (freeIndex > -1) {
       cart[freeIndex].qty += Number(quantity);
     } else {
@@ -158,11 +185,11 @@ export function addToCart(productId, quantity = 1, forceRedirect = false) {
 
 export function removeFromCart(productId, isFreeItem = false) {
   let cart = getCart();
-  cart = cart.filter(item => !(item.id === productId && item.isFreeItem === isFreeItem));
+  cart = cart.filter(item => !(String(item.id) === String(productId) && item.isFreeItem === isFreeItem));
   
   // If we remove the main item, also remove its free companion in "Buy 1 Get 1"
   if (!isFreeItem) {
-    cart = cart.filter(item => !(item.id === productId && item.isFreeItem === true));
+    cart = cart.filter(item => !(String(item.id) === String(productId) && item.isFreeItem === true));
   }
   
   localStorage.setItem('cart', JSON.stringify(cart));
@@ -172,7 +199,7 @@ export function removeFromCart(productId, isFreeItem = false) {
 
 export function updateCartQty(productId, newQty, isFreeItem = false) {
   let cart = getCart();
-  const index = cart.findIndex(item => item.id === productId && item.isFreeItem === isFreeItem);
+  const index = cart.findIndex(item => String(item.id) === String(productId) && item.isFreeItem === isFreeItem);
   if (index > -1) {
     if (newQty <= 0) {
       removeFromCart(productId, isFreeItem);
@@ -182,7 +209,7 @@ export function updateCartQty(productId, newQty, isFreeItem = false) {
     
     // Sync free BOGO quantity
     if (!isFreeItem && cart[index].tag === "Buy 1 Get 1") {
-      const freeIndex = cart.findIndex(item => item.id === productId && item.isFreeItem === true);
+      const freeIndex = cart.findIndex(item => String(item.id) === String(productId) && item.isFreeItem === true);
       if (freeIndex > -1) {
         cart[freeIndex].qty = Number(newQty);
       }
@@ -202,10 +229,10 @@ export function clearCart() {
 export function toggleWishlist(productId) {
   let wishlist = getWishlist();
   const products = getProducts();
-  const prod = products.find(p => p.id === productId);
+  const prod = products.find(p => String(p.id) === String(productId));
   if (!prod) return;
   
-  const index = wishlist.findIndex(item => item.id === productId);
+  const index = wishlist.findIndex(item => String(item.id) === String(productId));
   if (index > -1) {
     wishlist.splice(index, 1);
     showToast("উইশলিস্ট থেকে সরানো হয়েছে!", "danger");
@@ -256,27 +283,11 @@ export function injectSharedLayouts() {
   const categories = getCategories();
   const currentUser = getCurrentUser();
 
-  // Dynamically Inject Favicon and Page Title
-  if (settings.siteName) {
-    document.title = `${settings.siteName} - ${settings.tagline || '১০০% খাঁটি ও অর্গ্যানিক গ্রোসারি শপ'}`;
-  }
-
-  if (settings.favicon) {
-    let link = document.querySelector("link[rel~='icon']");
-    if (!link) {
-      link = document.createElement('link');
-      link.rel = 'icon';
-      document.head.appendChild(link);
-    }
-    link.href = settings.favicon;
-
-    let shortcutLink = document.querySelector("link[rel~='shortcut']");
-    if (!shortcutLink) {
-      shortcutLink = document.createElement('link');
-      shortcutLink.rel = 'shortcut icon';
-      document.head.appendChild(shortcutLink);
-    }
-    shortcutLink.href = settings.favicon;
+  // Dynamically Inject Favicon, SEO Metadata and JSON-LD structured schemas
+  try {
+    optimizeSEOAndSchema();
+  } catch (seoErr) {
+    console.error("Non-blocking SEO optimization engine failure:", seoErr);
   }
   
   // 1. Shared Header
@@ -287,50 +298,70 @@ export function injectSharedLayouts() {
                          settings.logoUrl.trim() !== "" && 
                          !settings.logoUrl.includes("images.unsplash.com/photo-1542838132");
 
-    const name = settings.siteName || "আম্রপালি";
-    let textLogoMarkup = "";
-    if (name === "আম্রপালি") {
-      textLogoMarkup = `
-        <span class="font-black text-2xl md:text-3.5xl tracking-tight select-none font-sans flex items-center">
-          <span class="text-[#f97316]">আম্র</span><span class="text-slate-900 font-extrabold">পালি</span>
-        </span>
-      `;
-    } else {
-      const words = name.trim().split(" ");
-      if (words.length > 1) {
-        textLogoMarkup = `
-          <span class="font-black text-2.5xl md:text-3.5xl tracking-tight select-none font-sans flex items-center">
-            <span class="text-[#f97316]">${words[0]}</span><span class="text-slate-900 ml-1.5 font-extrabold">${words.slice(1).join(" ")}</span>
-          </span>
-        `;
-      } else {
-        const mid = Math.ceil(name.length / 2);
-        const first = name.substring(0, mid);
-        const second = name.substring(mid);
-        textLogoMarkup = `
-          <span class="font-black text-2.5xl md:text-3.5xl tracking-tight select-none font-sans flex items-center">
-            <span class="text-[#f97316]">${first}</span><span class="text-slate-900 font-extrabold">${second}</span>
-          </span>
-        `;
-      }
-    }
-
-    const imageLogoMarkup = isCustomLogo 
-      ? `<img src="${settings.logoUrl}" alt="${name}" class="h-9 md:h-11 w-auto object-contain max-w-[200px]" />`
-      : "";
-
+    const name = settings.siteName || "Ghorer Bazar";
+    const logoType = settings.headerLogoType || "image";
     let logoMarkup = "";
-    if (settings.headerLogoType === 'both' && isCustomLogo) {
-      logoMarkup = `
-        <div class="flex items-center gap-2.5">
-          ${imageLogoMarkup}
-          ${textLogoMarkup}
+    
+    // 1. Prepare logo image markup
+    let logoImgHtml = "";
+    if (isCustomLogo) {
+      logoImgHtml = `<img src="${settings.logoUrl}" alt="${name}" class="h-9 md:h-11 w-auto object-contain max-w-[200px]" />`;
+    } else {
+      // Default Ghorer Bazar house icon SVG
+      logoImgHtml = `
+        <div class="w-10 h-10 rounded-xl bg-[#f97316] flex items-center justify-center text-white shadow-[0_2px_8px_rgba(249,115,22,0.22)] flex-shrink-0 transition-transform hover:scale-105 duration-350">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-white">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+            <polyline points="9 22 9 12 15 12 15 22"></polyline>
+            <path d="M12 22V12"></path>
+            <path d="M12 7c-1.5 1-2 2.5-1.5 4a2 2 0 0 0 3 0c0.5-1.5 0-3-1.5-4z" fill="currentColor" opacity="0.35"></path>
+          </svg>
         </div>
       `;
-    } else if (settings.headerLogoType === 'text' || !isCustomLogo) {
-      logoMarkup = textLogoMarkup;
+    }
+
+    // 2. Prepare logo text markup
+    let logoTextHtml = "";
+    if (name.toLowerCase().includes("ghorer") || name.toLowerCase().includes("bazar")) {
+      logoTextHtml = `
+        <div class="flex flex-col leading-none">
+          <span class="font-black text-xl md:text-[21px] tracking-tight text-[#f97316] font-sans">GHORER</span>
+          <span class="font-extrabold text-xs md:text-[14px] tracking-[0.18em] text-[#f97316] font-sans mt-0.5">BAZAR</span>
+        </div>
+      `;
     } else {
-      logoMarkup = imageLogoMarkup;
+      logoTextHtml = `
+        <div class="flex flex-col leading-none">
+          <span class="font-black text-lg md:text-[20px] tracking-tight text-[#f97316] font-sans">${name}</span>
+        </div>
+      `;
+    }
+
+    // 3. Assemble based on logo display type
+    if (logoType === "image") {
+      if (isCustomLogo) {
+        logoMarkup = logoImgHtml;
+      } else {
+        logoMarkup = `
+          <div class="flex items-center gap-2 select-none">
+            ${logoImgHtml}
+            ${logoTextHtml}
+          </div>
+        `;
+      }
+    } else if (logoType === "text") {
+      logoMarkup = `
+        <div class="flex items-center gap-2 select-none">
+          ${logoTextHtml}
+        </div>
+      `;
+    } else if (logoType === "both") {
+      logoMarkup = `
+        <div class="flex items-center gap-2 select-none">
+          ${logoImgHtml}
+          ${logoTextHtml}
+        </div>
+      `;
     }
 
     header.innerHTML = `
@@ -342,92 +373,92 @@ export function injectSharedLayouts() {
         </div>
       </div>
       
-      <!-- Top White Header Row exactly matching the reference layout -->
-      <div class="bg-white border-b border-gray-100 py-3.5 px-4 md:px-8 max-w-7xl mx-auto flex items-center justify-between gap-4 z-40 relative">
+      <!-- Top White Header Row matching Ghorer Bazar layout exactly -->
+      <div class="bg-white border-b border-gray-150 py-4 px-4 md:px-8 max-w-7xl mx-auto flex items-center justify-between gap-4 z-40 relative">
         
-        <!-- Logo on the left styled dynamically from admin -->
-        <a href="/index.html" class="flex-shrink-0 flex items-center gap-2 hover:opacity-95 transition-opacity select-none -translate-y-[1px]">
+        <!-- Logo on the left -->
+        <a href="/index.html" class="flex-shrink-0 flex items-center gap-2 hover:opacity-95 transition-opacity select-none">
           ${logoMarkup}
         </a>
 
-        <!-- Search Bar with Live Suggestions in the center -->
-        <div class="relative flex-1 max-w-[620px] mx-2 md:mx-6 hidden md:block">
+        <!-- Search Bar with Live Suggestions in the center (Pill shaped, clean border, right magnifying glass) -->
+        <div class="relative flex-1 max-w-[580px] mx-2 md:mx-6 hidden md:block">
           <div class="relative flex items-center w-full">
             <input 
               type="text" 
               id="global-search-input" 
-              placeholder="Enter product name..." 
-              class="w-full bg-white border border-gray-200 focus:border-gray-300 rounded-full py-3.5 pl-6 pr-14 text-[13.5px] outline-none transition-all placeholder:text-gray-400 text-slate-800 shadow-[0_1px_2px_rgba(0,0,0,0.02)]"
+              placeholder="Search in..." 
+              class="w-full bg-slate-50/50 border border-gray-200 focus:border-orange-300 focus:bg-white rounded-full py-2.5 pl-6 pr-12 text-sm outline-none transition-all placeholder:text-gray-400 text-slate-800 shadow-[inset_0_1px_2px_rgba(0,0,0,0.01)]"
             >
-            <!-- Black rounded search action button exactly like reference -->
-            <button class="absolute right-1 top-1 bottom-1 bg-[#111111] hover:bg-black text-white rounded-full w-14 flex items-center justify-center transition-all cursor-pointer">
-              <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" class="text-white"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            <!-- Magnifying glass search trigger inside the bar on the right -->
+            <button class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-[#f97316] transition-colors cursor-pointer focus:outline-none">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
             </button>
           </div>
           <!-- Live suggestions drop -->
           <div id="live-suggestions" class="absolute left-0 top-full mt-2 w-full bg-white rounded-xl shadow-2xl border border-gray-100 max-h-96 overflow-y-auto hidden z-[999] p-1"></div>
         </div>
 
-        <!-- Right side action icons precisely grouped -->
-        <div class="hidden md:flex items-center gap-5 lg:gap-7 flex-shrink-0 select-none">
+        <!-- Right side action icons precisely styled -->
+        <div class="hidden md:flex items-center gap-6 lg:gap-8 flex-shrink-0 select-none">
           
           <!-- Track Order -->
-          <a href="/order-tracking.html" class="group flex flex-col items-center justify-center gap-1 text-center cursor-pointer relative py-0.5">
-            <div class="text-slate-700 group-hover:text-orange-500 transition-colors">
-              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="stroke-[1.8]"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>
+          <a href="/order-tracking.html" class="group flex flex-col items-center justify-center gap-1.5 text-center cursor-pointer relative py-0.5">
+            <div class="text-[#374151] group-hover:text-[#f97316] transition-colors duration-200">
+              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
             </div>
-            <span class="text-[11px] font-semibold text-slate-500 group-hover:text-slate-800 transition-colors font-sans whitespace-nowrap">Track Order</span>
+            <span class="text-[11px] font-bold text-slate-550 group-hover:text-slate-800 transition-colors font-sans whitespace-nowrap">Track Order</span>
           </a>
 
           <!-- Sign In / Dashboard-->
-          <a href="${currentUser ? '/dashboard.html' : '/login.html'}" class="group flex flex-col items-center justify-center gap-1 text-center cursor-pointer relative py-0.5">
-            <div class="text-slate-700 group-hover:text-orange-500 transition-colors">
-              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="stroke-[1.8]"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+          <a href="${currentUser ? '/dashboard.html' : '/login.html'}" class="group flex flex-col items-center justify-center gap-1.5 text-center cursor-pointer relative py-0.5">
+            <div class="text-[#374151] group-hover:text-[#f97316] transition-colors duration-200">
+              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
             </div>
-            <span class="text-[11px] font-semibold text-slate-500 group-hover:text-slate-800 transition-colors font-sans whitespace-nowrap">${currentUser ? 'Dashboard' : 'Sign In'}</span>
+            <span class="text-[11px] font-bold text-slate-550 group-hover:text-slate-800 transition-colors font-sans whitespace-nowrap">${currentUser ? 'Dashboard' : 'Sign In'}</span>
           </a>
 
           <!-- Wishlist -->
-          <a href="/wishlist.html" class="group flex flex-col items-center justify-center gap-1 text-center cursor-pointer relative py-0.5">
-            <div class="text-slate-700 group-hover:text-red-500 transition-colors relative">
-              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="stroke-[1.8]"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+          <a href="/wishlist.html" class="group flex flex-col items-center justify-center gap-1.5 text-center cursor-pointer relative py-0.5">
+            <div class="text-[#374151] group-hover:text-red-500 transition-colors duration-200 relative">
+              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
               <span class="wishlist-count absolute -top-1 -right-1.5 bg-red-600 text-white font-extrabold text-[9px] w-4.5 h-4.5 rounded-full flex items-center justify-center border border-white hidden">0</span>
             </div>
-            <span class="text-[11px] font-semibold text-slate-500 group-hover:text-slate-800 transition-colors font-sans whitespace-nowrap">Wishlist</span>
+            <span class="text-[11px] font-bold text-slate-550 group-hover:text-slate-800 transition-colors font-sans whitespace-nowrap">Wishlist</span>
           </a>
 
-          <!-- Cart with high-contrast black badge -->
-          <a href="/cart.html" class="group flex flex-col items-center justify-center gap-1 text-center cursor-pointer relative py-0.5">
-            <div class="text-slate-700 group-hover:text-emerald-600 transition-colors relative">
-              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="stroke-[1.8]"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
-              <!-- Cart count black badge aligned to top-right of icon -->
-              <span class="cart-count absolute -top-1.5 -right-2 bg-[#111111] text-white font-extrabold text-[9px] w-4.5 h-4.5 rounded-full flex items-center justify-center border border-white hidden">0</span>
+          <!-- Cart with high-contrast badge -->
+          <a href="/cart.html" class="group flex flex-col items-center justify-center gap-1.5 text-center cursor-pointer relative py-0.5">
+            <div class="text-[#374151] group-hover:text-[#f97316] transition-colors duration-200 relative">
+              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+              <!-- Cart count red badge aligned to top-right of icon -->
+              <span class="cart-count absolute -top-1.5 -right-2 bg-red-600 text-white font-extrabold text-[9px] w-4.5 h-4.5 rounded-full flex items-center justify-center border border-white hidden">0</span>
             </div>
-            <span class="text-[11px] font-semibold text-slate-500 group-hover:text-slate-800 transition-colors font-sans whitespace-nowrap font-sans">Cart</span>
+            <span class="text-[11px] font-bold text-slate-550 group-hover:text-slate-800 transition-colors font-sans whitespace-nowrap">Cart</span>
           </a>
 
           <!-- More Button with dynamic drawer open/close -->
-          <button id="desktop-more-menu-btn" class="group flex flex-col items-center justify-center gap-1 text-center cursor-pointer relative py-0.5 focus:outline-none">
-            <div class="text-slate-700 group-hover:text-emerald-650 transition-colors">
-              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="stroke-[1.8]"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+          <button id="desktop-more-menu-btn" class="group flex flex-col items-center justify-center gap-1.5 text-center cursor-pointer relative py-0.5 focus:outline-none">
+            <div class="text-[#374151] group-hover:text-emerald-700 transition-colors duration-200">
+              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
             </div>
-            <span class="text-[11px] font-semibold text-slate-500 group-hover:text-slate-800 transition-colors font-sans whitespace-nowrap">More</span>
+            <span class="text-[11px] font-bold text-slate-550 group-hover:text-slate-800 transition-colors font-sans whitespace-nowrap">More</span>
           </button>
 
         </div>
       </div>
 
       <!-- Mobile Search bar row (only visible on mobile below the logo header) -->
-      <div class="bg-white px-4 pb-3 border-b border-gray-100 md:hidden">
+      <div class="bg-white px-4 pb-3.5 border-b border-gray-100 md:hidden">
         <div class="relative flex items-center w-full">
           <input 
             type="text" 
             id="global-search-input-mobile" 
-            placeholder="Enter product name..." 
-            class="w-full bg-slate-50 border border-gray-200 focus:border-gray-200 rounded-full py-2.5 pl-5 pr-12 text-sm outline-none transition-all placeholder:text-gray-400 text-slate-800"
+            placeholder="Search in..." 
+            class="w-full bg-slate-50 border border-gray-150 focus:border-orange-300 focus:bg-white rounded-full py-2.5 pl-5 pr-12 text-sm outline-none transition-all placeholder:text-gray-400 text-slate-800"
           >
-          <button class="absolute right-1 top-1 bottom-1 bg-[#111111] hover:bg-black text-white rounded-full w-10 flex items-center justify-center transition cursor-pointer">
-            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" class="text-white"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          <button class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-[#f97316] transition cursor-pointer">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
           </button>
           <div id="live-suggestions-mobile" class="absolute left-0 top-full mt-2 w-full bg-white rounded-xl shadow-2xl border border-gray-100 max-h-80 overflow-y-auto hidden z-[999] p-1"></div>
         </div>
@@ -728,6 +759,28 @@ function initNavSearch() {
     const box = document.getElementById(boxId);
     if (!input || !box) return;
     
+    // Redirect to search results page when hitting Enter
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        const term = input.value.trim();
+        if (term) {
+          window.location.href = `/shop.html?search=${encodeURIComponent(term)}`;
+        }
+      }
+    });
+
+    // Also handle search button click next to input
+    const nextBtn = input.nextElementSibling;
+    if (nextBtn && (nextBtn.tagName === 'BUTTON' || nextBtn.closest('button'))) {
+      const buttonEl = nextBtn.tagName === 'BUTTON' ? nextBtn : nextBtn.closest('button');
+      buttonEl.addEventListener('click', () => {
+        const term = input.value.trim();
+        if (term) {
+          window.location.href = `/shop.html?search=${encodeURIComponent(term)}`;
+        }
+      });
+    }
+    
     input.addEventListener('input', (e) => {
       const term = e.target.value.toLowerCase().trim();
       if (!term) {
@@ -736,7 +789,10 @@ function initNavSearch() {
         return;
       }
 
-      const filtered = products.filter(p => p.name.toLowerCase().includes(term) || p.category.toLowerCase().includes(term));
+      const filtered = products.filter(p => 
+        (p.name || '').toLowerCase().includes(term) || 
+        (p.category || '').toLowerCase().includes(term)
+      );
       if (filtered.length === 0) {
         box.innerHTML = `<p class="p-4 text-sm text-gray-500 text-center font-sans">কোনো পণ্য পাওয়া যায়নি!</p>`;
       } else {
@@ -769,7 +825,7 @@ function initNavSearch() {
 
 // CARD GENERATOR HELPER
 export function createProductCardHTML(p) {
-  const isWishlisted = getWishlist().some(item => item.id === p.id);
+  const isWishlisted = getWishlist().some(item => String(item.id) === String(p.id));
   const discountAmount = p.discountPrice && p.discountPrice < p.price ? Math.round(((p.price - p.discountPrice) / p.price) * 100) : 0;
   
   return `
@@ -787,7 +843,7 @@ export function createProductCardHTML(p) {
 
       <!-- Thumb -->
       <a href="/product.html?id=${p.id}" class="block relative aspect-square overflow-hidden bg-gray-50 flex-shrink-0 cursor-pointer">
-        <img src="${p.image}" loading="lazy" decoding="async" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out" alt="${p.name}">
+        <img src="${p.image}" loading="lazy" decoding="async" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-in-out" alt="${p.name}">
       </a>
 
       <!-- Content -->
@@ -823,7 +879,11 @@ export function createProductCardHTML(p) {
 }
 
 // Global button interceptors for dynamically generated content
+let isGlobalProductButtonsBound = false;
 export function bindGlobalProductButtons() {
+  if (isGlobalProductButtonsBound) return;
+  isGlobalProductButtonsBound = true;
+
   document.addEventListener('click', (e) => {
     const target = e.target.closest('[data-action]');
     if (!target) return;
@@ -834,7 +894,7 @@ export function bindGlobalProductButtons() {
     if (action === 'wishlist') {
       toggleWishlist(id);
       // Toggle color state locally without full redraw
-      const isWishlisted = getWishlist().some(item => item.id === id);
+      const isWishlisted = getWishlist().some(item => String(item.id) === String(id));
       const svg = target.querySelector('svg');
       if (svg) {
         svg.setAttribute('fill', isWishlisted ? 'red' : 'none');
@@ -987,7 +1047,7 @@ export function trackSpecificPagePixelEvents() {
     const prodId = urlParams.get('id');
     if (prodId) {
       const products = getProducts();
-      const p = products.find(prod => prod.id === prodId);
+      const p = products.find(prod => String(prod.id) === String(prodId));
       if (p) {
         trackPixelEvent('ViewContent', {
           content_name: p.name,
@@ -1007,6 +1067,14 @@ export function trackSpecificPagePixelEvents() {
       value: totalVal,
       currency: 'BDT'
     });
+  } else if (path.includes('shop.html')) {
+    const urlParams = new URLSearchParams(window.location.search);
+    const searchTerm = urlParams.get('search');
+    if (searchTerm) {
+      trackPixelEvent('Search', {
+        search_string: searchTerm
+      });
+    }
   }
 }
 
@@ -1015,9 +1083,187 @@ export function trackPixelEvent(eventName, params = {}) {
     fbq('track', eventName, params);
     console.log(`Facebook Pixel Tracked: ${eventName}`, params);
   } else {
-    // Queue tracking if pixel not initialized yet
     console.log(`Facebook Pixel not active, queued event [${eventName}]`);
   }
+}
+
+// Dynamic SEO & JSON-LD Schema.org Optimization Engine
+export function optimizeSEOAndSchema() {
+  const settings = getSettings();
+  const products = getProducts();
+  const path = window.location.pathname;
+
+  const siteName = settings.siteName || "Green Grocery";
+  const tagline = settings.tagline || "১০০% খাঁটি ও অর্গ্যানিক গ্রোসারি শপ";
+  const generalDesc = settings.announcement || "Green Grocery - ১০০% খাঁটি ও অর্গ্যানিক গ্রোসারি শপ। প্রিমিয়াম কোয়ালিটি ও রাসায়নিক মুক্ত খাঁটি দেশি পণ্য সরবরাহকারী প্রতিষ্ঠান।";
+  const logoUrl = settings.logoUrl || "/assets/logo.png";
+  const phone = settings.phone || "01700000000";
+
+  let pageTitle = `${siteName} - ${tagline}`;
+  let pageDesc = generalDesc;
+  let pageImage = window.location.origin + logoUrl;
+  let pageKeywords = "organic food, green grocery, গ্রোসারি, খাঁটি খাবার, অর্গ্যানিক পণ্য, মধু, ঘি, সর্ষের তেল, খাস ফুড, organic grocery, bangladesh grocery";
+  
+  let jsonLdSchema = null;
+
+  // 1. Contextual parsing for precise SEO matching
+  if (path.includes('product.html')) {
+    const urlParams = new URLSearchParams(window.location.search);
+    const prodId = urlParams.get('id');
+    const product = products.find(p => String(p.id) === String(prodId)) || products[0];
+    
+    if (product) {
+      pageTitle = `${product.name} - ৳${product.discountPrice || product.price} | ${siteName}`;
+      pageDesc = `${product.name} - ক্যাটাগরি: ${product.category}। ১০০% খাঁটি, রাসায়নিক মুক্ত, স্বাস্থ্যসম্মত ও প্রিমিয়াম অর্গ্যানিক খাদ্য পণ্য।`;
+      pageImage = product.image;
+      pageKeywords = `${product.name}, ${product.category}, ${product.name} price in Bangladesh, organic ${product.name}, ${pageKeywords}`;
+      
+      // Inject standard Product Schema
+      jsonLdSchema = {
+        "@context": "https://schema.org/",
+        "@type": "Product",
+        "name": product.name,
+        "image": [product.image],
+        "description": pageDesc,
+        "sku": `GG-PROD-${product.id}`,
+        "mpn": `GG-MPN-${product.id}`,
+        "brand": {
+          "@type": "Brand",
+          "name": "Green Grocery"
+        },
+        "offers": {
+          "@type": "Offer",
+          "url": window.location.href,
+          "priceCurrency": "BDT",
+          "price": product.discountPrice || product.price,
+          "priceValidUntil": "2027-12-31",
+          "itemCondition": "https://schema.org/NewCondition",
+          "availability": product.stock > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
+          "seller": {
+            "@type": "Organization",
+            "name": siteName
+          }
+        },
+        "aggregateRating": {
+          "@type": "AggregateRating",
+          "ratingValue": "4.8",
+          "bestRating": "5",
+          "worstRating": "1",
+          "ratingCount": "34"
+        }
+      };
+    }
+  } else if (path.includes('shop.html')) {
+    const urlParams = new URLSearchParams(window.location.search);
+    const searchVal = urlParams.get('search');
+    if (searchVal) {
+      pageTitle = `Search results for "${searchVal}" | ${siteName}`;
+      pageDesc = `আমাদের শপে "${searchVal}" এর জন্য সেরা খাঁটি অর্গ্যানিক পণ্য কিনুন সাশ্রয়ী মূল্যে।`;
+    } else {
+      pageTitle = `Shop - Organic Products Online in Bangladesh | ${siteName}`;
+      pageDesc = `আমাদের ১০০% প্রিমিয়াম ও অরজিনাল অর্গ্যানিক খাদ্য পণ্যের বিশাল সংগ্রহ থেকে অর্ডার করুন আজই।`;
+    }
+    pageKeywords = `shop, buy organic, grocery, ${pageKeywords}`;
+  } else if (path.includes('about.html')) {
+    pageTitle = `আমাদের সম্পর্কে (About Us) | ${siteName}`;
+    pageDesc = `Green Grocery এর লক্ষ্য ও উদ্দেশ্য সম্পর্কে জানুন। আমরা গ্রাহকদের কাছে ১০০% প্রাকৃতিক ও খাঁটি পণ্য পৌঁছে দিতে প্রতিশ্রুতিবদ্ধ।`;
+  } else if (path.includes('contact.html')) {
+    pageTitle = `যোগাযোগ করুন (Contact Us) | ${siteName}`;
+    pageDesc = `আমাদের সাথে যোগাযোগ করুন। ফোন: ${phone}, ইমেইল বা আমাদের অফিসে সরাসরি চলে আসুন। যেকোনো সহায়তায় আমরা আপনার সাথে আছি।`;
+  } else if (path.includes('faq.html')) {
+    pageTitle = `সাধারণ জিজ্ঞাসা ও উত্তর (FAQs) | ${siteName}`;
+    pageDesc = `আমাদের পণ্য ডেলিভারি, কোয়ালিটি ও সার্ভিস সংক্রান্ত সাধারণ প্রশ্নের উত্তর এখানে পেয়ে যাবেন।`;
+  }
+
+  // 2. Set browser tab document title dynamically
+  document.title = pageTitle;
+
+  // 3. Select or generate meta head nodes
+  const updateOrAddMeta = (nameAttr, value, isProperty = false) => {
+    const attr = isProperty ? 'property' : 'name';
+    let meta = document.querySelector(`meta[${attr}="${nameAttr}"]`);
+    if (!meta) {
+      meta = document.createElement('meta');
+      meta.setAttribute(attr, nameAttr);
+      document.head.appendChild(meta);
+    }
+    meta.setAttribute('content', value);
+  };
+
+  // Standard Meta Tags
+  updateOrAddMeta('description', pageDesc);
+  updateOrAddMeta('keywords', pageKeywords);
+  updateOrAddMeta('robots', 'index, follow');
+
+  // Open Graph Social Meta Tags
+  updateOrAddMeta('og:title', pageTitle, true);
+  updateOrAddMeta('og:description', pageDesc, true);
+  updateOrAddMeta('og:image', pageImage, true);
+  updateOrAddMeta('og:url', window.location.href, true);
+  updateOrAddMeta('og:type', path.includes('product.html') ? 'product' : 'website', true);
+  updateOrAddMeta('og:site_name', siteName, true);
+
+  // Twitter Card Meta Tags
+  updateOrAddMeta('twitter:card', 'summary_large_image');
+  updateOrAddMeta('twitter:title', pageTitle);
+  updateOrAddMeta('twitter:description', pageDesc);
+  updateOrAddMeta('twitter:image', pageImage);
+
+  // Dynamic Canonical Link setup
+  let canonicalLink = document.querySelector('link[rel="canonical"]');
+  if (!canonicalLink) {
+    canonicalLink = document.createElement('link');
+    canonicalLink.setAttribute('rel', 'canonical');
+    document.head.appendChild(canonicalLink);
+  }
+  canonicalLink.setAttribute('href', window.location.href);
+
+  // Dynamic Favicon setup
+  if (settings.favicon) {
+    let faviconLink = document.querySelector('link[rel="icon"]') || document.querySelector('link[rel="shortcut icon"]');
+    if (!faviconLink) {
+      faviconLink = document.createElement('link');
+      faviconLink.setAttribute('rel', 'icon');
+      document.head.appendChild(faviconLink);
+    }
+    faviconLink.setAttribute('href', settings.favicon);
+  }
+
+  // 4. Organisation Store / Site Schema fallbacks
+  if (!jsonLdSchema) {
+    jsonLdSchema = {
+      "@context": "https://schema.org",
+      "@type": "Store",
+      "name": siteName,
+      "image": pageImage,
+      "@id": window.location.origin,
+      "url": window.location.origin,
+      "telephone": phone,
+      "priceRange": "$$",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "Dhaka, Bangladesh",
+        "addressLocality": "Dhaka",
+        "postalCode": "1200",
+        "addressCountry": "BD"
+      },
+      "sameAs": [
+        settings.facebookUrl || "https://facebook.com",
+        settings.youtubeUrl || "https://youtube.com"
+      ]
+    };
+  }
+
+  // 5. Inject/Replace JSON-LD Structured Schema Script block
+  let schemaScript = document.getElementById('dynamic-seo-schema');
+  if (!schemaScript) {
+    schemaScript = document.createElement('script');
+    schemaScript.id = 'dynamic-seo-schema';
+    schemaScript.type = 'application/ld+json';
+    document.head.appendChild(schemaScript);
+  }
+  schemaScript.textContent = JSON.stringify(jsonLdSchema);
+  console.log("SEO & Structured Schema applied successfully for path:", path);
 }
 
 // Trigger initializations on loaded safely

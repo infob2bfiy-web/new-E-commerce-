@@ -391,6 +391,7 @@
     <!-- Script controllers for dynamic customer features -->
     <script type="module">
       import { getCurrentUser, showToast, getCart, getWishlist } from './src/app.js';
+      import { saveSupportTicketsToSupabase } from './src/supabase.js';
 
       let user = null;
 
@@ -666,6 +667,13 @@
         const tickets = JSON.parse(localStorage.getItem('supportTickets') || '[]');
         tickets.push(newTicket);
         localStorage.setItem('supportTickets', JSON.stringify(tickets));
+
+        // Sync support tickets to Supabase
+        try {
+          saveSupportTicketsToSupabase(tickets);
+        } catch (syncErr) {
+          console.warn("Non-blocking background support tickets sync failed:", syncErr);
+        }
 
         showToast("সাপোর্ট টিকিট সফলভাবে সাবমিট করা হয়েছে!", "success");
         

@@ -928,6 +928,13 @@
           if (divVal && distVal && DIVISION_DATA[divVal][distVal]) {
             const upazilas = DIVISION_DATA[divVal][distVal];
             upSelect.innerHTML += upazilas.map(up => `<option value="${up}">${up}</option>`).join('');
+            
+            // Automatic Area Selection based on district:
+            if (distVal === 'Dhaka (Dhaka)') {
+              selectDeliveryArea('inside');
+            } else {
+              selectDeliveryArea('outside');
+            }
           }
         });
       }
@@ -1006,6 +1013,13 @@
 
               if (info.district) {
                 distSelect.value = info.district;
+                
+                // Automatic Area Selection based on loaded district:
+                if (info.district === 'Dhaka (Dhaka)') {
+                  selectDeliveryArea('inside');
+                } else {
+                  selectDeliveryArea('outside');
+                }
                 
                 // Populate upazila options based on district
                 if (DIVISION_DATA[divVal][info.district]) {
