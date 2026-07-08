@@ -257,7 +257,7 @@ export function updateCartBadges() {
   });
   
   // If we are currently on the cart page, reload dynamic sections
-  if (window.location.pathname.includes('cart.html')) {
+  if (window.location.pathname.includes('cart.html') || window.location.pathname.endsWith('/cart')) {
     renderCartPageInside();
   }
 }
@@ -272,7 +272,7 @@ export function updateWishlistBadges() {
     else el.classList.add('hidden');
   });
   
-  if (window.location.pathname.includes('wishlist.html')) {
+  if (window.location.pathname.includes('wishlist.html') || window.location.pathname.endsWith('/wishlist')) {
     renderWishlistPageInside();
   }
 }
@@ -715,11 +715,11 @@ export function injectSharedLayouts() {
   // 3. Mobile Navigation Layout
   const mobileNav = document.getElementById('shared-mobile-nav');
   if (mobileNav) {
-    const isHome = window.location.pathname.endsWith('index.html') || window.location.pathname === '/' || window.location.pathname === '';
-    const isShop = window.location.pathname.includes('shop.html');
-    const isCart = window.location.pathname.includes('cart.html');
-    const isWishlist = window.location.pathname.includes('wishlist.html');
-    const isAccount = window.location.pathname.includes('dashboard.html') || window.location.pathname.includes('login.html');
+    const isHome = window.location.pathname.endsWith('index.html') || window.location.pathname === '/' || window.location.pathname === '' || window.location.pathname.endsWith('/index');
+    const isShop = window.location.pathname.includes('shop.html') || window.location.pathname.endsWith('/shop');
+    const isCart = window.location.pathname.includes('cart.html') || window.location.pathname.endsWith('/cart');
+    const isWishlist = window.location.pathname.includes('wishlist.html') || window.location.pathname.endsWith('/wishlist');
+    const isAccount = window.location.pathname.includes('dashboard.html') || window.location.pathname.endsWith('/dashboard') || window.location.pathname.includes('login.html') || window.location.pathname.endsWith('/login');
 
     mobileNav.innerHTML = `
       <div class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-150 py-2.5 px-4 flex justify-between items-center z-[90] sm:hidden shadow-lg select-none">
@@ -1042,7 +1042,7 @@ export function initFacebookPixel() {
 // Track events based on the current page path automatically
 export function trackSpecificPagePixelEvents() {
   const path = window.location.pathname;
-  if (path.includes('product.html')) {
+  if (path.includes('product.html') || path.endsWith('/product')) {
     const urlParams = new URLSearchParams(window.location.search);
     const prodId = urlParams.get('id');
     if (prodId) {
@@ -1058,7 +1058,7 @@ export function trackSpecificPagePixelEvents() {
         });
       }
     }
-  } else if (path.includes('checkout.html')) {
+  } else if (path.includes('checkout.html') || path.endsWith('/checkout')) {
     const cart = getCart();
     const totalVal = cart.reduce((acc, item) => acc + ((item.discountPrice || item.price) * item.qty), 0);
     trackPixelEvent('InitiateCheckout', {
@@ -1067,7 +1067,7 @@ export function trackSpecificPagePixelEvents() {
       value: totalVal,
       currency: 'BDT'
     });
-  } else if (path.includes('shop.html')) {
+  } else if (path.includes('shop.html') || path.endsWith('/shop')) {
     const urlParams = new URLSearchParams(window.location.search);
     const searchTerm = urlParams.get('search');
     if (searchTerm) {
@@ -1107,7 +1107,7 @@ export function optimizeSEOAndSchema() {
   let jsonLdSchema = null;
 
   // 1. Contextual parsing for precise SEO matching
-  if (path.includes('product.html')) {
+  if (path.includes('product.html') || path.endsWith('/product')) {
     const urlParams = new URLSearchParams(window.location.search);
     const prodId = urlParams.get('id');
     const product = products.find(p => String(p.id) === String(prodId)) || products[0];
@@ -1153,7 +1153,7 @@ export function optimizeSEOAndSchema() {
         }
       };
     }
-  } else if (path.includes('shop.html')) {
+  } else if (path.includes('shop.html') || path.endsWith('/shop')) {
     const urlParams = new URLSearchParams(window.location.search);
     const searchVal = urlParams.get('search');
     if (searchVal) {
@@ -1164,13 +1164,13 @@ export function optimizeSEOAndSchema() {
       pageDesc = `আমাদের ১০০% প্রিমিয়াম ও অরজিনাল অর্গ্যানিক খাদ্য পণ্যের বিশাল সংগ্রহ থেকে অর্ডার করুন আজই।`;
     }
     pageKeywords = `shop, buy organic, grocery, ${pageKeywords}`;
-  } else if (path.includes('about.html')) {
+  } else if (path.includes('about.html') || path.endsWith('/about')) {
     pageTitle = `আমাদের সম্পর্কে (About Us) | ${siteName}`;
     pageDesc = `Green Grocery এর লক্ষ্য ও উদ্দেশ্য সম্পর্কে জানুন। আমরা গ্রাহকদের কাছে ১০০% প্রাকৃতিক ও খাঁটি পণ্য পৌঁছে দিতে প্রতিশ্রুতিবদ্ধ।`;
-  } else if (path.includes('contact.html')) {
+  } else if (path.includes('contact.html') || path.endsWith('/contact')) {
     pageTitle = `যোগাযোগ করুন (Contact Us) | ${siteName}`;
     pageDesc = `আমাদের সাথে যোগাযোগ করুন। ফোন: ${phone}, ইমেইল বা আমাদের অফিসে সরাসরি চলে আসুন। যেকোনো সহায়তায় আমরা আপনার সাথে আছি।`;
-  } else if (path.includes('faq.html')) {
+  } else if (path.includes('faq.html') || path.endsWith('/faq')) {
     pageTitle = `সাধারণ জিজ্ঞাসা ও উত্তর (FAQs) | ${siteName}`;
     pageDesc = `আমাদের পণ্য ডেলিভারি, কোয়ালিটি ও সার্ভিস সংক্রান্ত সাধারণ প্রশ্নের উত্তর এখানে পেয়ে যাবেন।`;
   }
@@ -1200,7 +1200,7 @@ export function optimizeSEOAndSchema() {
   updateOrAddMeta('og:description', pageDesc, true);
   updateOrAddMeta('og:image', pageImage, true);
   updateOrAddMeta('og:url', window.location.href, true);
-  updateOrAddMeta('og:type', path.includes('product.html') ? 'product' : 'website', true);
+  updateOrAddMeta('og:type', (path.includes('product.html') || path.endsWith('/product')) ? 'product' : 'website', true);
   updateOrAddMeta('og:site_name', siteName, true);
 
   // Twitter Card Meta Tags
