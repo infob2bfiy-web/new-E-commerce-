@@ -761,27 +761,31 @@ export function loadDynamicStaticPageContent() {
   const settings = getSettings();
   const path = window.location.pathname.toLowerCase();
   
+  // Create a clean pathname without .html extension or trailing slashes for robust matching!
+  const cleanPath = path.replace(/\.html$/, '').replace(/\/$/, '');
+  const pageName = cleanPath.substring(cleanPath.lastIndexOf('/') + 1);
+  
   let content = null;
   
-  if (path.includes('about.html')) {
+  if (pageName === 'about') {
     content = settings.aboutContent;
-  } else if (path.includes('terms-and-condition.html')) {
+  } else if (pageName === 'terms-and-condition' || pageName === 'terms-and-conditions' || pageName === 'terms') {
     content = settings.termsContent;
-  } else if (path.includes('privacy-and-policy.html')) {
+  } else if (pageName === 'privacy-and-policy' || pageName === 'privacy-policy' || pageName === 'privacy') {
     content = settings.privacyContent;
-  } else if (path.includes('shipping-policy.html')) {
+  } else if (pageName === 'shipping-policy' || pageName === 'shipping') {
     content = settings.shippingContent;
-  } else if (path.includes('return-policy.html')) {
+  } else if (pageName === 'return-policy' || pageName === 'return') {
     content = settings.returnContent;
-  } else if (path.includes('refund-policy.html')) {
+  } else if (pageName === 'refund-policy' || pageName === 'refund') {
     content = settings.refundContent;
-  } else if (path.includes('faq.html')) {
+  } else if (pageName === 'faq' || pageName === 'faqs') {
     content = settings.faqContent;
-  } else if (path.includes('contact.html')) {
+  } else if (pageName === 'contact' || pageName === 'contact-us') {
     content = settings.contactContent;
-  } else if (path.includes('blog.html')) {
+  } else if (pageName === 'blog') {
     content = settings.blogContent;
-  } else if (path.includes('order-tracking.html')) {
+  } else if (pageName === 'order-tracking' || pageName === 'tracking') {
     content = settings.trackingContent;
   }
   

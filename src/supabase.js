@@ -681,11 +681,12 @@ export async function saveSiteSettingsToSupabase(settings) {
         return { success: false, message: fallbackError };
       } else {
         console.log("Site settings saved successfully using fallback mode (older table structure).");
+        return { success: true, fallbackUsed: true, error: errorText };
       }
     } else {
       console.log("All site settings (including social media & copyright text) successfully saved to Supabase.");
     }
-    return { success: true };
+    return { success: true, fallbackUsed: false };
   } catch (e) {
     console.warn("Background sync of site settings to Supabase failed (non-blocking):", e.message);
     return { success: false, message: e.message };
@@ -784,10 +785,19 @@ export async function syncAllDataFromSupabase() {
       const defaults = JSON.parse(localStorage.getItem('siteSettings') || '{}');
       if (Object.keys(defaults).length > 0) await saveSiteSettingsToSupabase(defaults);
     } else {
+      const localSettings = JSON.parse(localStorage.getItem('siteSettings') || '{}');
       const remoteSettings = settingsData.find(s => s.id === 'default') || settingsData[0] || {};
       delete remoteSettings.id;
       delete remoteSettings.updated_at;
-      localStorage.setItem('siteSettings', JSON.stringify(remoteSettings));
+      
+      // Merge remote settings on top of local settings to avoid wiping out properties not supported in remote schema
+      const mergedSettings = { ...localSettings };
+      for (const key of Object.keys(remoteSettings)) {
+        if (remoteSettings[key] !== null && remoteSettings[key] !== undefined) {
+          mergedSettings[key] = remoteSettings[key];
+        }
+      }
+      localStorage.setItem('siteSettings', JSON.stringify(mergedSettings));
     }
   }
 

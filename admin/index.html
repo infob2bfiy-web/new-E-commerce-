@@ -1292,6 +1292,16 @@ create table if not exists public.site_settings (
   "footerNewsletterTitle" text,
   "footerNewsletterText" text,
   "footerShowPayments" boolean default true,
+  "aboutContent" text,
+  "termsContent" text,
+  "privacyContent" text,
+  "shippingContent" text,
+  "returnContent" text,
+  "refundContent" text,
+  "faqContent" text,
+  "contactContent" text,
+  "blogContent" text,
+  "trackingContent" text,
   updated_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
 
@@ -2072,7 +2082,13 @@ alter table public.products add column if not exists variant text;
           } else if (key === 'categories') {
             saveCategoriesToSupabase(serializedArray).then(() => updateSupabaseStats());
           } else if (key === 'siteSettings') {
-            saveSiteSettingsToSupabase(serializedArray).then(() => updateSupabaseStats());
+            saveSiteSettingsToSupabase(serializedArray).then((res) => {
+              updateSupabaseStats();
+              if (res && res.success && res.fallbackUsed) {
+                console.warn("Settings saved using fallback payload. Database schema missing static page columns. Please run the SQL schema script in your Supabase SQL Editor!");
+                triggerToast("সতর্কতা: আপনার সুপাবেস ডাটাবেজে স্ট্যাটিক পেজ কলামগুলো নেই! সেটিংস লোকালি সংরক্ষিত আছে। সুপাবেসে স্থায়ী করতে স্কিমা সেকশনের SQL রান করুন।", "warning");
+              }
+            });
           } else if (key === 'banners') {
             saveBannersToSupabase(serializedArray).then(() => updateSupabaseStats());
           } else if (key === 'coupons') {
