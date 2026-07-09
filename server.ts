@@ -21,6 +21,36 @@ app.post("/api/notify-order", async (req, res) => {
       return res.status(400).json({ success: false, error: "Order data is required" });
     }
 
+    // --- WHATSAPP NOTIFICATION ENGINE ---
+    // Target admin phone number is "01615469679"
+    const rawAdminPhone = "01615469679";
+    const cleanDigits = rawAdminPhone.replace(/[^0-9]/g, "");
+    let waFormattedNumber = cleanDigits;
+    if (cleanDigits.startsWith("01")) {
+      waFormattedNumber = "88" + cleanDigits;
+    } else if (cleanDigits.startsWith("1")) {
+      waFormattedNumber = "880" + cleanDigits;
+    }
+
+    const waApiKey = process.env.CALLMEBOT_API_KEY; // Free key requested from CallMeBot
+    const waMessage = `🔔 নতুন অর্ডার এসেছে!\n\n🔹 অর্ডার আইডি: ${order.orderId}\n🔹 কাস্টমার: ${order.customerName}\n🔹 মোবাইল: ${order.customerPhone}\n🔹 ঠিকানা: ${order.address}, ${order.area}, ${order.district}\n\n💵 মোট বিল: ৳${order.totalPrice}\n\nদয়া করে এডমিন প্যানেলে লগইন করে অর্ডারটি কনফার্ম করুন।`;
+
+    if (waApiKey) {
+      const waUrl = `https://api.callmebot.com/whatsapp.php?phone=${encodeURIComponent(waFormattedNumber)}&text=${encodeURIComponent(waMessage)}&apikey=${encodeURIComponent(waApiKey)}`;
+      fetch(waUrl)
+        .then(waRes => waRes.text())
+        .then(body => console.log(`[WhatsApp Notifier] CallMeBot API response: ${body}`))
+        .catch(err => console.error("[WhatsApp Notifier] CallMeBot request failed:", err));
+    } else {
+      console.log(`==================== WHATSAPP NOTIFICATION SIMULATED ====================
+To WhatsApp: +${waFormattedNumber}
+Message:
+${waMessage}
+----------------------------------------------------------------------
+Note: To make this live, set the CALLMEBOT_API_KEY secret in your server environment.
+======================================================================`);
+    }
+
     const targetEmail = adminEmail || process.env.SMTP_USER || "info.b2bfiy@gmail.com";
     
     console.log(`[Order Notifier] Attempting to send order notification for ID ${order.orderId} to: ${targetEmail}`);
