@@ -469,19 +469,37 @@ export async function saveAdminCredentialsToSupabase(creds) {
   const config = getSupabaseConfig();
   if (!config.enabled) return;
   try {
-    await fetch(`${config.supabaseUrl}/rest/v1/admin_credentials?username=not.is.null`, {
-      method: 'DELETE',
+    if (!creds || !creds.username) return;
+
+    // 1. Fetch existing credentials first
+    const checkRes = await fetch(`${config.supabaseUrl}/rest/v1/admin_credentials?select=*`, {
       headers: {
         'apikey': config.supabaseKey,
         'Authorization': `Bearer ${config.supabaseKey}`
       }
     });
+    
+    const rows = checkRes.ok ? await checkRes.json() : [];
 
-    if (creds && creds.username) {
-      const payload = {
-        username: creds.username,
-        password: creds.password || 'admin1'
-      };
+    if (rows && rows.length > 0) {
+      // 2. Update the existing first row
+      const firstRow = rows[0];
+      const queryParam = firstRow.id ? `?id=eq.${firstRow.id}` : `?username=eq.${encodeURIComponent(firstRow.username)}`;
+      
+      await fetch(`${config.supabaseUrl}/rest/v1/admin_credentials${queryParam}`, {
+        method: 'PATCH',
+        headers: {
+          'apikey': config.supabaseKey,
+          'Authorization': `Bearer ${config.supabaseKey}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          username: creds.username,
+          password: creds.password || 'admin1'
+        })
+      });
+    } else {
+      // 3. Insert new row
       await fetch(`${config.supabaseUrl}/rest/v1/admin_credentials`, {
         method: 'POST',
         headers: {
@@ -490,7 +508,10 @@ export async function saveAdminCredentialsToSupabase(creds) {
           'Content-Type': 'application/json',
           'Prefer': 'return=minimal'
         },
-        body: JSON.stringify(payload)
+        body: JSON.stringify({
+          username: creds.username,
+          password: creds.password || 'admin1'
+        })
       });
     }
   } catch (e) {
@@ -577,7 +598,17 @@ export async function saveSiteSettingsToSupabase(settings) {
       footerCol2LinksText: settings.footerCol2LinksText || '',
       footerNewsletterTitle: settings.footerNewsletterTitle || '',
       footerNewsletterText: settings.footerNewsletterText || '',
-      footerShowPayments: settings.footerShowPayments !== false
+      footerShowPayments: settings.footerShowPayments !== false,
+      aboutContent: settings.aboutContent || '',
+      termsContent: settings.termsContent || '',
+      privacyContent: settings.privacyContent || '',
+      shippingContent: settings.shippingContent || '',
+      returnContent: settings.returnContent || '',
+      refundContent: settings.refundContent || '',
+      faqContent: settings.faqContent || '',
+      contactContent: settings.contactContent || '',
+      blogContent: settings.blogContent || '',
+      trackingContent: settings.trackingContent || ''
     };
 
     const fallbackPayload = {
@@ -686,8 +717,28 @@ export async function syncAllDataFromSupabase() {
     return null;
   };
 
+  // Fetch all tables in parallel to dramatically speed up loading time and performance!
+  const [
+    catData,
+    prodData,
+    banData,
+    coupData,
+    settingsData,
+    userData,
+    adminCredData,
+    ticketData
+  ] = await Promise.all([
+    fetchTable('categories'),
+    fetchTable('products'),
+    fetchTable('banners'),
+    fetchTable('coupons'),
+    fetchTable('site_settings'),
+    fetchTable('users'),
+    fetchTable('admin_credentials'),
+    fetchTable('support_tickets')
+  ]);
+
   // 1. Categories
-  const catData = await fetchTable('categories');
   if (catData !== null) {
     if (catData.length === 0) {
       const defaults = JSON.parse(localStorage.getItem('categories') || '[]');
@@ -698,7 +749,6 @@ export async function syncAllDataFromSupabase() {
   }
 
   // 2. Products
-  const prodData = await fetchTable('products');
   if (prodData !== null) {
     if (prodData.length === 0) {
       const defaults = JSON.parse(localStorage.getItem('products') || '[]');
@@ -709,7 +759,6 @@ export async function syncAllDataFromSupabase() {
   }
 
   // 3. Banners
-  const banData = await fetchTable('banners');
   if (banData !== null) {
     if (banData.length === 0) {
       const defaults = JSON.parse(localStorage.getItem('banners') || '[]');
@@ -720,7 +769,6 @@ export async function syncAllDataFromSupabase() {
   }
 
   // 4. Coupons
-  const coupData = await fetchTable('coupons');
   if (coupData !== null) {
     if (coupData.length === 0) {
       const defaults = JSON.parse(localStorage.getItem('coupons') || '[]');
@@ -731,7 +779,6 @@ export async function syncAllDataFromSupabase() {
   }
 
   // 5. Site Settings
-  const settingsData = await fetchTable('site_settings');
   if (settingsData !== null) {
     if (settingsData.length === 0) {
       const defaults = JSON.parse(localStorage.getItem('siteSettings') || '{}');
@@ -745,7 +792,6 @@ export async function syncAllDataFromSupabase() {
   }
 
   // 6. Users
-  const userData = await fetchTable('users');
   if (userData !== null) {
     if (userData.length === 0) {
       const defaults = JSON.parse(localStorage.getItem('users') || '[]');
@@ -756,7 +802,6 @@ export async function syncAllDataFromSupabase() {
   }
 
   // 7. Admin Credentials
-  const adminCredData = await fetchTable('admin_credentials');
   if (adminCredData !== null) {
     if (adminCredData.length === 0) {
       const defaults = JSON.parse(localStorage.getItem('adminCredentials') || '{"username":"admin","password":"admin1"}');
@@ -772,7 +817,6 @@ export async function syncAllDataFromSupabase() {
   }
 
   // 8. Support Tickets
-  const ticketData = await fetchTable('support_tickets');
   if (ticketData !== null) {
     if (ticketData.length === 0) {
       const defaults = JSON.parse(localStorage.getItem('supportTickets') || '[]');

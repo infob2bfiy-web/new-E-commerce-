@@ -289,21 +289,35 @@
           }
 
           // Render Results
-          resultsCountStr.textContent = results.length;
-          
-          if (results.length === 0) {
-            grid.innerHTML = '';
-            noResults.classList.remove('hidden');
+          if (window.isSupabaseSyncing) {
+            resultsCountStr.textContent = "0";
+            grid.innerHTML = Array(12).fill(0).map(() => `
+              <div class="bg-white rounded-xl border border-gray-100 p-4 space-y-4 animate-pulse">
+                <div class="aspect-square bg-slate-100 rounded-xl"></div>
+                <div class="h-4 bg-slate-100 rounded w-2/3"></div>
+                <div class="h-4 bg-slate-100 rounded w-1/3"></div>
+                <div class="h-8 bg-slate-100 rounded-lg"></div>
+              </div>
+            `).join('');
+            noResults.classList.add('hidden');
             document.getElementById('pagination-block').classList.add('hidden');
           } else {
-            noResults.classList.add('hidden');
-            grid.innerHTML = results.map(p => createProductCardHTML(p)).join('');
+            resultsCountStr.textContent = results.length;
             
-            // Hide Paginations if results are small
-            if (results.length <= 12) {
+            if (results.length === 0) {
+              grid.innerHTML = '';
+              noResults.classList.remove('hidden');
               document.getElementById('pagination-block').classList.add('hidden');
             } else {
-              document.getElementById('pagination-block').classList.remove('hidden');
+              noResults.classList.add('hidden');
+              grid.innerHTML = results.map(p => createProductCardHTML(p)).join('');
+              
+              // Hide Paginations if results are small
+              if (results.length <= 12) {
+                document.getElementById('pagination-block').classList.add('hidden');
+              } else {
+                document.getElementById('pagination-block').classList.remove('hidden');
+              }
             }
           }
         }

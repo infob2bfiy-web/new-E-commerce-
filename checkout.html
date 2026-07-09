@@ -1410,8 +1410,8 @@
           trackDynVal.href = `/order-tracking.html?id=${orderId}`;
         }
 
-        // 6. Prefilled WhatsApp API order dispatcher template
-        const userPhoneToUse = siteSettings.phone || "01789-123456";
+        // 6. Prefilled WhatsApp API order dispatcher template with complete order details
+        const userPhoneToUse = siteSettings.whatsapp || siteSettings.phone || "01789-123456";
         const cleanPhoneDigits = userPhoneToUse.replace(/[^0-9]/g, "");
         // Prepend 88 prefix if clean digit starts with standard mobile 01
         let waFormattedNumber = cleanPhoneDigits;
@@ -1421,10 +1421,21 @@
           waFormattedNumber = "880" + cleanPhoneDigits;
         }
         
-        const waMessageBody = `আসসালামু আলাইকুম!\nআমি আপনার শপ থেকে একটি অর্ডার সম্পন্ন করেছি।\n\n🔹 অর্ডার আইডি: ${orderId}\n🔹 নাম: ${newOrder.customerName}\n🔹 মোবাইল: ${newOrder.customerPhone}\n🔹 ঠিকানা: ${newOrder.address}, ${newOrder.area}, ${newOrder.district}\n\n💵 মোট বিল: ৳${newOrder.totalPrice}\n\nদয়া করে অর্ডারটি দ্রুত কনফার্ম করে পাঠিয়ে দিন। ধন্যবাদ!`;
+        const itemLines = newOrder.items.map(item => `  - ${item.name} x ${item.qty} (৳${item.discountPrice || item.price})`).join('\n');
+        const discountText = newOrder.discount > 0 ? `\n🔹 কুপন ডিসকাউন্ট: ৳${newOrder.discount}` : '';
+        
+        const waMessageBody = `আসসালামু আলাইকুম!\nআমি আপনার শপ থেকে একটি অর্ডার সম্পন্ন করেছি।\n\n🔹 অর্ডার আইডি: ${orderId}\n🔹 নাম: ${newOrder.customerName}\n🔹 মোবাইল: ${newOrder.customerPhone}\n🔹 ডেলিভারি ঠিকানা: ${newOrder.address}, ${newOrder.area}, ${newOrder.district}, ${newOrder.division}\n\n📦 ক্রয়কৃত পণ্যসমূহ:\n${itemLines}\n\n💵 হিসাব বিবরণী:\n🔹 পণ্য উপমোট: ৳${newOrder.subtotal}${discountText}\n🔹 ডেলিভারি চার্জ: ৳${newOrder.deliveryFee}\n🔹 মোট প্রদেয় বিল: ৳${newOrder.totalPrice}\n\nদয়া করে অর্ডারটি দ্রুত কনফার্ম করে পাঠিয়ে দিন। ধন্যবাদ!`;
+        const waLink = `https://wa.me/${waFormattedNumber}?text=${encodeURIComponent(waMessageBody)}`;
         const waLinkSelector = document.getElementById('success-whatsapp-btn');
         if (waLinkSelector) {
-          waLinkSelector.href = `https://wa.me/${waFormattedNumber}?text=${encodeURIComponent(waMessageBody)}`;
+          waLinkSelector.href = waLink;
+        }
+        
+        // Auto open WhatsApp chat window in a new tab
+        try {
+          window.open(waLink, '_blank');
+        } catch (e) {
+          console.error("WhatsApp auto-open blocked", e);
         }
 
         // Display auto account alert notice if newly created

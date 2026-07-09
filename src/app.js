@@ -257,7 +257,7 @@ export function updateCartBadges() {
   });
   
   // If we are currently on the cart page, reload dynamic sections
-  if (window.location.pathname.includes('cart.html') || window.location.pathname.endsWith('/cart')) {
+  if (window.location.pathname.toLowerCase().includes('cart')) {
     renderCartPageInside();
   }
 }
@@ -272,7 +272,7 @@ export function updateWishlistBadges() {
     else el.classList.add('hidden');
   });
   
-  if (window.location.pathname.includes('wishlist.html') || window.location.pathname.endsWith('/wishlist')) {
+  if (window.location.pathname.toLowerCase().includes('wishlist')) {
     renderWishlistPageInside();
   }
 }
@@ -747,6 +747,54 @@ export function injectSharedLayouts() {
         </a>
       </div>
     `;
+  }
+
+  try {
+    loadDynamicStaticPageContent();
+  } catch (err) {
+    console.error("Failed to load custom static page contents:", err);
+  }
+}
+
+// Loads dynamic page contents if defined in settings
+export function loadDynamicStaticPageContent() {
+  const settings = getSettings();
+  const path = window.location.pathname.toLowerCase();
+  
+  let content = null;
+  
+  if (path.includes('about.html')) {
+    content = settings.aboutContent;
+  } else if (path.includes('terms-and-condition.html')) {
+    content = settings.termsContent;
+  } else if (path.includes('privacy-and-policy.html')) {
+    content = settings.privacyContent;
+  } else if (path.includes('shipping-policy.html')) {
+    content = settings.shippingContent;
+  } else if (path.includes('return-policy.html')) {
+    content = settings.returnContent;
+  } else if (path.includes('refund-policy.html')) {
+    content = settings.refundContent;
+  } else if (path.includes('faq.html')) {
+    content = settings.faqContent;
+  } else if (path.includes('contact.html')) {
+    content = settings.contactContent;
+  } else if (path.includes('blog.html')) {
+    content = settings.blogContent;
+  } else if (path.includes('order-tracking.html')) {
+    content = settings.trackingContent;
+  }
+  
+  if (content && content.trim() !== '') {
+    const mainEl = document.querySelector('main');
+    if (mainEl) {
+      const innerContainer = mainEl.querySelector('div');
+      if (innerContainer) {
+        innerContainer.innerHTML = content;
+      } else {
+        mainEl.innerHTML = `<div class="bg-white rounded-3xl border border-gray-100 shadow-sm p-6 sm:p-10 text-left font-sans">${content}</div>`;
+      }
+    }
   }
 }
 
@@ -1266,10 +1314,83 @@ export function optimizeSEOAndSchema() {
   console.log("SEO & Structured Schema applied successfully for path:", path);
 }
 
+export function isSupabaseConfigured() {
+  let url = import.meta.env?.VITE_SUPABASE_URL || '';
+  let key = import.meta.env?.VITE_SUPABASE_ANON_KEY || '';
+  try {
+    const savedConfig = JSON.parse(localStorage.getItem('supabaseSettings') || '{}');
+    if (savedConfig.supabaseUrl) url = savedConfig.supabaseUrl;
+    if (savedConfig.supabaseKey) key = savedConfig.supabaseKey;
+  } catch (e) {}
+  
+  const cleanUrl = url?.trim().replace(/\/$/, "") || '';
+  const cleanKey = key?.trim() || '';
+  const isValidUrl = cleanUrl.startsWith('http://') || cleanUrl.startsWith('https://');
+  const isPlaceholder = cleanUrl.includes('placeholder') || cleanUrl.includes('your-') || cleanUrl.includes('example.com') ||
+                        cleanKey.includes('placeholder') || cleanKey.includes('your-') ||
+                        cleanKey.length < 40;
+  return !!(cleanUrl && cleanKey && isValidUrl && !isPlaceholder);
+}
+
 // Trigger initializations on loaded safely
 async function startMainApplication() {
   initDB();
   
+  // Check if we need to show a loading screen for first-time Supabase sync
+  const isFirstSync = isSupabaseConfigured() && !localStorage.getItem('supabase_synced');
+  if (isFirstSync) {
+    window.isSupabaseSyncing = true;
+  } else {
+    window.isSupabaseSyncing = false;
+  }
+  let loadingOverlay = null;
+
+  if (isFirstSync) {
+    try {
+      // Create and append a beautiful full-screen loading overlay to prevent dummy data flash
+      loadingOverlay = document.createElement('div');
+      loadingOverlay.id = 'supabase-loading-overlay';
+      loadingOverlay.style.position = 'fixed';
+      loadingOverlay.style.inset = '0';
+      loadingOverlay.style.backgroundColor = '#021c15';
+      loadingOverlay.style.display = 'flex';
+      loadingOverlay.style.flexDirection = 'column';
+      loadingOverlay.style.alignItems = 'center';
+      loadingOverlay.style.justifyContent = 'center';
+      loadingOverlay.style.zIndex = '999999';
+      loadingOverlay.style.color = '#ffffff';
+      loadingOverlay.style.transition = 'opacity 0.6s ease';
+      
+      loadingOverlay.innerHTML = `
+        <div style="display: flex; flex-direction: column; align-items: center; gap: 16px; padding: 24px; text-align: center; font-family: 'Inter', sans-serif;">
+          <!-- Spinning indicator -->
+          <div style="position: relative; width: 64px; height: 64px; display: flex; align-items: center; justify-content: center;">
+            <div style="position: absolute; width: 64px; height: 64px; border: 4px solid rgba(16, 185, 129, 0.2); border-top: 4px solid #10b981; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5" style="margin-top: 2px; animation: pulse 1.5s ease-in-out infinite;">
+              <path d="M12 22V12"></path>
+              <path d="M12 7c-1.5 1-2 2.5-1.5 4a2 2 0 0 0 3 0c0.5-1.5 0-3-1.5-4z" fill="currentColor" opacity="0.35"></path>
+            </svg>
+          </div>
+          <h3 style="font-weight: 800; font-size: 20px; color: #ffffff; margin-top: 12px; font-family: system-ui, -apple-system, sans-serif;">স্বাগতম ঘরে তৈরি ও প্রিমিয়াম অর্গ্যানিক শপে</h3>
+          <p style="font-size: 13px; color: #34d399; max-w: 280px; line-height: 1.5; font-family: system-ui, -apple-system, sans-serif;">আপনার জন্য প্রয়োজনীয় তথ্য ও প্রোডাক্ট লোড হচ্ছে, দয়া করে একটু অপেক্ষা করুন...</p>
+        </div>
+        <style>
+          @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+          }
+          @keyframes pulse {
+            0%, 100% { opacity: 0.6; transform: scale(0.95); }
+            50% { opacity: 1; transform: scale(1.05); }
+          }
+        </style>
+      `;
+      document.body.appendChild(loadingOverlay);
+    } catch (overlayErr) {
+      console.error("Failed to create loading overlay:", overlayErr);
+    }
+  }
+
   // 1. Render layout and badges immediately using cached data (instant 0ms loading!)
   try {
     injectSharedLayouts();
@@ -1284,11 +1405,14 @@ async function startMainApplication() {
   try {
     const { syncAllDataFromSupabase } = await import('./supabase.js');
     await syncAllDataFromSupabase();
+    localStorage.setItem('supabase_synced', 'true');
+    window.isSupabaseSyncing = false;
     
     // Dispatch custom event so pages can optionally re-render if data updated
     window.dispatchEvent(new CustomEvent('supabaseDataSynced'));
   } catch (e) {
     console.error("Failed to load and sync data from Supabase:", e);
+    window.isSupabaseSyncing = false;
   }
 
   // 3. Re-render layouts to reflect any updated settings, products or categories
@@ -1299,6 +1423,20 @@ async function startMainApplication() {
     bindGlobalProductButtons();
   } catch (err) {
     console.error("Layout re-injection after sync failed:", err);
+  }
+
+  // Fade out and remove loading overlay once sync is complete (or even if it failed)
+  if (loadingOverlay) {
+    try {
+      loadingOverlay.style.opacity = '0';
+      setTimeout(() => {
+        if (loadingOverlay && loadingOverlay.parentNode) {
+          loadingOverlay.parentNode.removeChild(loadingOverlay);
+        }
+      }, 600);
+    } catch (fadeErr) {
+      console.error("Failed to clear loading overlay:", fadeErr);
+    }
   }
 
   // Initialize facebook pixel dynamically after downloading settings

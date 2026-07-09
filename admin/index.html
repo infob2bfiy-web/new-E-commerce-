@@ -616,6 +616,7 @@
           <button onclick="setSubTab('banners')" id="tab-set-banners" class="setting-sub-tab px-4 py-2 hover:bg-slate-800 text-slate-400 text-xs rounded-lg font-bold transition font-sans">ব্যনার ম্যানেজমেন্ট</button>
           <button onclick="setSubTab('credentials')" id="tab-set-credentials" class="setting-sub-tab px-4 py-2 hover:bg-slate-800 text-slate-400 text-xs rounded-lg font-bold transition font-sans">অ্যাডমিন ক্রেডেনশিয়াল</button>
           <button onclick="setSubTab('footer')" id="tab-set-footer" class="setting-sub-tab px-4 py-2 hover:bg-slate-800 text-slate-400 text-xs rounded-lg font-bold transition font-sans">ফুটার সেটিংস</button>
+          <button onclick="setSubTab('static-pages')" id="tab-set-static-pages" class="setting-sub-tab px-4 py-2 hover:bg-slate-800 text-slate-400 text-xs rounded-lg font-bold transition font-sans">স্ট্যাটিক পেজ কন্টেন্ট</button>
           <button onclick="setSubTab('backup')" id="tab-set-backup" class="setting-sub-tab px-4 py-2 hover:bg-slate-800 text-slate-400 text-xs rounded-lg font-bold transition font-sans">ডাটা ব্যাকআপ ও নিরাপত্তা</button>
           <button onclick="setSubTab('supabase')" id="tab-set-supabase" class="setting-sub-tab px-4 py-2 hover:bg-slate-800 text-slate-400 text-xs rounded-lg font-bold transition font-sans">সুপাবেস ক্লাউড (Supabase)</button>
         </div>
@@ -954,6 +955,106 @@
             </div>
 
             <button type="submit" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 px-6 rounded-lg transition font-sans cursor-pointer">ফুটার সেটিংস সংরক্ষণ করুন (Save Footer)</button>
+          </form>
+        </div>
+
+        <!-- SUB-TAB 6.5: STATIC PAGES CONTENT EDITING -->
+        <div id="set-block-static-pages" class="setting-panel bg-[#1e293b] rounded-2xl border border-slate-800 p-6 text-left hidden space-y-4 font-sans">
+          <h3 class="font-bold text-slate-100 text-base mb-2">স্ট্যাটিক পেজ কন্টেন্ট এডিটর (Static Page Contents Editor)</h3>
+          <p class="text-xs text-slate-400">আপনার শপের ফুটার লিংকগুলোর ভেতরের পেজের কন্টেন্ট পরিবর্তন করুন। আপনি স্ট্যান্ডার্ড টেক্সট বা সুন্দর কাস্টম HTML ব্যবহার করতে পারেন।</p>
+          
+          <form id="form-settings-static-pages" class="space-y-4 text-xs">
+            <div class="bg-[#0f172a]/20 p-4 rounded-xl border border-slate-800 space-y-3">
+              <div>
+                <label class="block font-bold text-slate-300 text-xs mb-1.5 font-sans">সম্পাদনা করার জন্য পেজ নির্বাচন করুন (Select Page to Edit)</label>
+                <select id="static-page-select" class="w-full bg-[#0f172a] border border-slate-700 text-slate-150 p-2.5 rounded-lg font-sans" onchange="switchStaticPageEditor()">
+                  <option value="about">আমাদের সম্পর্কে (About Us)</option>
+                  <option value="terms">শর্তাবলী ও নীতিমালা (Terms & Conditions)</option>
+                  <option value="privacy">প্রাইভেসি পলিসি (Privacy Policy)</option>
+                  <option value="shipping">শিপিং পলিসি (Shipping Policy)</option>
+                  <option value="return">রিটার্ন পলিসি (Return Policy)</option>
+                  <option value="refund">রিফান্ড পলিসি (Refund Policy)</option>
+                  <option value="faq">সাধারণ প্রশ্ন ও উত্তর (FAQs)</option>
+                  <option value="contact">যোগাযোগ করুন (Contact)</option>
+                  <option value="blog">আমাদের ব্লগ (Blog)</option>
+                  <option value="tracking">অর্ডার কুরিয়ার ট্র্যাকিং (Order Tracking)</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="space-y-4">
+              <!-- About Us Content Textarea -->
+              <div id="static-content-about-box" class="static-editor-box space-y-1.5">
+                <label class="block font-bold text-slate-400 mb-1 font-sans">আমাদের সম্পর্কে (About Us) পেজের কন্টেন্ট (HTML/Text) *</label>
+                <textarea id="static-content-about" rows="12" class="w-full bg-[#0f172a] border border-slate-700 text-slate-200 p-3 rounded-lg font-mono leading-relaxed" placeholder="আমাদের সম্পর্কে পেজের বিস্তারিত বর্ণনা লিখুন..."></textarea>
+              </div>
+
+              <!-- Terms & Conditions Content Textarea -->
+              <div id="static-content-terms-box" class="static-editor-box space-y-1.5 hidden">
+                <label class="block font-bold text-slate-400 mb-1 font-sans">শর্তাবলী ও নীতিমালা (Terms & Conditions) পেজের কন্টেন্ট (HTML/Text) *</label>
+                <textarea id="static-content-terms" rows="12" class="w-full bg-[#0f172a] border border-slate-700 text-slate-200 p-3 rounded-lg font-mono leading-relaxed" placeholder="শর্তাবলী ও নীতিমালা বিস্তারিত লিখুন..."></textarea>
+              </div>
+
+              <!-- Privacy Policy Content Textarea -->
+              <div id="static-content-privacy-box" class="static-editor-box space-y-1.5 hidden">
+                <label class="block font-bold text-slate-400 mb-1 font-sans">প্রাইভেসি পলিসি (Privacy Policy) পেজের কন্টেন্ট (HTML/Text) *</label>
+                <textarea id="static-content-privacy" rows="12" class="w-full bg-[#0f172a] border border-slate-700 text-slate-200 p-3 rounded-lg font-mono leading-relaxed" placeholder="প্রাইভেসি পলিসি বিস্তারিত লিখুন..."></textarea>
+              </div>
+
+              <!-- Shipping Policy Content Textarea -->
+              <div id="static-content-shipping-box" class="static-editor-box space-y-1.5 hidden">
+                <label class="block font-bold text-slate-400 mb-1 font-sans">শিপিং পলিসি (Shipping Policy) পেজের কন্টেন্ট (HTML/Text) *</label>
+                <textarea id="static-content-shipping" rows="12" class="w-full bg-[#0f172a] border border-slate-700 text-slate-200 p-3 rounded-lg font-mono leading-relaxed" placeholder="শিপিং পলিসি বিস্তারিত লিখুন..."></textarea>
+              </div>
+
+              <!-- Return Policy Content Textarea -->
+              <div id="static-content-return-box" class="static-editor-box space-y-1.5 hidden">
+                <label class="block font-bold text-slate-400 mb-1 font-sans">রিটার্ন পলিসি (Return Policy) পেজের কন্টেন্ট (HTML/Text) *</label>
+                <textarea id="static-content-return" rows="12" class="w-full bg-[#0f172a] border border-slate-700 text-slate-200 p-3 rounded-lg font-mono leading-relaxed" placeholder="রিটার্ন পলিসি বিস্তারিত লিখুন..."></textarea>
+              </div>
+
+              <!-- Refund Policy Content Textarea -->
+              <div id="static-content-refund-box" class="static-editor-box space-y-1.5 hidden">
+                <label class="block font-bold text-slate-400 mb-1 font-sans">রিফান্ড পলিসি (Refund Policy) পেজের কন্টেন্ট (HTML/Text) *</label>
+                <textarea id="static-content-refund" rows="12" class="w-full bg-[#0f172a] border border-slate-700 text-slate-200 p-3 rounded-lg font-mono leading-relaxed" placeholder="রিফান্ড পলিসি বিস্তারিত লিখুন..."></textarea>
+              </div>
+
+              <!-- FAQ Content Textarea -->
+              <div id="static-content-faq-box" class="static-editor-box space-y-1.5 hidden">
+                <label class="block font-bold text-slate-400 mb-1 font-sans">সাধারণ প্রশ্ন ও উত্তর (FAQs) পেজের কন্টেন্ট (HTML/Text) *</label>
+                <textarea id="static-content-faq" rows="12" class="w-full bg-[#0f172a] border border-slate-700 text-slate-200 p-3 rounded-lg font-mono leading-relaxed" placeholder="সাধারণ প্রশ্ন ও উত্তর বিস্তারিত লিখুন..."></textarea>
+              </div>
+
+              <!-- Contact Content Textarea -->
+              <div id="static-content-contact-box" class="static-editor-box space-y-1.5 hidden">
+                <label class="block font-bold text-slate-400 mb-1 font-sans">যোগাযোগ করুন (Contact) পেজের কন্টেন্ট (HTML/Text) *</label>
+                <textarea id="static-content-contact" rows="12" class="w-full bg-[#0f172a] border border-slate-700 text-slate-200 p-3 rounded-lg font-mono leading-relaxed" placeholder="যোগাযোগ পেজের কাস্টম কন্টেন্ট লিখুন..."></textarea>
+              </div>
+
+              <!-- Blog Content Textarea -->
+              <div id="static-content-blog-box" class="static-editor-box space-y-1.5 hidden">
+                <label class="block font-bold text-slate-400 mb-1 font-sans">আমাদের ব্লগ (Blog) পেজের কন্টেন্ট (HTML/Text) *</label>
+                <textarea id="static-content-blog" rows="12" class="w-full bg-[#0f172a] border border-slate-700 text-slate-200 p-3 rounded-lg font-mono leading-relaxed" placeholder="ব্লগ পেজের কাস্টম কন্টেন্ট লিখুন..."></textarea>
+              </div>
+
+              <!-- Order Tracking Content Textarea -->
+              <div id="static-content-tracking-box" class="static-editor-box space-y-1.5 hidden">
+                <label class="block font-bold text-slate-400 mb-1 font-sans">অর্ডার কুরিয়ার ট্র্যাকিং (Order Tracking) পেজের কন্টেন্ট (HTML/Text) *</label>
+                <textarea id="static-content-tracking" rows="12" class="w-full bg-[#0f172a] border border-slate-700 text-slate-200 p-3 rounded-lg font-mono leading-relaxed" placeholder="অর্ডার ট্র্যাকিং পেজের কাস্টম কন্টেন্ট লিখুন..."></textarea>
+              </div>
+            </div>
+
+            <div class="p-3 bg-emerald-950/20 border border-emerald-900/30 rounded-xl text-slate-300 space-y-1">
+              <p class="font-bold text-[11px] text-emerald-400">💡 টিপস ও কুইক গাইডলাইন:</p>
+              <ul class="list-disc pl-4 text-[10px] space-y-0.5 leading-normal">
+                <li>যেকোনো সাধারণ টেক্সট লিখতে পারেন, এটি সরাসরি পেজে প্রদর্শিত হবে।</li>
+                <li>হেডিং তৈরি করতে <code class="text-emerald-400 font-mono">&lt;h3 class="font-bold text-lg text-emerald-700 mb-3"&gt;হেডিং&lt;/h3&gt;</code> ব্যবহার করতে পারেন।</li>
+                <li>প্যারাগ্রাফের জন্য <code class="text-emerald-400 font-mono">&lt;p class="text-gray-600 text-sm leading-relaxed mb-4"&gt;আপনার টেক্সট&lt;/p&gt;</code> ব্যবহার করুন।</li>
+                <li>লিস্ট আইটেমের জন্য <code class="text-emerald-400 font-mono">&lt;ul class="list-disc pl-5 text-gray-600 text-sm mb-4"&gt;&lt;li&gt;পয়েন্ট ১&lt;/li&gt;&lt;/ul&gt;</code> ব্যবহার করুন।</li>
+              </ul>
+            </div>
+
+            <button type="submit" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 px-6 rounded-lg transition font-sans cursor-pointer">সব স্ট্যাটিক পেজ কন্টেন্ট সংরক্ষণ করুন (Save All Pages)</button>
           </form>
         </div>
 
@@ -1351,7 +1452,19 @@ create policy "Enable delete for everyone" on public.support_tickets for delete 
 alter table public.site_settings add column if not exists "headerLogoType" text default 'image';
 alter table public.site_settings add column if not exists "footerLogoType" text default 'image';
 
--- 11. If you already have 'products' table, run this to support multi-images and product variants:
+-- 11. If you already have 'site_settings' table, run this to support dynamic static page contents:
+alter table public.site_settings add column if not exists "aboutContent" text;
+alter table public.site_settings add column if not exists "termsContent" text;
+alter table public.site_settings add column if not exists "privacyContent" text;
+alter table public.site_settings add column if not exists "shippingContent" text;
+alter table public.site_settings add column if not exists "returnContent" text;
+alter table public.site_settings add column if not exists "refundContent" text;
+alter table public.site_settings add column if not exists "faqContent" text;
+alter table public.site_settings add column if not exists "contactContent" text;
+alter table public.site_settings add column if not exists "blogContent" text;
+alter table public.site_settings add column if not exists "trackingContent" text;
+
+-- 12. If you already have 'products' table, run this to support multi-images and product variants:
 alter table public.products add column if not exists images jsonb default '[]'::jsonb;
 alter table public.products add column if not exists variant text;
             </pre>
@@ -3186,6 +3299,27 @@ Grand Total Payable Amount: ৳${activeOrderDetailObj.totalPrice}
       document.getElementById('set-foot-news-text').value = settings.footerNewsletterText || "আমাদের নতুন অফার এবং অর্গ্যানিক পণ্যের আপডেট পেতে মেইল দিয়ে সাবস্ক্রাইব করুন।";
       document.getElementById('set-foot-show-payments').checked = settings.footerShowPayments !== false;
 
+      // Static Pages sync
+      document.getElementById('static-content-about').value = settings.aboutContent || `<h1 class="text-2xl sm:text-3xl font-extrabold text-emerald-800 mb-6 bengali-font">আমাদের সম্পর্কে (About Us)</h1>\n<p class="text-gray-600 text-sm leading-relaxed mb-6">গ্রীন গ্রোসারি বাংলাদেশের একটি নির্ভরযোগ্য অনলাইন অর্গ্যানিক শপ। আমরা বিশ্বাস করি আমাদের সুস্বাস্থ্য এবং সুস্থ জীবনের চালিকাশক্তি হচ্ছে বিশুদ্ধ খাদ্য। বর্তমানে বাজারে কেমিক্যাল, প্রিজারভেটিভ এবং ভেজাল খাবারের ভিড়ে আমরা প্রত্যেকেই পরিবারের স্বাস্থ্য নিয়ে উদ্বিগ্ন। এই উদ্বেগ দূর করতে গ্রীন গ্রোসারি নিয়ে এসেছে শতভাগ নির্ভেজাল, প্রাকৃতিক এবং খাঁটি পণ্য যা সরাসরি কৃষকের মাঠ এবং বিশ্বস্ত উৎস থেকে সংগৃহীত।</p>\n<h3 class="font-bold text-lg text-emerald-700 mb-3.5 bengali-font">আমাদের লক্ষ্য ও উদ্দেশ্য:</h3>\n<ul class="list-disc pl-5 text-gray-600 text-sm leading-relaxed flex flex-col gap-2.5 mb-8">\n  <li><strong>নির্ভেজাল খাদ্য বণ্টন:</strong> প্রতিটি ঘরে কেমিক্যাল ও ফরমালিন মুক্ত তাজা ফল এবং পুষ্টিকর দৈনন্দিন খাদ্যসামগ্রী পৌঁছে দেওয়া।</li>\n  <li><strong>ন্যায্য মূল্য নির্ধারণ:</strong> মধ্যস্বত্বভোগী ছাড়া সরাসরি উৎপাদকের কাছ থেকে পণ্য সংগ্রহের মাধ্যমে ক্রেতা ও কৃষক উভয়ের স্বার্থ রক্ষা।</li>\n  <li><strong>স্থানীয় কৃষকদের ক্ষমতায়ন:</strong> বাংলাদেশের প্রান্তিক চাষীদের অর্গ্যানিক চাষাবাদে উৎসাহিত ও সহায়তা করা।</li>\n</ul>\n<div class="border-t border-gray-100 pt-6 mt-6 select-none bg-emerald-50/40 p-4 rounded-xl flex gap-4 items-center">\n  <span class="text-3xl">🛡️</span>\n  <div>\n    <h5 class="font-bold text-emerald-850 text-sm">১০০% মান নিয়ন্ত্রণ ও নিশ্চয়তা</h5>\n    <p class="text-xs text-gray-500 mt-0.5 font-sans">আমরা প্রতিটি পণ্য গ্রাহকের হাত পৌঁছার পূর্বে আমাদের ল্যাবে পুষ্টিগুণ এবং বিশুদ্ধতা সতর্কতার সাথে পরীক্ষা নিশ্চিত করি।</p>\n  </div>\n</div>`;
+
+      document.getElementById('static-content-terms').value = settings.termsContent || `<h1 class="text-2xl font-extrabold text-emerald-800 mb-6 bengali-font">শর্তাবলী ও নীতিমালা (Terms & Conditions)</h1>\n<p class="mb-4 text-gray-600 text-sm leading-relaxed">গ্রীন গ্রোসারি ডট কম বিডি ওয়েবসাইট ব্যবহারে আপনাকে স্বাগত। এই সাইটে ব্রাউজ বা অর্ডার প্রদানের মাধ্যমে আপনি নিম্নলিখিত চুক্তিসমূহ সম্পূর্ণরূপে মেনে নিচ্ছেন বলে গণ্য হবে:</p>\n<h3 class="font-bold text-gray-800 text-sm mb-2 mt-6">১. পণ্যের প্রাপ্যতা ও মূল্যমান:</h3>\n<p class="mb-4 text-gray-600 text-sm leading-relaxed">প্রাকৃতিক ও সিজনাল পণ্যের উৎপাদন বা স্টক সীমাবদ্ধতার কারণে মূল খাদ্য তালিকা বা স্টক যেকোনো সময় পরিবর্তনযোগ্য। অর্ডারের পর কোনো পণ্য স্টক না থাকলে আমাদের টিম সরাসরি মোবাইলে ফোন করে বিকল্প পণ্য বা রিফান্ড গাইডলাইন প্রদান করবে।</p>\n<h3 class="font-bold text-gray-800 text-sm mb-2 mt-6">২. ডেলিভারি ও কুরিয়ার:</h3>\n<p class="mb-4 text-gray-600 text-sm leading-relaxed">আমাদের পণ্যসমূহ ঢাকায় বিনামূল্যে অথবা কুরিয়ার চার্জের ভিত্তিতে সরবরাহ করা হয়। ডেলিভারি গ্রহণের সময় গ্রাহককে উপস্থিত থেকে বা সঠিক মোবাইল ঠিকানায় যোগাযোগ রক্ষা কনফার্ম করা আবশ্যক।</p>\n<h3 class="font-bold text-gray-800 text-sm mb-2 mt-6">৩. পেমেন্ট শর্ত সমূহ:</h3>\n<p class="mb-4 text-gray-600 text-sm leading-relaxed">ক্যাশ অন ডেলিভারি (সিওডি) ব্যতীত বিকাশ বা রকেট/নগদ পেমেন্ট সফলভাবে ট্রানজেকশন কাস্টমারকে অর্ডারের সময় কনফার্ম বা রেফারেন্সে জানাতে হতে পারে।</p>`;
+
+      document.getElementById('static-content-privacy').value = settings.privacyContent || `<h1 class="text-2xl font-extrabold text-emerald-800 mb-6 bengali-font">প্রাইভেসি পলিসি (Privacy Policy)</h1>\n<p class="mb-4">গ্রীন গ্রোসারি আপনার ব্যক্তিগত তথ্যের গোপনীয়তা রক্ষা করতে সম্পূর্ণরূপে প্রতিশ্রুতিবদ্ধ। আমাদের ওয়েবসাইট ব্যবহারের স্বার্থে গ্রাহকগণ যেসব ডেটা প্রদান করেন, তা আমরা কীভাবে সুরক্ষিত রাখি তা নিচে প্রকাশ করা হলো:</p>\n<h3 class="font-bold text-gray-800 text-sm mb-2 mt-6">১. কোন ধরনের তথ্য আমরা সংগ্রহ করি?</h3>\n<p class="mb-4">অর্ডার বুকিং এবং প্রসেস করার নিমিত্তে আমরা আপনার নাম, ফোন নম্বর, ইমেইল ঠিকানা এবং পূর্ণাঙ্গ ডেলিভারি এড্রেস সংগ্রহ করে থাকি।</p>\n<h3 class="font-bold text-gray-800 text-sm mb-2 mt-6">২. তথ্যের নিরাপত্তা ও ব্যবহার:</h3>\n<p class="mb-4">আপনার প্রদত্ত ডেটা শুধুমাত্র অর্ডার সফলভাবে ডেলিভারি করা এবং নতুন অফার বা কুপন আপডেট দেওয়ার স্বার্থে আমাদের নিজস্ব সিস্টেমে ব্যবহৃত হয়। আমরা কোনো তৃতীয় পক্ষের কাছে আপনার কোনো তথ্য বিক্রয় বা বিনিময় করি না।</p>\n<h3 class="font-bold text-gray-800 text-sm mb-2 mt-6">৩. লোকাল স্টোরেজ (Cookies & localStorage):</h3>\n<p class="mb-4">আমাদের এই ওয়েবসাইটটি সম্পূর্ণভাবে ব্রাউজারের লোকাল স্টোরেজ প্রযুক্তিতে আপনার শপিং কার্ট এবং পছন্দের প্রোডাক্টগুলোর তালিকা সংরক্ষণ করে রাখে। ব্রাউজার ডাটা ক্লিয়ার করলে এই ডেটা মুছে যাবে।</p>`;
+
+      document.getElementById('static-content-shipping').value = settings.shippingContent || `<h1 class="text-2xl font-extrabold text-emerald-800 mb-6 bengali-font">শিপিং পলিসি (Shipping Policy)</h1>\n<p class="mb-4">গ্রীন গ্রোসারি পণ্যের সঠিক মান এবং পুষ্টি নিশ্চিত রাখতে দ্রুত শিপিং করতে কাজ করে থাকে। ঢাকার ভিতর ও ঢাকা সিটির বাইরে আমাদের কুরিয়ার প্রোটোকল নিচে আলোচনা করা হলো:</p>\n<h3 class="font-bold text-gray-800 text-sm mb-2 mt-6">১. ডেলিভারি চার্জসমূহ:</h3>\n<ul class="list-disc pl-5 mb-4 flex flex-col gap-1.5">\n  <li><strong>ঢাকায় ফ্রি ডেলিভারী</strong> : ৫০০ টাকার উপরে অর্ডারে সম্পূর্ণ ফ্রি ডেলিভারি। ৫০০ টাকার নিচে অর্ডারে ফ্ল্যাট ৬০ টাকা চার্জ প্রযোজ্য।</li>\n  <li><strong>ঢাকার বাইরে</strong> : কাস্টমারদের অর্ডার ওজন ও দূরত্বের ভিত্তিতে ১৫০ টাকা ফ্ল্যাট কুরিয়ার শিপিং রেট নির্ধারিত।</li>\n</ul>\n<h3 class="font-bold text-gray-800 text-sm mb-2 mt-6">২. প্যাকেজিং নিরাপত্তা:</h3>\n<p class="mb-4">আম, লিচু অথবা লিকুইড ঘি ও মধু সরবরাহে বাস্ট বা ফুটো হওয়া এড়াতে আমরা কার্টন ও বাবল র‍্যাপ দিয়ে উন্নত মানের ডাবল লেয়ার প্রটেক্টেড এয়ার-টাইট প্যাকেজিং নিশ্চিত করি।</p>`;
+
+      document.getElementById('static-content-return').value = settings.returnContent || `<h1 class="text-2xl font-extrabold text-emerald-800 mb-6 bengali-font">রিটার্ন পলিসি (Return Policy)</h1>\n<p class="mb-4">আমাদের পণ্যের গুণগত মানের প্রশ্নে কোনো আপস নেই। তবুও কোনো অনাকাঙ্ক্ষিত কারণে আপনি ত্রুটিযুক্ত পণ্য পেলে তা কীভাবে ফেরত দেবেন তার বিশদ বিবরণ নিচে দেওয়া হলো:</p>\n<h3 class="font-bold text-gray-800 text-sm mb-2 mt-6">১. কোন কোন ক্ষেত্রে পণ্য ফেরত নেওয়া হয়?</h3>\n<ul class="list-disc pl-5 mb-4 flex flex-col gap-1.5">\n  <li>পণ্য মেয়াদোত্তীর্ণ বা নষ্ট অবস্থায় পাওয়া গেলে।</li>\n  <li>ভুল কপার বা ভিন্ন ওজনের পণ্য সরবরাহ করা হলে।</li>\n  <li>ডেলিভারির সময় ফুড কন্টেইনার ড্যামেজ বা ফুটো হলে।</li>\n</ul>\n<h3 class="font-bold text-gray-800 text-sm mb-2 mt-6">২. ফেরত দেওয়ার সময়সীমা:</h3>\n<p class="mb-4">পণ্য বুঝে পাওয়ার ৭ দিনের মধ্যে আমাদের কাস্টমার নাম্বারে জানাতে হবে অথবা যোগাযোগের ঠিকানায় পণ্য রিটার্ন পাঠাতে হবে।</p>\n<h3 class="font-bold text-gray-800 text-sm mb-2 mt-6">৩. ডেলিভারি বা রিটার্ন চার্জ:</h3>\n<p class="mb-4">আমাদের ভুলের কারণে বা নষ্ট পণ্যের ক্ষেত্রে সম্পূর্ণ রিটার্ন ও রি-ডেলিভারি খরচ গ্রীন গ্রোসারি বহন করবে।</p>`;
+
+      document.getElementById('static-content-refund').value = settings.refundContent || `<h1 class="text-2xl font-extrabold text-emerald-800 mb-6 bengali-font">রিফান্ড পলিসি (Refund Policy)</h1>\n<p class="mb-4">আপনার পেমেন্টকৃত কোনো অর্ডারের পণ্য বাতিল বা রিটার্ন হলে আপনার পরিশোধিত অর্থ কীভাবে রিফান্ড বা ফেরত পাবেন তার নিয়মাবলী নিম্নরূপ:</p>\n<h3 class="font-bold text-gray-800 text-sm mb-2 mt-6">১. রিফান্ড ক্লেইম কখন গৃহীত হবে?</h3>\n<p class="mb-4">অর্ডার বাতিল হলে বা রিটার্ন পলিসি অনুযায়ী ফেরত পাঠানো পণ্য আমাদের ওয়্যারহাউজে এসে পৌঁছালে আপনার রিফান্ড রিকোয়েস্ট সফলভাবে প্রসেস করা হবে।</p>\n<h3 class="font-bold text-gray-800 text-sm mb-2 mt-6">২. কত দিনের মধ্যে রিফান্ড পাওয়া যাবে?</h3>\n<p class="mb-4">মোবাইল ব্যাংকিং (বিকাশ, নগদ) বা ব্যাংক একাউন্টের ক্ষেত্রে ৩ থেকে ৫ কার্যদিবসের মধ্যে আপনার টাকা স্বয়ংক্রিয়ভাবে রিফান্ড হয়ে যাবে।</p>\n<h3 class="font-bold text-gray-800 text-sm mb-2 mt-6">৩. কার্ড গেটওয়ে প্রসেসিং:</h3>\n<p class="mb-4">ভিসা বা মাস্টারকার্ড পেমেন্টে কাস্টমারের স্ব স্ব ব্যাংক গেটওয়ের নিয়মানুসারে রিফান্ড হতে ৭-১০টি ওয়ার্কিং ডেইজ সময় লাগতে পারে।</p>`;
+
+      document.getElementById('static-content-faq').value = settings.faqContent || `<h1 class="text-2xl font-extrabold text-emerald-800 mb-2 bengali-font">সাধারণ জিজ্ঞাসা ও উত্তর (FAQs)</h1>\n<p class="text-xs text-gray-400 mb-8 max-w-sm">আমাদের সার্ভিস, শিপিং চার্জ এবং পণ্যের গুণমান সম্পর্কে ক্রেতাদের কিছু কমন প্রশ্ন ও উত্তর নিচে দেওয়া হলো।</p>\n<div class="border-b border-gray-100 pb-4 mb-4 select-none">\n  <button class="w-full flex justify-between items-center font-bold text-gray-800 text-sm focus:outline-none cursor-pointer" onclick="this.nextElementSibling.classList.toggle('active')">\n    <span>১. ঢাকার ভেতর এবং বাইরে ডেলিভারি পেতে কতদিন সময় লাগবে?</span>\n    <span class="text-emerald-700 font-bold">+</span>\n  </button>\n  <div class="accordion-content text-xs text-gray-500 mt-2 font-sans"> ঢাকার মধ্যে আমাদের হোম ডেলিভারি সাধারণত ২৪ থেকে ৪৮ ঘণ্টার মধ্যে সম্পন্ন হয়। ঢাকা সিটির বাইরে বিভিন্ন কুরিয়ার সার্ভিস (যেমন: সুন্দরবন বা রেডেক্স) এর মাধ্যমে ২/৩ কার্যদিবসের মধ্যে পণ্য পৌঁছে দেওয়া হয়। </div>\n</div>\n<div class="border-b border-gray-100 pb-4 mb-4 select-none">\n  <button class="w-full flex justify-between items-center font-bold text-gray-800 text-sm focus:outline-none cursor-pointer" onclick="this.nextElementSibling.classList.toggle('active')">\n    <span>২. প্রোডাক্ট খাঁটি এবং ফ্রেশ না হলে কি ফেরত দিতে পারব?</span>\n    <span class="text-emerald-700 font-bold">+</span>\n  </button>\n  <div class="accordion-content text-xs text-gray-500 mt-2 font-sans"> জী, অবশ্যই! আমাদের পণ্যের বিশুদ্ধতায় কোনো ত্রুটি বা ড্যামেজ থাকলে আপনি ৭ দিনের মধ্যে তা সম্পূর্ণ ফ্রিতে ফেরত বা রিপ্লেসমেন্ট সার্ভিস সুবিধা পেতে পারেন। </div>\n</div>`;
+
+      document.getElementById('static-content-contact').value = settings.contactContent || `<div class="grid grid-cols-1 md:grid-cols-2 gap-8">\n  <div class="bg-white rounded-3xl border border-gray-100 shadow-sm p-6 sm:p-8">\n    <h1 class="text-2xl font-extrabold text-emerald-800 mb-6 bengali-font">যোগাযোগ করুন (Contact Us)</h1>\n    <p class="text-gray-500 text-sm mb-6 leading-relaxed">পণ্য সংক্রান্ত কোনো জিজ্ঞাসা, কাস্টমাইজড অর্ডার অথবা কোনো সমস্যার ক্ষেত্রে সরাসরি আমাদের নিচে ফর্মটি পূরণ করে পাঠান অথবা মোবাইল হেল্পলাইনে যোগাযোগ করুন।</p>\n    <form id="contact-form" class="flex flex-col gap-4">\n      <div>\n        <label class="block text-xs text-gray-500 font-bold mb-1.5">আপনার নাম *</label>\n        <input type="text" required placeholder="আব্দুল্লাহ আল মাসুম" class="w-full bg-gray-50 focus:bg-white border border-gray-200 focus:border-emerald-500 rounded-xl px-3.5 py-2.5 text-xs outline-none transition">\n      </div>\n      <div>\n        <label class="block text-xs text-gray-500 font-bold mb-1.5">মোবাইল নম্বর *</label>\n        <input type="tel" required placeholder="017xxxxxxxx" class="w-full bg-gray-50 focus:bg-white border border-gray-200 focus:border-emerald-500 rounded-xl px-3.5 py-2.5 text-xs outline-none transition font-semibold text-gray-700">\n      </div>\n      <div>\n        <label class="block text-xs text-gray-500 font-bold mb-1.5">বার্তার বিষয়/প্রশ্ন *</label>\n        <textarea required rows="4" placeholder="আপনার প্রশ্ন বা মতামত এখানে বিস্তারিত লিখুন..." class="w-full bg-gray-50 focus:bg-white border border-gray-200 focus:border-emerald-500 rounded-xl px-3.5 py-2.5 text-xs outline-none transition resize-none"></textarea>\n      </div>\n      <button type="submit" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs h-10 w-fit px-6 rounded-xl transition shadow cursor-pointer select-none">বার্তা পাঠান</button>\n    </form>\n  </div>\n  <div class="bg-white rounded-3xl border border-gray-100 shadow-sm p-6 sm:p-8 flex flex-col justify-between">\n    <div>\n      <h3 class="font-extrabold text-emerald-800 text-lg mb-5 bengali-font">আমাদের কার্যালয় (Office Address)</h3>\n      <div class="flex flex-col gap-5 text-sm font-sans text-gray-600">\n        <div>\n          <p class="font-bold text-gray-800 mb-1">📍 প্রধান কার্যালয় ও ওয়্যারহাউজ:</p>\n          <p>হাউজ নং-৫, রোড নং-২, ব্লক-সি, মিরপুর-১১, ঢাকা-১২১৬, বাংলাদেশ।</p>\n        </div>\n        <div>\n          <p class="font-bold text-gray-800 mb-1">📞 ফোন ও হোয়াটস্যাপ সাপোর্ট:</p>\n          <p>কাস্টমার কেয়ার: <span class="text-emerald-700 font-bold">০১৭৮৯-১২৩৪৫৬</span> (সকাল ৯টা - রাত ১০টা)</p>\n        </div>\n        <div>\n          <p class="font-bold text-gray-800 mb-1">✉️ ইমেইল যোগাযোগ:</p>\n          <p>support@greengrocery.com.bd</p>\n        </div>\n      </div>\n    </div>\n  </div>\n</div>`;
+
+      document.getElementById('static-content-blog').value = settings.blogContent || `<h1 class="text-2xl sm:text-3xl font-extrabold text-emerald-800 mb-2 bengali-font text-center">গ্রীন গ্রোসারি ব্লগ (Our healthy Blog)</h1>\n<p class="text-xs text-gray-400 mb-8 max-w-sm mx-auto text-center">বিশুদ্ধ খাদ্য সংগ্রহ, স্বাস্থ্য সচেতনতা এবং পুষ্টিগুণ বজায় রাখার নানান ঘরোয়া টিপস ও রেসিপি পড়ুন আমাদের ব্লগে।</p>\n<div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-left">\n  <article class="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm hover:shadow-md transition">\n    <img src="https://images.unsplash.com/photo-1553279768-865429fa0078?auto=format&fit=crop&q=80&w=600" class="w-full h-44 object-cover">\n    <div class="p-4 flex flex-col gap-2">\n      <span class="text-[10px] text-emerald-700 font-bold uppercase font-sans">খাদ্য পুষ্টি</span>\n      <h3 class="text-sm font-semibold text-gray-800 line-clamp-2 h-10 font-sans leading-snug">খাঁটি সরিষার তেলের অবিশ্বাস্য উপকারিতা ও চেনার সহজ উপায়</h3>\n      <p class="text-xs text-gray-400 font-sans line-clamp-3">ঘানি ভাঙা খাস সরিষার তেলের চমৎকার প্রাকৃতিক ঘ্রাণ ও ঝাঁঝ থাকে। এটি ঠান্ডা সর্দি কাটাতে, হার্টের স্বাস্থ্যে এবং রান্নার স্বাদ বৃদ্ধিতে অবদান রাখে...</p>\n      <a href="#" class="text-xs font-bold text-emerald-600 hover:text-emerald-700 mt-2 block font-sans" onclick="alert('পড়ার জন্য ধন্যবাদ! বিস্তারিত আর্টিকেলটি শীঘ্রই আসছে।')">বিস্তারিত পড়ুন →</a>\n    </div>\n  </article>\n  <article class="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm hover:shadow-md transition">\n    <img src="https://images.unsplash.com/photo-1587049352846-4a222e784d38?auto=format&fit=crop&q=80&w=600" class="w-full h-44 object-cover">\n    <div class="p-4 flex flex-col gap-2">\n      <span class="text-[10px] text-emerald-700 font-bold uppercase font-sans">প্রাকৃতিক মধু</span>\n      <h3 class="text-sm font-semibold text-gray-800 line-clamp-2 h-10 font-sans leading-snug">সুন্দরবনের খাঁটি খলিসা ফুলের মধু ও ভেজাল মধু পরীক্ষার পদ্ধতি</h3>\n      <p class="text-xs text-gray-400 font-sans line-clamp-3">মধু কেন জমে যায়? খাঁটি মধু চেনার ঘরোয়া পানি পরীক্ষা এবং মধুর গ্লুকোজ ঘনত্ব সম্পর্কিত তথ্য জানুন বিস্তারিত আলোচনায়...</p>\n      <a href="#" class="text-xs font-bold text-emerald-600 hover:text-emerald-700 mt-2 block font-sans" onclick="alert('পড়ার জন্য ধন্যবাদ! বিস্তারিত আর্টিকেলটি শীঘ্রই আসছে।')">বিস্তারিত পড়ুন →</a>\n    </div>\n  </article>\n  <article class="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm hover:shadow-md transition">\n    <img src="https://images.unsplash.com/photo-1509223348103-9bb670fd7b31?auto=format&fit=crop&q=80&w=600" class="w-full h-44 object-cover">\n    <div class="p-4 flex flex-col gap-2">\n      <span class="text-[10px] text-emerald-700 font-bold uppercase font-sans">স্বাস্থ্য উপদেশ</span>\n      <h3 class="text-sm font-semibold text-gray-800 line-clamp-2 h-10 font-sans leading-snug">খালি পেটে ৩টি মদিনার আজওয়া খেজুর খাওয়ার শারীরিক চমৎকার উপকার</h3>\n      <p class="text-xs text-gray-400 font-sans line-clamp-3">আজওয়া খেজুরে ক্যালসিয়াম, সালফার, আয়রন এবং প্রচুর ফাইবার থাকে যা কোষ্ঠকাঠিন্য দূর করতে এবং হার্টের কর্মক্ষমতা বাড়িয়ে তোলে অত্যন্ত দারুণভাবে...</p>\n      <a href="#" class="text-xs font-bold text-emerald-600 hover:text-emerald-700 mt-2 block font-sans" onclick="alert('পড়ার জন্য ধন্যবাদ! বিস্তারিত আর্টিকেলটি শীঘ্রই আসছে।')">বিস্তারিত পড়ুন →</a>\n    </div>\n  </article>\n</div>`;
+
+      document.getElementById('static-content-tracking').value = settings.trackingContent || `<div class="bg-white border border-gray-100 shadow-sm rounded-3xl p-6 sm:p-10">\n  <h1 class="text-xl sm:text-2xl font-extrabold text-gray-800 bengali-font mb-2">অর্ডার ট্র্যাকিং সিস্টেম (Order Tracking)</h1>\n  <p class="text-xs text-gray-400 mb-8 max-w-md mx-auto">নির্দিষ্ট অর্ডার আইডি বা মোবাইল নম্বর টাইপ করে আপনার পণ্যের বর্তমান সংগ্রহ বা ডেলিভারি ধাপ দেখে নিন নিরাপদে।</p>\n  <div class="flex flex-col sm:flex-row gap-3 max-w-lg mx-auto mb-10 select-none">\n    <input type="text" id="track-input" placeholder="অর্ডার আইডি (যেমন: ORD-2026-X47A) বা ফোন নম্বর লিখুন..." class="flex-grow bg-gray-50 border border-gray-200 focus:border-emerald-500 rounded-xl px-4 py-2.5 font-bold text-sm outline-none transition uppercase">\n    <button id="track-btn" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm px-6 py-2.5 rounded-xl transition shadow cursor-pointer">খুঁজুন (Track)</button>\n  </div>\n</div>`;
+
       // Render banners delete controller list directly inside settings
       renderBannersSettingsList();
     }
@@ -3276,6 +3410,41 @@ Grand Total Payable Amount: ৳${activeOrderDetailObj.totalPrice}
       setDBItem('siteSettings', current);
       triggerToast("ফুটার সজ্জা ও লিংক সেটিংস সফলভাবে আপডেট সম্পন্ন হয়েছে!", "success");
     });
+
+    // Submit static pages settings
+    document.getElementById('form-settings-static-pages').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const current = JSON.parse(localStorage.getItem('siteSettings') || '{}');
+
+      current.aboutContent = document.getElementById('static-content-about').value;
+      current.termsContent = document.getElementById('static-content-terms').value;
+      current.privacyContent = document.getElementById('static-content-privacy').value;
+      current.shippingContent = document.getElementById('static-content-shipping').value;
+      current.returnContent = document.getElementById('static-content-return').value;
+      current.refundContent = document.getElementById('static-content-refund').value;
+      current.faqContent = document.getElementById('static-content-faq').value;
+      current.contactContent = document.getElementById('static-content-contact').value;
+      current.blogContent = document.getElementById('static-content-blog').value;
+      current.trackingContent = document.getElementById('static-content-tracking').value;
+
+      setDBItem('siteSettings', current);
+      triggerToast("সকল স্ট্যাটিক পেজের কন্টেন্ট সফলভাবে সংরক্ষণ করা হয়েছে!", "success");
+    });
+
+    // Helper to switch between active static page editors
+    window.switchStaticPageEditor = function() {
+      const select = document.getElementById('static-page-select');
+      if (!select) return;
+      const selectedValue = select.value;
+      
+      const boxes = document.querySelectorAll('.static-editor-box');
+      boxes.forEach(box => box.classList.add('hidden'));
+      
+      const targetBox = document.getElementById(`static-content-${selectedValue}-box`);
+      if (targetBox) {
+        targetBox.classList.remove('hidden');
+      }
+    };
 
     // Banners lists populator directly
     function renderBannersSettingsList() {
@@ -3443,7 +3612,7 @@ Grand Total Payable Amount: ৳${activeOrderDetailObj.totalPrice}
       creds.username = newUser;
       creds.password = newPass;
 
-      localStorage.setItem('adminCredentials', JSON.stringify(creds));
+      setDBItem('adminCredentials', creds);
       triggerToast("ইউজারনেম ও সিকিউরিটি পাসওয়ার্ড সফলভাবে আপডেট করা হয়েছে!", "success");
       document.getElementById('form-settings-credentials').reset();
     });
