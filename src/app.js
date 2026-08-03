@@ -76,7 +76,15 @@ export function getCategories() {
   });
 }
 export function getSettings() {
-  return JSON.parse(localStorage.getItem('siteSettings') || '{}');
+  const saved = JSON.parse(localStorage.getItem('siteSettings') || '{}');
+  const merged = { ...DEFAULT_SITE_SETTINGS, ...saved };
+  if (!saved.siteName || saved.siteName === "আম্রপালি" || saved.siteName === "Ghorer Bazar") {
+    merged.siteName = "Ghorer Shad";
+    if (!saved.logoUrl || saved.logoUrl.includes('unsplash')) {
+      merged.logoUrl = "/assets/ghorer-shad-logo.jpg";
+    }
+  }
+  return merged;
 }
 export function getCart() {
   return JSON.parse(localStorage.getItem('cart') || '[]');
@@ -249,11 +257,19 @@ export function toggleWishlist(productId) {
 export function updateCartBadges() {
   const cart = getCart();
   const totalItems = cart.reduce((sum, item) => sum + (item.isFreeItem ? 0 : item.qty), 0);
+  const totalPrice = cart.reduce((sum, item) => sum + ((item.discountPrice || item.price) * item.qty), 0);
   
   document.querySelectorAll('.cart-count').forEach(el => {
     el.textContent = totalItems;
     if (totalItems > 0) el.classList.remove('hidden');
     else el.classList.add('hidden');
+  });
+
+  document.querySelectorAll('#float-cart-count').forEach(el => {
+    el.textContent = `${totalItems} Items`;
+  });
+  document.querySelectorAll('#float-cart-total').forEach(el => {
+    el.textContent = `${totalPrice.toLocaleString('en-IN')}.00`;
   });
   
   // If we are currently on the cart page, reload dynamic sections
@@ -293,91 +309,30 @@ export function injectSharedLayouts() {
   // 1. Shared Header
   const header = document.getElementById('shared-header');
   if (header) {
-    header.className = "relative z-45 block";
+    header.className = "relative z-45 block shadow-[0_4px_12px_rgba(0,0,0,0.12)]";
     const isCustomLogo = settings.logoUrl && 
                          settings.logoUrl.trim() !== "" && 
                          !settings.logoUrl.includes("images.unsplash.com/photo-1542838132");
 
-    const name = settings.siteName || "Ghorer Bazar";
-    const logoType = settings.headerLogoType || "image";
-    let logoMarkup = "";
+    const name = settings.siteName || "Ghorer Shad";
+    const logoImgUrl = (settings.logoUrl && !settings.logoUrl.includes("images.unsplash.com")) ? settings.logoUrl : "/assets/ghorer-shad-logo.jpg";
     
-    // 1. Prepare logo image markup
-    let logoImgHtml = "";
-    if (isCustomLogo) {
-      logoImgHtml = `<img src="${settings.logoUrl}" alt="${name}" class="h-9 md:h-11 w-auto object-contain max-w-[200px]" />`;
-    } else {
-      // Default Ghorer Bazar house icon SVG
-      logoImgHtml = `
-        <div class="w-10 h-10 rounded-xl bg-[#f97316] flex items-center justify-center text-white shadow-[0_2px_8px_rgba(249,115,22,0.22)] flex-shrink-0 transition-transform hover:scale-105 duration-350">
-          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-white">
-            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-            <polyline points="9 22 9 12 15 12 15 22"></polyline>
-            <path d="M12 22V12"></path>
-            <path d="M12 7c-1.5 1-2 2.5-1.5 4a2 2 0 0 0 3 0c0.5-1.5 0-3-1.5-4z" fill="currentColor" opacity="0.35"></path>
-          </svg>
-        </div>
-      `;
-    }
+    // 1. Logo image HTML - larger and prominent on mobile and desktop
+    const logoImgHtml = `<img src="${logoImgUrl}" alt="${name}" class="h-11 sm:h-14 md:h-16 w-auto object-contain max-w-[200px] sm:max-w-[280px] md:max-w-[320px] rounded transition group-hover:scale-105 duration-200" />`;
 
-    // 2. Prepare logo text markup
-    let logoTextHtml = "";
-    if (name.toLowerCase().includes("ghorer") || name.toLowerCase().includes("bazar")) {
-      logoTextHtml = `
-        <div class="flex flex-col leading-none">
-          <span class="font-black text-xl md:text-[21px] tracking-tight text-[#f97316] font-sans">GHORER</span>
-          <span class="font-extrabold text-xs md:text-[14px] tracking-[0.18em] text-[#f97316] font-sans mt-0.5">BAZAR</span>
-        </div>
-      `;
-    } else {
-      logoTextHtml = `
-        <div class="flex flex-col leading-none">
-          <span class="font-black text-lg md:text-[20px] tracking-tight text-[#f97316] font-sans">${name}</span>
-        </div>
-      `;
-    }
-
-    // 3. Assemble based on logo display type
-    if (logoType === "image") {
-      if (isCustomLogo) {
-        logoMarkup = logoImgHtml;
-      } else {
-        logoMarkup = `
-          <div class="flex items-center gap-2 select-none">
-            ${logoImgHtml}
-            ${logoTextHtml}
-          </div>
-        `;
-      }
-    } else if (logoType === "text") {
-      logoMarkup = `
-        <div class="flex items-center gap-2 select-none">
-          ${logoTextHtml}
-        </div>
-      `;
-    } else if (logoType === "both") {
-      logoMarkup = `
-        <div class="flex items-center gap-2 select-none">
-          ${logoImgHtml}
-          ${logoTextHtml}
-        </div>
-      `;
-    }
+    // 2. Logo Markup
+    const logoMarkup = `
+      <div class="flex items-center select-none group">
+        ${logoImgHtml}
+      </div>
+    `;
 
     header.innerHTML = `
-      <!-- Announcement bar -->
-      <div class="bg-emerald-700 text-white text-xs sm:text-sm py-2 px-4 font-medium select-none flex justify-between items-center relative z-50">
-        <div class="mx-auto flex items-center gap-2 text-center overflow-x-auto no-scrollbar whitespace-nowrap scroll-smooth">
-          <span class="inline-block animate-pulse">📢</span>
-          <span>${settings.announcement || settings.tagline}</span>
-        </div>
-      </div>
-      
       <!-- Top White Header Row matching Ghorer Bazar layout exactly -->
-      <div class="bg-white border-b border-gray-150 py-4 px-4 md:px-8 max-w-7xl mx-auto flex items-center justify-between gap-4 z-40 relative">
+      <div class="bg-white md:border-b border-gray-150 py-2.5 md:py-3.5 px-3 md:px-8 max-w-7xl mx-auto flex items-center justify-between gap-3 md:gap-4 z-40 relative">
         
         <!-- Logo on the left -->
-        <a href="/index.html" class="flex-shrink-0 flex items-center gap-2 hover:opacity-95 transition-opacity select-none">
+        <a href="/index.html" class="flex-shrink-0 flex items-center hover:opacity-95 transition-opacity select-none">
           ${logoMarkup}
         </a>
 
@@ -446,16 +401,33 @@ export function injectSharedLayouts() {
           </button>
 
         </div>
+
+        <!-- Mobile Right Action Icons (Search Toggle Icon & Cart Button) -->
+        <div class="flex md:hidden items-center gap-2 select-none">
+          <!-- Mobile Search Icon Button matching provided design demo -->
+          <button id="mobile-search-toggle-btn" class="p-2 text-slate-700 hover:text-[#f97316] transition cursor-pointer focus:outline-none rounded-full hover:bg-slate-100" title="Search">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+          </button>
+
+          <!-- Mobile Cart Button -->
+          <a href="/cart.html" class="p-2 text-slate-700 hover:text-[#f97316] transition relative rounded-full hover:bg-slate-100" title="Cart">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+            <span class="cart-count absolute top-0.5 right-0.5 bg-red-600 text-white font-extrabold text-[9px] w-4.5 h-4.5 rounded-full flex items-center justify-center border border-white hidden">0</span>
+          </a>
+        </div>
       </div>
 
-      <!-- Mobile Search bar row (only visible on mobile below the logo header) -->
-      <div class="bg-white px-4 pb-3.5 border-b border-gray-100 md:hidden">
+      <!-- Expandable Mobile Search bar row (toggled via search icon on mobile) -->
+      <div id="mobile-search-bar-row" class="hidden bg-white px-4 pt-1.5 pb-3 border-b border-gray-150 md:hidden animate-fade-in">
         <div class="relative flex items-center w-full">
           <input 
             type="text" 
             id="global-search-input-mobile" 
             placeholder="Search in..." 
-            class="w-full bg-slate-50 border border-gray-150 focus:border-orange-300 focus:bg-white rounded-full py-2.5 pl-5 pr-12 text-sm outline-none transition-all placeholder:text-gray-400 text-slate-800"
+            class="w-full bg-slate-50 border border-gray-200 focus:border-orange-300 focus:bg-white rounded-full py-2.5 pl-5 pr-12 text-sm outline-none transition-all placeholder:text-gray-400 text-slate-800 shadow-[inset_0_1px_2px_rgba(0,0,0,0.01)]"
           >
           <button class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-[#f97316] transition cursor-pointer">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
@@ -464,8 +436,8 @@ export function injectSharedLayouts() {
         </div>
       </div>
 
-      <!-- Bottom Dark Green Category Navigation dynamically loaded -->
-      <div class="bg-[#021c15] text-white/95 select-none w-full border-b border-emerald-950/40 relative z-30">
+      <!-- Bottom Dark Green Category Navigation dynamically loaded (hidden on mobile) -->
+      <div class="hidden md:block bg-[#021c15] text-white/95 select-none w-full border-b border-emerald-950/40 relative z-30">
         <div class="max-w-7xl mx-auto px-4 md:px-8">
           <div class="flex items-center gap-x-4 md:gap-x-5 lg:gap-x-6 lg:gap-y-2 py-2.5 overflow-x-auto lg:overflow-visible lg:flex-wrap lg:whitespace-normal lg:justify-center no-scrollbar whitespace-nowrap scroll-smooth font-sans justify-start w-full">
             ${categories.map(cat => {
@@ -634,21 +606,12 @@ export function injectSharedLayouts() {
     const checkCopyright = settings.footerCopyright || "&copy; 2026 [siteName]. All Rights Reserved. Crafted for Healthy Lifestyle.";
     const processedCopyright = checkCopyright.replace('[siteName]', settings.siteName || "আম্রপালি");
 
-    const hasFooterImg = settings.footerLogoUrl || settings.logoUrl;
-    const footerTextVal = settings.footerLogoText || settings.siteName || "আম্রপালি";
-
-    let footerLogoHeadingMarkup = "";
-    if (settings.footerLogoType === 'both' && hasFooterImg) {
-      footerLogoHeadingMarkup = `
-        <img src="${settings.footerLogoUrl || settings.logoUrl}" class="w-8 h-8 rounded-full">
-        <span>${footerTextVal}</span>
-      `;
-    } else if (settings.footerLogoType === 'text' || !hasFooterImg) {
-      footerLogoHeadingMarkup = `<span>${footerTextVal}</span>`;
-    } else {
-      // Default to 'image'
-      footerLogoHeadingMarkup = `<img src="${settings.footerLogoUrl || settings.logoUrl}" class="w-8 h-8 rounded-full">`;
-    }
+    const footerImgUrl = (settings.footerLogoUrl || settings.logoUrl) && !((settings.footerLogoUrl || settings.logoUrl).includes("images.unsplash.com")) ? (settings.footerLogoUrl || settings.logoUrl) : "/assets/ghorer-shad-logo.jpg";
+    const footerLogoHeadingMarkup = `
+      <div class="flex items-center">
+        <img src="${footerImgUrl}" class="h-14 md:h-16 w-auto object-contain max-w-[200px] rounded-lg bg-white p-1 shadow-sm">
+      </div>
+    `;
 
     footer.innerHTML = `
       <section class="bg-gray-900 text-gray-300 pt-14 pb-8 border-t border-gray-800 bengali-font">
@@ -682,7 +645,7 @@ export function injectSharedLayouts() {
           </div>
         </div>
         <div class="max-w-7xl mx-auto px-4 md:px-8 pt-6 border-t border-gray-800 flex flex-col md:flex-row items-center justify-between gap-4">
-          <p class="text-xs text-gray-500">${processedCopyright} <span class="mx-1.5 text-gray-700">•</span> <a href="/admin/index.html" class="hover:text-emerald-400 transition font-medium underline decoration-dotted">অ্যাডমিন প্রবেশদ্বার (Admin Login)</a></p>
+          <p class="text-xs text-gray-500">${processedCopyright} <span class="mx-1.5 text-gray-700">•</span> Developed by <a href="https://b2bfiy-com-two.vercel.app/" target="_blank" rel="noopener noreferrer" class="text-emerald-400 hover:underline font-bold">B2Bfiy</a></p>
           <div class="flex items-center gap-4 ${settings.footerShowPayments === false ? 'hidden' : ''}">
             <span class="text-xs text-gray-500 select-none">Secure Payments via:</span>
             <!-- Logo flags -->
@@ -873,6 +836,21 @@ function initNavSearch() {
 
   setupInput('global-search-input', 'live-suggestions');
   setupInput('global-search-input-mobile', 'live-suggestions-mobile');
+
+  // Mobile search icon toggle button
+  const mobileSearchToggle = document.getElementById('mobile-search-toggle-btn');
+  const mobileSearchRow = document.getElementById('mobile-search-bar-row');
+  const mobileInput = document.getElementById('global-search-input-mobile');
+
+  if (mobileSearchToggle && mobileSearchRow) {
+    mobileSearchToggle.addEventListener('click', (e) => {
+      e.stopPropagation();
+      mobileSearchRow.classList.toggle('hidden');
+      if (!mobileSearchRow.classList.contains('hidden') && mobileInput) {
+        mobileInput.focus();
+      }
+    });
+  }
 }
 
 // CARD GENERATOR HELPER
@@ -1340,62 +1318,26 @@ export function isSupabaseConfigured() {
 async function startMainApplication() {
   initDB();
   
-  // Check if we need to show a loading screen for first-time Supabase sync
-  const isFirstSync = isSupabaseConfigured() && !localStorage.getItem('supabase_synced');
-  if (isFirstSync) {
+  // If Supabase is configured, sync fresh data BEFORE initial layout injection
+  if (isSupabaseConfigured()) {
     window.isSupabaseSyncing = true;
+    try {
+      const { syncAllDataFromSupabase } = await import('./supabase.js');
+      await Promise.race([
+        syncAllDataFromSupabase(),
+        new Promise(resolve => setTimeout(resolve, 3500))
+      ]);
+      localStorage.setItem('supabase_synced', 'true');
+    } catch (e) {
+      console.warn("Pre-render Supabase sync error:", e);
+    } finally {
+      window.isSupabaseSyncing = false;
+    }
   } else {
     window.isSupabaseSyncing = false;
   }
-  let loadingOverlay = null;
 
-  if (isFirstSync) {
-    try {
-      // Create and append a beautiful full-screen loading overlay to prevent dummy data flash
-      loadingOverlay = document.createElement('div');
-      loadingOverlay.id = 'supabase-loading-overlay';
-      loadingOverlay.style.position = 'fixed';
-      loadingOverlay.style.inset = '0';
-      loadingOverlay.style.backgroundColor = '#021c15';
-      loadingOverlay.style.display = 'flex';
-      loadingOverlay.style.flexDirection = 'column';
-      loadingOverlay.style.alignItems = 'center';
-      loadingOverlay.style.justifyContent = 'center';
-      loadingOverlay.style.zIndex = '999999';
-      loadingOverlay.style.color = '#ffffff';
-      loadingOverlay.style.transition = 'opacity 0.6s ease';
-      
-      loadingOverlay.innerHTML = `
-        <div style="display: flex; flex-direction: column; align-items: center; gap: 16px; padding: 24px; text-align: center; font-family: 'Inter', sans-serif;">
-          <!-- Spinning indicator -->
-          <div style="position: relative; width: 64px; height: 64px; display: flex; align-items: center; justify-content: center;">
-            <div style="position: absolute; width: 64px; height: 64px; border: 4px solid rgba(16, 185, 129, 0.2); border-top: 4px solid #10b981; border-radius: 50%; animation: spin 1s linear infinite;"></div>
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5" style="margin-top: 2px; animation: pulse 1.5s ease-in-out infinite;">
-              <path d="M12 22V12"></path>
-              <path d="M12 7c-1.5 1-2 2.5-1.5 4a2 2 0 0 0 3 0c0.5-1.5 0-3-1.5-4z" fill="currentColor" opacity="0.35"></path>
-            </svg>
-          </div>
-          <h3 style="font-weight: 800; font-size: 20px; color: #ffffff; margin-top: 12px; font-family: system-ui, -apple-system, sans-serif;">স্বাগতম ঘরে তৈরি ও প্রিমিয়াম অর্গ্যানিক শপে</h3>
-          <p style="font-size: 13px; color: #34d399; max-w: 280px; line-height: 1.5; font-family: system-ui, -apple-system, sans-serif;">আপনার জন্য প্রয়োজনীয় তথ্য ও প্রোডাক্ট লোড হচ্ছে, দয়া করে একটু অপেক্ষা করুন...</p>
-        </div>
-        <style>
-          @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-          }
-          @keyframes pulse {
-            0%, 100% { opacity: 0.6; transform: scale(0.95); }
-            50% { opacity: 1; transform: scale(1.05); }
-          }
-        </style>
-      `;
-      document.body.appendChild(loadingOverlay);
-    } catch (overlayErr) {
-      console.error("Failed to create loading overlay:", overlayErr);
-    }
-  }
-
-  // 1. Render layout and badges immediately using cached data (instant 0ms loading!)
+  // 1. Render layout and badges with freshly synced data
   try {
     injectSharedLayouts();
     updateCartBadges();
@@ -1405,45 +1347,10 @@ async function startMainApplication() {
     console.error("Initial layout injection failed:", err);
   }
 
-  // 2. Try to sync/fetch all data from Supabase asynchronously
-  try {
-    const { syncAllDataFromSupabase } = await import('./supabase.js');
-    await syncAllDataFromSupabase();
-    localStorage.setItem('supabase_synced', 'true');
-    window.isSupabaseSyncing = false;
-    
-    // Dispatch custom event so pages can optionally re-render if data updated
-    window.dispatchEvent(new CustomEvent('supabaseDataSynced'));
-  } catch (e) {
-    console.error("Failed to load and sync data from Supabase:", e);
-    window.isSupabaseSyncing = false;
-  }
+  // 2. Dispatch custom event so active page renders with updated cloud data directly
+  window.dispatchEvent(new CustomEvent('supabaseDataSynced'));
 
-  // 3. Re-render layouts to reflect any updated settings, products or categories
-  try {
-    injectSharedLayouts();
-    updateCartBadges();
-    updateWishlistBadges();
-    bindGlobalProductButtons();
-  } catch (err) {
-    console.error("Layout re-injection after sync failed:", err);
-  }
-
-  // Fade out and remove loading overlay once sync is complete (or even if it failed)
-  if (loadingOverlay) {
-    try {
-      loadingOverlay.style.opacity = '0';
-      setTimeout(() => {
-        if (loadingOverlay && loadingOverlay.parentNode) {
-          loadingOverlay.parentNode.removeChild(loadingOverlay);
-        }
-      }, 600);
-    } catch (fadeErr) {
-      console.error("Failed to clear loading overlay:", fadeErr);
-    }
-  }
-
-  // Initialize facebook pixel dynamically after downloading settings
+  // Initialize facebook pixel dynamically
   try {
     initFacebookPixel();
   } catch(e) {

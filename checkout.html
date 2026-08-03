@@ -1042,17 +1042,93 @@
         const tray = document.getElementById('checkout-items-tray');
         if (!tray) return;
 
+        if (cart.length === 0) {
+          tray.innerHTML = `
+            <div class="text-center py-6 text-xs text-slate-500 font-medium font-sans">
+              আপনার কার্টে কোনো পণ্য নেই।
+              <div class="mt-2.5">
+                <a href="/shop.html" class="inline-block bg-[#ff7800] hover:bg-amber-600 text-white font-bold px-3.5 py-1.5 rounded-lg text-xs transition shadow-2xs">শপিং করুন</a>
+              </div>
+            </div>
+          `;
+          return;
+        }
+
         tray.innerHTML = cart.map(item => `
-          <div class="flex items-center gap-3 pb-3 border-b border-gray-100 last:border-none last:pb-0 font-sans">
+          <div class="flex items-center gap-2.5 pb-3 border-b border-gray-100 last:border-none last:pb-0 font-sans group">
             <img src="${item.image}" referrerPolicy="no-referrer" class="w-11 h-11 object-cover rounded-xl border border-gray-100 flex-shrink-0">
             <div class="flex-grow text-left">
               <h6 class="text-[12px] font-bold text-slate-800 line-clamp-1 b-f leading-tight">${item.name}</h6>
-              <p class="text-[10px] text-slate-400 mt-1 font-mono">৳${item.discountPrice || item.price} × ${item.qty}</p>
+              <div class="flex items-center gap-2 mt-1">
+                <span class="text-[10px] text-slate-400 font-mono">৳${item.discountPrice || item.price} × ${item.qty}</span>
+                <div class="inline-flex items-center border border-gray-200 rounded px-1 py-0.5 gap-1.5 bg-gray-50/90">
+                  <button onclick="changeCheckoutQty('${item.id}', -1)" class="w-4 h-4 rounded-full bg-white hover:bg-gray-200 border border-gray-200 flex items-center justify-center text-gray-700 font-bold text-[10px] leading-none transition select-none cursor-pointer" title="কমান">-</button>
+                  <span class="text-[11px] font-bold text-slate-800 font-mono">${item.qty}</span>
+                  <button onclick="changeCheckoutQty('${item.id}', 1)" class="w-4 h-4 rounded-full bg-white hover:bg-gray-200 border border-gray-200 flex items-center justify-center text-gray-700 font-bold text-[10px] leading-none transition select-none cursor-pointer" title="বাড়ান">+</button>
+                </div>
+              </div>
             </div>
-            <span class="text-xs font-bold text-slate-800 font-mono">৳${(item.discountPrice || item.price) * item.qty}</span>
+            <div class="flex items-center gap-1.5 flex-shrink-0">
+              <span class="text-xs font-bold text-slate-800 font-mono">৳${(item.discountPrice || item.price) * item.qty}</span>
+              <button onclick="removeCheckoutItem('${item.id}')" title="পণ্যটি রিমুভ করুন" class="text-gray-400 hover:text-red-500 hover:bg-red-50 p-1 rounded-lg transition cursor-pointer flex items-center justify-center ml-1" aria-label="Remove item">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M3 6h18"></path>
+                  <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+                  <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+                  <line x1="10" y1="11" x2="10" y2="17"></line>
+                  <line x1="14" y1="11" x2="14" y2="17"></line>
+                </svg>
+              </button>
+            </div>
           </div>
         `).join('');
       }
+
+      function removeCheckoutItem(id) {
+        cart = cart.filter(item => String(item.id) !== String(id));
+        localStorage.setItem('cart', JSON.stringify(cart));
+        
+        const floatCartCount = document.getElementById('float-cart-count');
+        const floatCartTotal = document.getElementById('float-cart-total');
+        if (floatCartCount && floatCartTotal) {
+          const totalCount = cart.reduce((acc, item) => acc + (item.qty || 1), 0);
+          const totalPrice = cart.reduce((acc, item) => acc + ((item.discountPrice || item.price) * (item.qty || 1)), 0);
+          floatCartCount.textContent = `${totalCount} Items`;
+          floatCartTotal.textContent = `৳${totalPrice.toLocaleString('en-IN')}.00`;
+        }
+        
+        if (typeof showToast === 'function') {
+          showToast("পণ্যটি অর্ডার থেকে সরায়ে ফেলা হয়েছে!", "info");
+        }
+
+        renderCheckoutCart();
+        recalculateGrandTotal();
+      }
+      window.removeCheckoutItem = removeCheckoutItem;
+
+      function changeCheckoutQty(id, delta) {
+        const item = cart.find(i => String(i.id) === String(id));
+        if (!item) return;
+        item.qty = (item.qty || 1) + delta;
+        if (item.qty <= 0) {
+          removeCheckoutItem(id);
+          return;
+        }
+        localStorage.setItem('cart', JSON.stringify(cart));
+        
+        const floatCartCount = document.getElementById('float-cart-count');
+        const floatCartTotal = document.getElementById('float-cart-total');
+        if (floatCartCount && floatCartTotal) {
+          const totalCount = cart.reduce((acc, item) => acc + (item.qty || 1), 0);
+          const totalPrice = cart.reduce((acc, item) => acc + ((item.discountPrice || item.price) * (item.qty || 1)), 0);
+          floatCartCount.textContent = `${totalCount} Items`;
+          floatCartTotal.textContent = `৳${totalPrice.toLocaleString('en-IN')}.00`;
+        }
+
+        renderCheckoutCart();
+        recalculateGrandTotal();
+      }
+      window.changeCheckoutQty = changeCheckoutQty;
 
       // Delivery Area Card Click Handler with exact UI radio simulation
       function selectDeliveryArea(area) {

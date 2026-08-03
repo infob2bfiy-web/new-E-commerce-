@@ -3336,6 +3336,13 @@ Grand Total Payable Amount: ৳${activeOrderDetailObj.totalPrice}
 
       document.getElementById('static-content-tracking').value = settings.trackingContent || `<div class="bg-white border border-gray-100 shadow-sm rounded-3xl p-6 sm:p-10">\n  <h1 class="text-xl sm:text-2xl font-extrabold text-gray-800 bengali-font mb-2">অর্ডার ট্র্যাকিং সিস্টেম (Order Tracking)</h1>\n  <p class="text-xs text-gray-400 mb-8 max-w-md mx-auto">নির্দিষ্ট অর্ডার আইডি বা মোবাইল নম্বর টাইপ করে আপনার পণ্যের বর্তমান সংগ্রহ বা ডেলিভারি ধাপ দেখে নিন নিরাপদে।</p>\n  <div class="flex flex-col sm:flex-row gap-3 max-w-lg mx-auto mb-10 select-none">\n    <input type="text" id="track-input" placeholder="অর্ডার আইডি (যেমন: ORD-2026-X47A) বা ফোন নম্বর লিখুন..." class="flex-grow bg-gray-50 border border-gray-200 focus:border-emerald-500 rounded-xl px-4 py-2.5 font-bold text-sm outline-none transition uppercase">\n    <button id="track-btn" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm px-6 py-2.5 rounded-xl transition shadow cursor-pointer">খুঁজুন (Track)</button>\n  </div>\n</div>`;
 
+      // Credentials sync
+      const creds = JSON.parse(localStorage.getItem('adminCredentials') || '{"username":"admin","password":"admin1"}');
+      const currUserEl = document.getElementById('set-cred-curr-user');
+      if (currUserEl) {
+        currUserEl.value = creds.username || 'admin';
+      }
+
       // Render banners delete controller list directly inside settings
       renderBannersSettingsList();
     }
@@ -3629,8 +3636,12 @@ Grand Total Payable Amount: ৳${activeOrderDetailObj.totalPrice}
       creds.password = newPass;
 
       setDBItem('adminCredentials', creds);
-      triggerToast("ইউজারনেম ও সিকিউরিটি পাসওয়ার্ড সফলভাবে আপডেট করা হয়েছে!", "success");
+      triggerToast("ইউজারনেম ও সিকিউরিটি পাসওয়ার্ড সফলভাবে ডাটাবেজে আপডেট করা হয়েছে!", "success");
       document.getElementById('form-settings-credentials').reset();
+      const currUserEl = document.getElementById('set-cred-curr-user');
+      if (currUserEl) {
+        currUserEl.value = creds.username;
+      }
     });
 
 

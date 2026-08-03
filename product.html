@@ -3,29 +3,186 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Product Details - Green Grocery Organic Store</title>
+    <title>Product Details - Ghorer Shad Organic Store</title>
     <link rel="stylesheet" href="/src/style.css">
     <script type="module" src="/src/app.js"></script>
   </head>
-  <body class="bg-gray-50/50 pb-20 sm:pb-0">
+  <body class="bg-gray-100/70 pb-20 sm:pb-0 min-h-screen flex flex-col font-sans relative">
     <!-- Dynamic Header -->
     <header id="shared-header"></header>
 
+    <!-- Floating Right-Side Cart Widget -->
+    <a href="/cart.html" class="fixed right-0 top-36 z-40 bg-white border border-r-0 border-amber-500 rounded-l-xl shadow-xl overflow-hidden cursor-pointer flex flex-col items-center select-none group transition hover:scale-105">
+      <div class="bg-[#ff7800] text-white px-2.5 py-2 flex flex-col items-center justify-center w-full">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+        <span id="float-cart-count" class="text-[11px] font-bold mt-0.5 whitespace-nowrap">0 Items</span>
+      </div>
+      <div class="bg-white text-[#ff7800] font-extrabold text-xs px-2.5 py-1.5 text-center w-full border-t border-amber-100">
+        <span id="float-cart-total">৳0.00</span>
+      </div>
+    </a>
+
+    <!-- Floating Chat Messenger Button -->
+    <a id="float-chat-btn" href="#" target="_blank" rel="noopener noreferrer" class="fixed bottom-20 right-4 z-40 bg-[#ff7800] hover:bg-amber-600 text-white w-12 h-12 rounded-full shadow-xl flex items-center justify-center transition hover:scale-110 cursor-pointer">
+      <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 9h12v2H6V9zm8 5H6v-2h8v2zm4-6H6V6h12v2z"/></svg>
+    </a>
+
     <!-- Product Detail Container -->
-    <main class="max-w-7xl mx-auto px-4 md:px-8 py-10 font-sans">
-      <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 sm:p-8 mb-12">
-        <div id="product-detail-layout" class="grid grid-cols-1 lg:grid-cols-2 gap-10">
-          <!-- Dynamically populated detail blocks -->
+    <main class="max-w-7xl mx-auto px-4 md:px-8 py-6 flex-grow w-full">
+      <!-- Breadcrumb -->
+      <nav class="flex items-center gap-2 text-xs text-gray-500 mb-4 select-none">
+        <a href="/" class="hover:text-emerald-600 transition">Home</a>
+        <span>&gt;</span>
+        <a href="/shop.html" class="hover:text-emerald-600 transition">Products</a>
+        <span>&gt;</span>
+        <span id="breadcrumb-product-name" class="text-gray-800 font-medium truncate max-w-[200px] sm:max-w-xs">Product Details</span>
+      </nav>
+
+      <!-- Main Product Info Card -->
+      <div class="bg-white rounded-xl border border-gray-200/80 shadow-sm p-4 sm:p-6 mb-6">
+        <div id="product-detail-layout" class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8">
+          <!-- Dynamically populated product layout -->
+        </div>
+      </div>
+
+      <!-- Tabs Section: Description & Reviews -->
+      <div class="bg-white rounded-xl border border-gray-200/80 shadow-sm overflow-hidden mb-8">
+        <div class="flex border-b border-gray-200 bg-gray-50/60 select-none">
+          <button id="tab-btn-desc" class="py-3 px-6 text-xs sm:text-sm font-bold border-b-2 border-amber-500 text-amber-600 bg-white cursor-pointer transition focus:outline-none">
+            Description
+          </button>
+          <button id="tab-btn-reviews" class="py-3 px-6 text-xs sm:text-sm font-bold border-b-2 border-transparent text-gray-500 hover:text-gray-800 cursor-pointer transition focus:outline-none">
+            Customer Reviews (<span id="review-tab-count">0</span>)
+          </button>
+        </div>
+
+        <!-- Tab 1: Description Content -->
+        <div id="panel-desc" class="p-5 sm:p-8">
+          <h3 class="text-base font-bold text-gray-900 mb-4 pb-2 border-b border-gray-100">Product Details</h3>
+          <div id="product-desc-body" class="text-xs sm:text-sm text-gray-600 leading-relaxed font-sans space-y-3">
+            <!-- Populated dynamically -->
+          </div>
+        </div>
+
+        <!-- Tab 2: Reviews Content -->
+        <div id="panel-reviews" class="p-5 sm:p-8 hidden">
+          <div class="grid grid-cols-1 md:grid-cols-12 gap-8">
+            <!-- Rating Breakdown -->
+            <div class="md:col-span-4 border-b md:border-b-0 md:border-r border-gray-100 pr-0 md:pr-6 pb-6 md:pb-0">
+              <div class="flex items-baseline gap-2 mb-1">
+                <span id="review-avg-score" class="text-3xl sm:text-4xl font-extrabold text-gray-900">0.0</span>
+                <span class="text-xs text-gray-500 font-medium">Average Rating</span>
+              </div>
+              <div id="review-star-rating" class="text-amber-400 text-sm mb-2">☆☆☆☆☆</div>
+              <div id="review-recommend-pct" class="text-xs text-gray-400 font-medium mb-6">0.00% Recommended (0 reviews)</div>
+
+              <!-- Rating Bars -->
+              <div class="space-y-2 text-xs text-gray-500">
+                <div class="flex items-center gap-2">
+                  <span class="w-12 text-amber-500 font-bold">5 Stars</span>
+                  <div class="flex-grow bg-gray-100 h-2 rounded-full overflow-hidden">
+                    <div id="bar-5star" class="bg-amber-400 h-full w-0 transition-all duration-300"></div>
+                  </div>
+                  <span id="count-5star" class="w-6 text-right">0%</span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <span class="w-12 text-amber-500 font-bold">4 Stars</span>
+                  <div class="flex-grow bg-gray-100 h-2 rounded-full overflow-hidden">
+                    <div id="bar-4star" class="bg-amber-400 h-full w-0 transition-all duration-300"></div>
+                  </div>
+                  <span id="count-4star" class="w-6 text-right">0%</span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <span class="w-12 text-amber-500 font-bold">3 Stars</span>
+                  <div class="flex-grow bg-gray-100 h-2 rounded-full overflow-hidden">
+                    <div id="bar-3star" class="bg-amber-400 h-full w-0 transition-all duration-300"></div>
+                  </div>
+                  <span id="count-3star" class="w-6 text-right">0%</span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <span class="w-12 text-amber-500 font-bold">2 Stars</span>
+                  <div class="flex-grow bg-gray-100 h-2 rounded-full overflow-hidden">
+                    <div id="bar-2star" class="bg-amber-400 h-full w-0 transition-all duration-300"></div>
+                  </div>
+                  <span id="count-2star" class="w-6 text-right">0%</span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <span class="w-12 text-amber-500 font-bold">1 Star</span>
+                  <div class="flex-grow bg-gray-100 h-2 rounded-full overflow-hidden">
+                    <div id="bar-1star" class="bg-amber-400 h-full w-0 transition-all duration-300"></div>
+                  </div>
+                  <span id="count-1star" class="w-6 text-right">0%</span>
+                </div>
+              </div>
+
+              <!-- Customer Reviews List -->
+              <div class="mt-8">
+                <h4 class="font-bold text-gray-800 text-xs uppercase mb-3">Customer Feedback</h4>
+                <div id="reviews-list-container" class="space-y-3 max-h-60 overflow-y-auto pr-1">
+                  <p class="text-xs text-gray-400 italic">No reviews yet. Be the first to review this product!</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Review Submission Form -->
+            <div class="md:col-span-8">
+              <h3 class="text-sm font-bold text-gray-900 mb-1">Submit Your Review</h3>
+              <p class="text-[11px] text-gray-400 mb-4">Your opinion helps others make better choices. Required fields are marked *</p>
+
+              <form id="form-submit-review" class="space-y-4">
+                <div>
+                  <label class="block text-xs font-semibold text-gray-700 mb-1">Write your opinion about the product *</label>
+                  <textarea id="review-text" required rows="4" placeholder="Write your review here..." class="w-full bg-white border border-gray-200 rounded-lg p-3 text-xs text-gray-800 focus:border-amber-500 outline-none transition resize-none"></textarea>
+                </div>
+
+                <div>
+                  <label class="block text-xs font-semibold text-gray-700 mb-1">Upload Images (Optional)</label>
+                  <div id="review-dropzone" class="border-2 border-dashed border-gray-200 rounded-xl p-5 text-center bg-gray-50/50 hover:bg-gray-50 transition cursor-pointer relative">
+                    <input type="file" id="review-images-input" accept="image/*" multiple class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
+                    <div class="flex flex-col items-center justify-center gap-1.5 text-gray-400">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="text-amber-500"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                      <span class="text-xs font-bold text-gray-700">Drag &amp; Drop Images Here</span>
+                      <span class="text-[10px] text-gray-400">or click to browse files (3 max)</span>
+                    </div>
+                  </div>
+                  <div id="review-image-previews" class="flex gap-2 mt-2"></div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label class="block text-xs font-semibold text-gray-700 mb-1">Your rating *</label>
+                    <select id="review-rating-val" required class="w-full bg-white border border-gray-200 rounded-lg p-2.5 text-xs text-gray-800 focus:border-amber-500 outline-none">
+                      <option value="5">5 Stars - Excellent</option>
+                      <option value="4">4 Stars - Very Good</option>
+                      <option value="3">3 Stars - Good</option>
+                      <option value="2">2 Stars - Fair</option>
+                      <option value="1">1 Star - Poor</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label class="block text-xs font-semibold text-gray-700 mb-1">Your Name *</label>
+                    <input type="text" id="review-author-name" required placeholder="Enter your name" class="w-full bg-white border border-gray-200 rounded-lg p-2.5 text-xs text-gray-800 focus:border-amber-500 outline-none">
+                  </div>
+                </div>
+
+                <div class="flex justify-end pt-2">
+                  <button type="submit" class="bg-[#111827] hover:bg-black text-white font-extrabold text-xs uppercase px-6 py-2.5 rounded-lg shadow transition cursor-pointer select-none">
+                    Submit Review
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
         </div>
       </div>
 
       <!-- Related Products Section -->
-      <section class="mt-14 mb-8">
-        <h3 class="text-xl font-bold text-gray-800 bengali-font mb-6 flex items-center gap-2">
-          <span class="w-1.5 h-6 bg-emerald-600 rounded-full"></span>
-          <span>সম্পর্কিত কিছু প্রোডাক্ট (Related Products)</span>
+      <section class="mt-10 mb-8">
+        <h3 class="text-lg font-bold text-gray-800 mb-5 flex items-center gap-2">
+          <span class="w-1.5 h-5 bg-amber-500 rounded-full"></span>
+          <span>সম্পর্কিত প্রোডাক্ট (Related Products)</span>
         </h3>
-        <div id="related-grid" class="grid grid-cols-2 md:grid-cols-4 gap-5">
+        <div id="related-grid" class="grid grid-cols-2 md:grid-cols-4 gap-4">
           <!-- Related elements -->
         </div>
       </section>
@@ -39,45 +196,48 @@
 
     <!-- Script triggers for Detail View -->
     <script type="module">
-      import { getProducts, addToCart, toggleWishlist, getWishlist, createProductCardHTML } from './src/app.js';
+      import { getProducts, addToCart, toggleWishlist, getWishlist, createProductCardHTML, getSettings, showToast } from './src/app.js';
 
       function initProductDetailPage() {
         const products = getProducts();
+        const settings = getSettings();
         
         // Retrieve Product ID from URL
         const urlParams = new URLSearchParams(window.location.search);
-        const productId = urlParams.get('id') || products[0]?.id; // Fallback to first item
+        const productId = urlParams.get('id') || products[0]?.id;
 
         const product = products.find(p => String(p.id) === String(productId));
         const container = document.getElementById('product-detail-layout');
 
         if (!product) {
-          container.innerHTML = `
-            <div class="col-span-full py-12 text-center">
-              <h2 class="text-xl font-bold text-gray-700 mb-2 font-bengali">দুঃখিত, প্রোডাক্টটি খুঁজে পাওয়া যায়নি!</h2>
-              <a href="/shop.html" class="bg-emerald-600 text-white rounded-lg px-6 py-2.5 font-bold mt-4 inline-block shadow">শপ পেইজে ফিরে যান</a>
-            </div>
-          `;
+          if (container) {
+            container.innerHTML = `
+              <div class="col-span-full py-12 text-center">
+                <h2 class="text-xl font-bold text-gray-700 mb-2 font-bengali">দুঃখিত, প্রোডাক্টটি খুঁজে পাওয়া যায়নি!</h2>
+                <a href="/shop.html" class="bg-amber-500 text-white rounded-lg px-6 py-2.5 font-bold mt-4 inline-block shadow">শপ পেইজে ফিরে যান</a>
+              </div>
+            `;
+          }
           return;
         }
 
-        // Set page document title dynamically
-        document.title = `${product.name} - Green Grocery`;
+        // Set page document title and breadcrumb
+        document.title = `${product.name} - Ghorer Shad`;
+        const breadcrumbEl = document.getElementById('breadcrumb-product-name');
+        if (breadcrumbEl) breadcrumbEl.textContent = product.name;
 
-        const isWishlisted = getWishlist().some(item => String(item.id) === String(product.id));
-
-        // Setup gallery images thumbnail buttons
+        // Gallery setup
         const galleryImages = product.images && product.images.length > 0 
           ? product.images.filter(img => img && img.trim().length > 0)
           : [product.image];
 
         const thumbnailsHTML = galleryImages.map((img, idx) => {
           const borderClass = idx === 0 
-            ? "border-2 border-emerald-600 shadow" 
-            : "border border-gray-100 hover:border-emerald-300 opacity-80 hover:opacity-100";
+            ? "border-2 border-amber-500 shadow-sm" 
+            : "border border-gray-200 hover:border-amber-400 opacity-80 hover:opacity-100";
           return `
-            <button class="gallery-thumb-btn ${borderClass} rounded-xl overflow-hidden aspect-square p-0.5 bg-white cursor-pointer select-none transition" onclick="changeMainDetailImage(this, '${img}')">
-              <img src="${img}" class="w-full h-full object-cover rounded-lg" referrerPolicy="no-referrer">
+            <button class="gallery-thumb-btn ${borderClass} rounded-lg overflow-hidden aspect-square p-0.5 bg-white cursor-pointer select-none transition shrink-0" onclick="changeMainDetailImage(this, '${img}')">
+              <img src="${img}" class="w-full h-full object-cover rounded" referrerPolicy="no-referrer">
             </button>
           `;
         }).join('');
@@ -88,151 +248,310 @@
             mainImg.src = url;
           }
           document.querySelectorAll('.gallery-thumb-btn').forEach(b => {
-            b.className = "gallery-thumb-btn border border-gray-100 hover:border-emerald-300 opacity-80 hover:opacity-100 rounded-xl overflow-hidden aspect-square p-0.5 bg-white cursor-pointer select-none transition";
+            b.className = "gallery-thumb-btn border border-gray-200 hover:border-amber-400 opacity-80 hover:opacity-100 rounded-lg overflow-hidden aspect-square p-0.5 bg-white cursor-pointer select-none transition shrink-0";
           });
-          btnElement.className = "gallery-thumb-btn border-2 border-emerald-600 shadow rounded-xl overflow-hidden aspect-square p-0.5 bg-white cursor-pointer select-none transition";
+          btnElement.className = "gallery-thumb-btn border-2 border-amber-500 shadow-sm rounded-lg overflow-hidden aspect-square p-0.5 bg-white cursor-pointer select-none transition shrink-0";
         };
 
-        // Render Product Content
+        // Phone & WhatsApp formatting
+        const rawPhone = settings.phone || '01700000000';
+        const rawWhatsapp = settings.whatsapp || settings.phone || '01700000000';
+        let waDigits = rawWhatsapp.replace(/\D/g, '');
+        if (waDigits.startsWith('0')) waDigits = '88' + waDigits;
+        if (!waDigits.startsWith('88') && waDigits.length === 11) waDigits = '88' + waDigits;
+
+        const waText = encodeURIComponent(`অর্ডার করতে চাই: ${product.name} (মূল্য: ৳${product.discountPrice || product.price})`);
+        const waUrl = `https://wa.me/${waDigits}?text=${waText}`;
+        const phoneUrl = `tel:${rawPhone.replace(/\s+/g, '')}`;
+
+        // Link floating chat button
+        const floatChatBtn = document.getElementById('float-chat-btn');
+        if (floatChatBtn) floatChatBtn.href = waUrl;
+
+        // Render Main Product Info Container matching demo
+        const savePct = product.discountPrice && product.discountPrice < product.price 
+          ? Math.round(((product.price - product.discountPrice) / product.price) * 100) 
+          : 0;
+
         container.innerHTML = `
-          <!-- Left side gallery thumbs -->
-          <div>
-            <div class="border border-gray-100 rounded-2xl bg-gray-50 overflow-hidden aspect-square flex items-center justify-center p-2 mb-4">
-              <img id="main-detail-img" src="${product.image}" class="w-full h-full object-cover transition duration-300" alt="${product.name}" referrerPolicy="no-referrer">
-            </div>
-            <!-- Thumbnails loops -->
-            <div class="grid grid-cols-5 gap-2">
+          <!-- Left side: Vertical Gallery -->
+          <div class="lg:col-span-6 flex gap-3 sm:gap-4 items-start">
+            <!-- Vertical Thumbnails Strip on Left -->
+            <div class="flex flex-col gap-2.5 w-16 sm:w-20 shrink-0 max-h-[420px] overflow-y-auto pr-0.5">
               ${thumbnailsHTML}
+            </div>
+
+            <!-- Main Big Display Frame -->
+            <div class="flex-grow border border-gray-200/80 rounded-xl bg-white overflow-hidden aspect-square flex items-center justify-center p-3 relative shadow-inner">
+              <img id="main-detail-img" src="${product.image}" class="max-h-full max-w-full object-contain transition-all duration-300" alt="${product.name}" referrerPolicy="no-referrer">
             </div>
           </div>
 
-          <!-- Right side information list -->
-          <div class="flex flex-col text-left">
-            <span class="text-xs uppercase tracking-wider text-emerald-700 font-extrabold font-mono mb-2">${product.category}</span>
-            <h1 class="text-xl sm:text-2xl font-bold text-gray-800 font-sans tracking-tight mb-3 leading-snug">${product.name}</h1>
+          <!-- Right side: Product Overview & Actions -->
+          <div class="lg:col-span-6 flex flex-col text-left">
+            <!-- Product Title -->
+            <h1 class="text-lg sm:text-xl font-bold text-gray-900 font-sans tracking-tight mb-2 leading-snug">${product.name}</h1>
             
-            <!-- Ratings and category info -->
-            <div class="flex items-center gap-3 mb-4 select-none">
-              <div class="flex items-center gap-1">
-                <span class="text-amber-400 text-sm">★★★★★</span>
-                <span class="text-xs font-bold text-gray-500 font-sans">4.8 (26 Reviews)</span>
-              </div>
-              <span class="text-gray-200">|</span>
-              <span class="text-xs font-bold font-sans text-gray-500">ব্যান্ড: <span class="text-emerald-700">খাস গ্রোসারি</span></span>
-            </div>
-
-            <!-- Discount block -->
-            <div class="flex items-baseline gap-3.5 mb-6 py-4 px-5 bg-emerald-50/50 rounded-2xl w-fit">
-              <span class="text-3xl font-extrabold text-emerald-800 font-sans">৳${product.discountPrice || product.price}</span>
+            <!-- Price Display with Save Badge -->
+            <div class="flex items-center gap-2 mb-4 select-none flex-wrap">
+              <span class="text-2xl sm:text-3xl font-extrabold text-[#ff7800] font-sans">৳${(product.discountPrice || product.price).toLocaleString('en-IN')}.00</span>
               ${product.discountPrice && product.discountPrice < product.price ? `
-                <span class="text-base line-through text-gray-400 font-sans">৳${product.price}</span>
-                <span class="bg-red-500 text-white text-[10px] font-extrabold px-2 py-0.5 rounded-full select-none shadow">-${Math.round(((product.price - product.discountPrice) / product.price) * 100)}% ছাড়!</span>
+                <span class="text-sm line-through text-gray-400 font-sans">৳${product.price.toLocaleString('en-IN')}.00</span>
+                <span class="bg-[#10b981] text-white text-[11px] font-bold px-2 py-0.5 rounded shadow-2xs">Save ${savePct}%</span>
               ` : ''}
             </div>
 
-            <!-- Stock checklist -->
-            <div class="mb-6 flex flex-wrap gap-4 text-xs font-bold">
-              <div class="flex items-center gap-1.5 py-1 px-3 border border-emerald-100 rounded-full bg-emerald-50 text-emerald-800">
-                <span class="w-2 h-2 rounded-full bg-emerald-600 animate-pulse"></span>
-                <span>অর্গ্যানিক গ্যারান্টি</span>
+            <!-- Quantity Selector Row -->
+            <div class="flex items-center gap-3 mb-5 select-none">
+              <span class="text-xs sm:text-sm font-semibold text-gray-600 font-sans">Quantity:</span>
+              <div class="flex items-center border border-gray-300 rounded-lg bg-white px-2 py-1 gap-3 shadow-2xs">
+                <button id="qty-minus" class="w-6 h-6 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-gray-600 font-bold text-sm transition cursor-pointer select-none focus:outline-none">-</button>
+                <input type="text" id="qty-input" value="1" readonly class="w-8 text-center text-xs font-bold bg-transparent border-none outline-none text-gray-800">
+                <button id="qty-plus" class="w-6 h-6 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-gray-600 font-bold text-sm transition cursor-pointer select-none focus:outline-none">+</button>
               </div>
-              <div class="flex items-center gap-1.5 py-1 px-3 border border-emerald-100 rounded-full bg-emerald-50 text-emerald-800">
-                <span>📦 স্টক স্ট্যাটাস:</span>
-                <span class="${product.stock > 0 ? 'text-emerald-700' : 'text-red-650'}">${product.stock > 0 ? `ইন স্টক (${product.stock} কেজি/পিস)` : 'স্টক শেষ'}</span>
-              </div>
-              ${product.tag ? `
-                <div class="flex items-center gap-1.5 py-1 px-3 border border-orange-100 rounded-full bg-orange-50 text-orange-850">
-                  <span>💡 ট্যাগ:</span>
-                  <span>${product.tag}</span>
-                </div>
-              ` : ''}
             </div>
 
-            <!-- Description -->
-            <p class="text-sm text-gray-500 font-sans leading-relaxed mb-6 border-b border-gray-100 pb-6">${(product.description || '').replace(/<!--METADATA:[\s\S]*?-->/g, '').trim() || '১০০% পুষ্টিকর এবং সম্পূর্ণ নির্ভেজাল সোর্স থেকে আমাদের নিজস্ব তত্ত্বাবধানে সংগৃহীত খাদ্য উপাদান।'}</p>
-
-            <!-- Quantity & Actions block -->
-            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 mb-6">
-              <div class="flex items-center border border-gray-200 rounded-xl bg-gray-50 h-10.5 overflow-hidden">
-                <button id="qty-minus" class="px-4 text-gray-500 hover:bg-gray-100 font-bold focus:outline-none transition select-none">-</button>
-                <input type="text" id="qty-input" value="1" readonly class="w-12 text-center text-sm font-bold bg-transparent border-none outline-none">
-                <button id="qty-plus" class="px-4 text-gray-500 hover:bg-gray-100 font-bold focus:outline-none transition select-none">+</button>
-              </div>
-
-              <!-- Cart/Buy actions buttons -->
-              <div class="grid grid-cols-2 gap-3 flex-grow max-w-md">
-                <button id="detail-add-cart-btn" class="bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 select-none cursor-pointer h-10.5 rounded-xl font-bold text-xs sm:text-sm transition flex items-center justify-center gap-2">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
-                  <span>কার্ট করুন</span>
-                </button>
-                <button id="detail-buy-now-btn" class="bg-emerald-600 hover:bg-emerald-700 text-white select-none cursor-pointer h-10.5 rounded-xl font-bold text-xs sm:text-sm transition flex items-center justify-center shadow">
-                  <span>কিনুন (Order Now)</span>
-                </button>
-              </div>
-
-              <!-- Inline wishlist action -->
-              <button id="detail-wishlist-btn" class="border border-gray-200 hover:border-red-300 hover:bg-red-50 text-gray-400 hover:text-red-500 p-2.5 rounded-xl transition cursor-pointer select-none">
-                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="${isWishlisted ? 'red' : 'none'}" stroke="${isWishlisted ? 'red' : 'currentColor'}" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+            <!-- Action Buttons Grid (2x2 Grid) -->
+            <div class="grid grid-cols-2 gap-2.5 mb-5 max-w-lg">
+              <!-- ADD TO CART Button -->
+              <button id="detail-add-cart-btn" class="bg-[#ff7800] hover:bg-amber-600 text-white font-extrabold text-xs uppercase py-3 px-2 sm:px-3 rounded-lg flex items-center justify-center gap-1.5 shadow-sm transition cursor-pointer select-none">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+                <span>ADD TO CART</span>
               </button>
+
+              <!-- BUY NOW Button -->
+              <button id="detail-buy-now-btn" class="bg-[#021c15] hover:bg-black text-white font-extrabold text-xs uppercase py-3 px-2 sm:px-3 rounded-lg flex items-center justify-center gap-1.5 shadow-sm transition cursor-pointer select-none">
+                <span>BUY NOW</span>
+              </button>
+
+              <!-- Order On WhatsApp Button -->
+              <a href="${waUrl}" target="_blank" rel="noopener noreferrer" class="bg-[#10b981] hover:bg-emerald-600 text-white font-bold text-xs py-3 px-2 sm:px-3 rounded-lg flex items-center justify-center gap-1.5 shadow-sm transition cursor-pointer select-none">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
+                <span>Order On WhatsApp</span>
+              </a>
+
+              <!-- Call For Order Button -->
+              <a href="${phoneUrl}" class="bg-[#1e40af] hover:bg-blue-900 text-white font-bold text-xs py-3 px-2 sm:px-3 rounded-lg flex items-center justify-center gap-1.5 shadow-sm transition cursor-pointer select-none">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                <span>Call For Order</span>
+              </a>
             </div>
-            
-            <!-- Delivery Info highlights -->
-            <div class="bg-gray-50 rounded-2xl p-4 grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs text-gray-500 leading-relaxed font-sans mt-auto">
-              <div>🚚 <span class="font-bold text-gray-700">ঢাকায় ফ্রি ডেলিভারী</span> : ৫০০ টাকার উপরে অর্ডারে ২৪-৪৮ ঘণ্টায় ডেলিভারি।</div>
-              <div>🔄 <span class="font-bold text-gray-700">রিপ্লেসমেন্ট গ্যারান্টি</span> : ড্যামেজ বা পচা প্রোডাক্টে ৭ দিনে রিপ্লেসমেন্ট।</div>
+
+            <!-- Brand Box -->
+            <div class="border border-gray-200/90 rounded-lg p-2.5 bg-white w-fit flex items-center gap-2 text-xs text-gray-600 shadow-2xs mt-1">
+              <span class="font-medium text-gray-500">Brand:</span>
+              <span class="font-bold text-gray-900 border border-gray-100 bg-gray-50/80 px-2 py-0.5 rounded flex items-center gap-1">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="text-amber-500"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
+                <span>${product.category}</span>
+              </span>
             </div>
           </div>
         `;
 
-        // 1. Quantity control increments
+        // Description Body
+        const descBodyEl = document.getElementById('product-desc-body');
+        if (descBodyEl) {
+          const cleanDesc = (product.description || '').replace(/<!--METADATA:[\s\S]*?-->/g, '').trim();
+          descBodyEl.innerHTML = cleanDesc 
+            ? `<p class="whitespace-pre-line">${cleanDesc}</p>`
+            : `<p>১০০% পুষ্টিকর এবং সম্পূর্ণ নির্ভেজাল সোর্স থেকে আমাদের নিজস্ব তত্ত্বাবধানে সংগৃহীত প্রিমিয়াম খাদ্য উপাদান।</p>`;
+        }
+
+        // Quantity controls
         const qtyInp = document.getElementById('qty-input');
-        const qtyPlus = document.getElementById('qty-minus');
-        const qtyMin = document.getElementById('qty-plus');
+        const qtyMinus = document.getElementById('qty-minus');
+        const qtyPlus = document.getElementById('qty-plus');
         
         let qtyVal = 1;
-        qtyPlus?.addEventListener('click', () => {
+        qtyMinus?.addEventListener('click', () => {
           if (qtyVal > 1) {
             qtyVal--;
-            qtyInp.value = qtyVal;
+            if (qtyInp) qtyInp.value = qtyVal;
           }
         });
-        qtyMin?.addEventListener('click', () => {
-          if (qtyVal < product.stock) {
+        qtyPlus?.addEventListener('click', () => {
+          if (qtyVal < (product.stock || 99)) {
             qtyVal++;
-            qtyInp.value = qtyVal;
+            if (qtyInp) qtyInp.value = qtyVal;
           }
         });
 
-        // 2. Add to cart button trigger
+        // Cart Actions
         document.getElementById('detail-add-cart-btn')?.addEventListener('click', () => {
           addToCart(productId, qtyVal);
         });
 
-        // 3. Buy now trigger direct redirect
         document.getElementById('detail-buy-now-btn')?.addEventListener('click', () => {
           addToCart(productId, qtyVal, true);
         });
 
-        // 4. Wishlist action toggle
-        document.getElementById('detail-wishlist-btn')?.addEventListener('click', (e) => {
-          toggleWishlist(productId);
-          const hasIt = getWishlist().some(item => String(item.id) === String(productId));
-          e.currentTarget.querySelector('svg').setAttribute('fill', hasIt ? 'red' : 'none');
-          e.currentTarget.querySelector('svg').setAttribute('stroke', hasIt ? 'red' : 'currentColor');
-        });
+        // Render Reviews Data
+        renderProductReviews(productId);
 
-        // 5. Render Related Products
+        // Render Related Products
         const relatedGrid = document.getElementById('related-grid');
         if (relatedGrid) {
-          const related = products.filter(p => p.category === product.category && String(p.id) !== String(product.id));
+          const related = products.filter(p => p.category === product.category && String(p.id) !== String(productId));
           if (related.length > 0) {
             relatedGrid.innerHTML = related.slice(0, 4).map(p => createProductCardHTML(p)).join('');
           } else {
-            // Render non category list fallback
-            relatedGrid.innerHTML = products.filter(p => String(p.id) !== String(product.id)).slice(0, 4).map(p => createProductCardHTML(p)).join('');
+            relatedGrid.innerHTML = products.filter(p => String(p.id) !== String(productId)).slice(0, 4).map(p => createProductCardHTML(p)).join('');
           }
         }
       }
+
+      // Reviews rendering & local persistence
+      function renderProductReviews(productId) {
+        const reviewsKey = `product_reviews_${productId}`;
+        const storedReviews = JSON.parse(localStorage.getItem(reviewsKey) || '[]');
+
+        const countBadge = document.getElementById('review-tab-count');
+        if (countBadge) countBadge.textContent = storedReviews.length;
+
+        const totalReviews = storedReviews.length;
+        let avgRating = 0;
+
+        const counts = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
+
+        if (totalReviews > 0) {
+          const sum = storedReviews.reduce((acc, r) => {
+            const rating = Number(r.rating) || 5;
+            counts[rating] = (counts[rating] || 0) + 1;
+            return acc + rating;
+          }, 0);
+          avgRating = (sum / totalReviews).toFixed(1);
+        }
+
+        // Update score & bars UI
+        const scoreEl = document.getElementById('review-avg-score');
+        if (scoreEl) scoreEl.textContent = totalReviews > 0 ? avgRating : '0.0';
+
+        const starEl = document.getElementById('review-star-rating');
+        if (starEl) {
+          const numStars = Math.round(avgRating);
+          starEl.textContent = '★'.repeat(numStars) + '☆'.repeat(5 - numStars);
+        }
+
+        const pctEl = document.getElementById('review-recommend-pct');
+        if (pctEl) {
+          const recommendPct = totalReviews > 0 ? (((counts[5] + counts[4]) / totalReviews) * 100).toFixed(2) : '0.00';
+          pctEl.textContent = `${recommendPct}% Recommended (${totalReviews} reviews)`;
+        }
+
+        [5, 4, 3, 2, 1].forEach(star => {
+          const bar = document.getElementById(`bar-${star}star`);
+          const cnt = document.getElementById(`count-${star}star`);
+          const pct = totalReviews > 0 ? Math.round((counts[star] / totalReviews) * 100) : 0;
+          if (bar) bar.style.width = `${pct}%`;
+          if (cnt) cnt.textContent = `${pct}%`;
+        });
+
+        // Reviews list
+        const listContainer = document.getElementById('reviews-list-container');
+        if (listContainer) {
+          if (storedReviews.length === 0) {
+            listContainer.innerHTML = `<p class="text-xs text-gray-400 italic">No reviews yet. Be the first to review this product!</p>`;
+          } else {
+            listContainer.innerHTML = storedReviews.map(r => `
+              <div class="border border-gray-100 rounded-lg p-3 bg-gray-50/50 text-xs">
+                <div class="flex items-center justify-between mb-1">
+                  <span class="font-bold text-gray-800">${r.author || 'Anonymous'}</span>
+                  <span class="text-amber-400 text-xs">${'★'.repeat(r.rating || 5)}${'☆'.repeat(5 - (r.rating || 5))}</span>
+                </div>
+                <p class="text-gray-600 font-sans">${r.text}</p>
+                ${r.images && r.images.length > 0 ? `
+                  <div class="flex gap-1.5 mt-2">
+                    ${r.images.map(img => `<img src="${img}" class="w-10 h-10 object-cover rounded border border-gray-200" />`).join('')}
+                  </div>
+                ` : ''}
+              </div>
+            `).join('');
+          }
+        }
+      }
+
+      // Handle Review Submission
+      document.addEventListener('DOMContentLoaded', () => {
+        // Tab switching listeners
+        const btnDesc = document.getElementById('tab-btn-desc');
+        const btnReviews = document.getElementById('tab-btn-reviews');
+        const panelDesc = document.getElementById('panel-desc');
+        const panelReviews = document.getElementById('panel-reviews');
+
+        btnDesc?.addEventListener('click', () => {
+          btnDesc.className = "py-3 px-6 text-xs sm:text-sm font-bold border-b-2 border-amber-500 text-amber-600 bg-white cursor-pointer transition focus:outline-none";
+          btnReviews.className = "py-3 px-6 text-xs sm:text-sm font-bold border-b-2 border-transparent text-gray-500 hover:text-gray-800 cursor-pointer transition focus:outline-none";
+          panelDesc?.classList.remove('hidden');
+          panelReviews?.classList.add('hidden');
+        });
+
+        btnReviews?.addEventListener('click', () => {
+          btnReviews.className = "py-3 px-6 text-xs sm:text-sm font-bold border-b-2 border-amber-500 text-amber-600 bg-white cursor-pointer transition focus:outline-none";
+          btnDesc.className = "py-3 px-6 text-xs sm:text-sm font-bold border-b-2 border-transparent text-gray-500 hover:text-gray-800 cursor-pointer transition focus:outline-none";
+          panelReviews?.classList.remove('hidden');
+          panelDesc?.classList.add('hidden');
+        });
+
+        // Review image dropzone handling
+        let reviewUploadedImages = [];
+        const fileInput = document.getElementById('review-images-input');
+        const previewsContainer = document.getElementById('review-image-previews');
+
+        fileInput?.addEventListener('change', (e) => {
+          const files = Array.from(e.target.files).slice(0, 3);
+          reviewUploadedImages = [];
+          if (previewsContainer) previewsContainer.innerHTML = '';
+
+          files.forEach(file => {
+            const reader = new FileReader();
+            reader.onload = (event) => {
+              const base64 = event.target.result;
+              reviewUploadedImages.push(base64);
+              if (previewsContainer) {
+                const img = document.createElement('img');
+                img.src = base64;
+                img.className = 'w-12 h-12 object-cover rounded-lg border border-gray-200 shadow-sm';
+                previewsContainer.appendChild(img);
+              }
+            };
+            reader.readAsDataURL(file);
+          });
+        });
+
+        // Submit review form
+        document.getElementById('form-submit-review')?.addEventListener('submit', (e) => {
+          e.preventDefault();
+          const urlParams = new URLSearchParams(window.location.search);
+          const products = getProducts();
+          const productId = urlParams.get('id') || products[0]?.id;
+
+          const text = document.getElementById('review-text')?.value?.trim();
+          const rating = Number(document.getElementById('review-rating-val')?.value || 5);
+          const author = document.getElementById('review-author-name')?.value?.trim() || 'Anonymous';
+
+          if (!text) return;
+
+          const reviewsKey = `product_reviews_${productId}`;
+          const storedReviews = JSON.parse(localStorage.getItem(reviewsKey) || '[]');
+
+          storedReviews.unshift({
+            author,
+            text,
+            rating,
+            images: reviewUploadedImages,
+            date: new Date().toLocaleDateString()
+          });
+
+          localStorage.setItem(reviewsKey, JSON.stringify(storedReviews));
+          showToast("আপনার রিভিউটি সফলভাবে প্রকাশিত হয়েছে!", "success");
+
+          // Reset form & re-render reviews
+          e.target.reset();
+          reviewUploadedImages = [];
+          if (previewsContainer) previewsContainer.innerHTML = '';
+          renderProductReviews(productId);
+        });
+      });
 
       if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', initProductDetailPage);
@@ -245,3 +564,4 @@
     </script>
   </body>
 </html>
+

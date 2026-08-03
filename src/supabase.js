@@ -467,55 +467,45 @@ export async function saveUsersToSupabase(users) {
  */
 export async function saveAdminCredentialsToSupabase(creds) {
   const config = getSupabaseConfig();
-  if (!config.enabled) return;
+  if (!config.enabled) return { success: false };
   try {
-    if (!creds || !creds.username) return;
+    if (!creds || !creds.username) return { success: false };
 
-    // 1. Fetch existing credentials first
-    const checkRes = await fetch(`${config.supabaseUrl}/rest/v1/admin_credentials?select=*`, {
+    // 1. Clear existing admin_credentials rows in Supabase
+    try {
+      await fetch(`${config.supabaseUrl}/rest/v1/admin_credentials?username=not.is.null`, {
+        method: 'DELETE',
+        headers: {
+          'apikey': config.supabaseKey,
+          'Authorization': `Bearer ${config.supabaseKey}`
+        }
+      });
+    } catch (delErr) {
+      console.warn("DELETE prior admin_credentials rows failed:", delErr);
+    }
+
+    // 2. Insert the updated admin credentials
+    const res = await fetch(`${config.supabaseUrl}/rest/v1/admin_credentials`, {
+      method: 'POST',
       headers: {
         'apikey': config.supabaseKey,
-        'Authorization': `Bearer ${config.supabaseKey}`
-      }
+        'Authorization': `Bearer ${config.supabaseKey}`,
+        'Content-Type': 'application/json',
+        'Prefer': 'return=minimal'
+      },
+      body: JSON.stringify({
+        username: creds.username,
+        password: creds.password || 'admin1'
+      })
     });
-    
-    const rows = checkRes.ok ? await checkRes.json() : [];
 
-    if (rows && rows.length > 0) {
-      // 2. Update the existing first row
-      const firstRow = rows[0];
-      const queryParam = firstRow.id ? `?id=eq.${firstRow.id}` : `?username=eq.${encodeURIComponent(firstRow.username)}`;
-      
-      await fetch(`${config.supabaseUrl}/rest/v1/admin_credentials${queryParam}`, {
-        method: 'PATCH',
-        headers: {
-          'apikey': config.supabaseKey,
-          'Authorization': `Bearer ${config.supabaseKey}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          username: creds.username,
-          password: creds.password || 'admin1'
-        })
-      });
-    } else {
-      // 3. Insert new row
-      await fetch(`${config.supabaseUrl}/rest/v1/admin_credentials`, {
-        method: 'POST',
-        headers: {
-          'apikey': config.supabaseKey,
-          'Authorization': `Bearer ${config.supabaseKey}`,
-          'Content-Type': 'application/json',
-          'Prefer': 'return=minimal'
-        },
-        body: JSON.stringify({
-          username: creds.username,
-          password: creds.password || 'admin1'
-        })
-      });
+    if (!res.ok) {
+      console.warn("POST new admin credentials failed:", res.status);
     }
+    return { success: res.ok };
   } catch (e) {
     console.warn("Error saving admin credentials to Supabase", e);
+    return { success: false, error: e };
   }
 }
 

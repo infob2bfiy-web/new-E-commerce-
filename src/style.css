@@ -26,6 +26,7 @@ html, body {
   max-width: 100%;
   overflow-x: hidden;
   width: 100%;
+  -webkit-tap-highlight-color: transparent;
 }
 
 body {
@@ -33,10 +34,30 @@ body {
   color: var(--text-dark);
   background-color: #ffffff;
   scroll-behavior: smooth;
+  animation: pageFadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+@keyframes pageFadeIn {
+  from {
+    opacity: 0.85;
+    transform: translateY(2px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .bengali-font {
   font-family: var(--font-bengali);
+}
+
+/* GPU Hardware acceleration & Smooth rendering */
+img {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
 }
 
 /* Hide scrollbar utility */
@@ -46,6 +67,7 @@ body {
 .no-scrollbar {
   -ms-overflow-style: none;  /* IE and Edge */
   scrollbar-width: none;  /* Firefox */
+  -webkit-overflow-scrolling: touch;
 }
 
 /* Sticky top navigation shadow transition */

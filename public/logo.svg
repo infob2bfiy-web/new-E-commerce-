@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 400" width="100%" height="100%">
+  <defs>
+    <style>
+      .bg-badge { fill: #0A481E; }
+      .roof { fill: #0A481E; }
+      .leaf { fill: #F5B000; stroke: #0A481E; stroke-width: 1.5; }
+      .swoosh { fill: #F5B000; }
+      .text-ghorer { font-family: 'Brush Script MT', 'Pacifico', 'Caveat', 'Dancing Script', cursive, sans-serif; font-weight: 900; fill: #FFFFFF; font-size: 88px; }
+      .text-shad { font-family: 'Brush Script MT', 'Pacifico', 'Caveat', 'Dancing Script', cursive, sans-serif; font-weight: 900; fill: #F5B000; font-size: 110px; }
+    </style>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="2" dy="4" stdDeviation="3" flood-color="#000" flood-opacity="0.15"/>
+    </filter>
+  </defs>
+
+  <!-- House Roof & Chimney Header -->
+  <g class="roof" filter="url(#shadow)">
+    <!-- Roof outline -->
+    <path d="M 250 15 L 120 110 L 150 110 L 250 35 L 350 110 L 380 110 Z" />
+    <!-- Inner Roof Fill -->
+    <polygon points="250,42 155,110 345,110" />
+    <!-- Chimney -->
+    <rect x="310" y="30" width="28" height="45" rx="2" />
+    <!-- Window Grid -->
+    <rect x="235" y="65" width="13" height="13" fill="#FFFFFF" rx="1" />
+    <rect x="252" y="65" width="13" height="13" fill="#FFFFFF" rx="1" />
+    <rect x="235" y="82" width="13" height="13" fill="#FFFFFF" rx="1" />
+    <rect x="252" y="82" width="13" height="13" fill="#FFFFFF" rx="1" />
+  </g>
+
+  <!-- Main Dark Green Organic Background Badge -->
+  <path class="bg-badge" d="M 50 160 
+           C 20 140, 20 230, 40 270 
+           C 60 320, 120 370, 250 370 
+           C 380 370, 450 320, 480 260 
+           C 500 220, 490 140, 450 130 
+           C 400 120, 360 125, 330 135 
+           C 280 110, 180 110, 130 125 
+           C 80 135, 60 145, 50 160 Z" />
+
+  <!-- Leaves Top Right -->
+  <g class="leaf" transform="translate(360, 110) rotate(-15)">
+    <!-- Leaf 1 -->
+    <path d="M 0 30 C -20 10, 10 -20, 35 -10 C 25 15, 10 30, 0 30 Z" />
+    <path d="M 0 30 Q 15 5 35 -10" fill="none" stroke="#0A481E" stroke-width="1.5" />
+    <!-- Leaf 2 -->
+    <path d="M 25 35 C 10 20, 30 -5, 55 5 C 48 25, 35 38, 25 35 Z" />
+    <path d="M 25 35 Q 38 18 55 5" fill="none" stroke="#0A481E" stroke-width="1.5" />
+  </g>
+
+  <!-- Golden Yellow Swoosh Accents -->
+  <path class="swoosh" d="M 160 120 Q 250 100 350 135 Q 250 112 160 120 Z" />
+  <path class="swoosh" d="M 180 230 Q 280 215 390 238 Q 280 222 180 230 Z" />
+  <path class="swoosh" d="M 40 280 Q 220 395 400 340 Q 210 380 40 280 Z" />
+
+  <!-- Text "Ghorer" -->
+  <text x="75" y="210" class="text-ghorer" stroke="#0A481E" stroke-width="8" paint-order="stroke fill">Ghorer</text>
+
+  <!-- Text "Shad" -->
+  <text x="110" y="325" class="text-shad" stroke="#0A481E" stroke-width="10" paint-order="stroke fill">Shad</text>
+</svg>

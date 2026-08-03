@@ -302,18 +302,18 @@ export const BANGLADESH_DISTRICTS = [
 ].sort();
 
 export const DEFAULT_SITE_SETTINGS = {
-  siteName: "আম্রপালি",
+  siteName: "Ghorer Shad",
   tagline: "🚚 ঢাকায় ফ্রি ডেলিভারি ৳৫০০+ অর্ডারে!",
-  logoUrl: "https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&q=80&w=150",
-  favicon: "https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&q=80&w=150",
+  logoUrl: "/assets/ghorer-shad-logo.jpg",
+  favicon: "/assets/ghorer-shad-logo.jpg",
   phone: "01615469679",
   whatsapp: "01615469679",
   bkash: "01615469679",
   nagad: "01615469679",
   announcement: "💥 ফ্রি ডেলিভারি সারা বাংলাদেশে ৫০০+ টাকার অর্ডারে bKash/Nagad কুপনে!",
   footerText: "Premium Organic grocery directly from local farmers of Bangladesh to your dining table safely.",
-  footerLogoUrl: "",
-  footerLogoText: "",
+  footerLogoUrl: "/assets/ghorer-shad-logo.jpg",
+  footerLogoText: "Ghorer Shad",
   fbPixel: "",
   adminNotifyEmail: "info.b2bfiy@gmail.com"
 };
