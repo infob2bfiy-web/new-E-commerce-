@@ -261,8 +261,7 @@ export function updateCartBadges() {
   
   document.querySelectorAll('.cart-count').forEach(el => {
     el.textContent = totalItems;
-    if (totalItems > 0) el.classList.remove('hidden');
-    else el.classList.add('hidden');
+    el.classList.remove('hidden');
   });
 
   document.querySelectorAll('#float-cart-count').forEach(el => {
@@ -328,11 +327,20 @@ export function injectSharedLayouts() {
     `;
 
     header.innerHTML = `
-      <!-- Top White Header Row matching Ghorer Bazar layout exactly -->
-      <div class="bg-white md:border-b border-gray-150 py-2.5 md:py-3.5 px-3 md:px-8 max-w-7xl mx-auto flex items-center justify-between gap-3 md:gap-4 z-40 relative">
+      <!-- Top White Header Row matching Ghorer Bazar mobile layout exactly -->
+      <div class="bg-white md:border-b border-gray-150 py-2.5 md:py-3.5 px-3 md:px-8 max-w-7xl mx-auto flex items-center justify-between gap-2 md:gap-4 z-40 relative">
         
-        <!-- Logo on the left -->
-        <a href="/index.html" class="flex-shrink-0 flex items-center hover:opacity-95 transition-opacity select-none">
+        <!-- Mobile Left Hamburger Button (3 lines) -->
+        <button id="mobile-hamburger-btn" class="md:hidden p-1.5 text-slate-800 hover:text-[#f97316] transition focus:outline-none cursor-pointer flex-shrink-0" title="মেনু খুলুন">
+          <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="18" x2="16" y2="18"></line>
+          </svg>
+        </button>
+
+        <!-- Logo (Centered on mobile, left-aligned on desktop) -->
+        <a href="/index.html" class="flex-shrink-0 flex items-center justify-center hover:opacity-95 transition-opacity select-none mx-auto md:mx-0">
           ${logoMarkup}
         </a>
 
@@ -387,7 +395,7 @@ export function injectSharedLayouts() {
             <div class="text-[#374151] group-hover:text-[#f97316] transition-colors duration-200 relative">
               <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
               <!-- Cart count red badge aligned to top-right of icon -->
-              <span class="cart-count absolute -top-1.5 -right-2 bg-red-600 text-white font-extrabold text-[9px] w-4.5 h-4.5 rounded-full flex items-center justify-center border border-white hidden">0</span>
+              <span class="cart-count absolute -top-1.5 -right-2 bg-[#ff7800] text-white font-extrabold text-[9px] w-4.5 h-4.5 rounded-full flex items-center justify-center border border-white">0</span>
             </div>
             <span class="text-[11px] font-bold text-slate-550 group-hover:text-slate-800 transition-colors font-sans whitespace-nowrap">Cart</span>
           </a>
@@ -403,19 +411,19 @@ export function injectSharedLayouts() {
         </div>
 
         <!-- Mobile Right Action Icons (Search Toggle Icon & Cart Button) -->
-        <div class="flex md:hidden items-center gap-2 select-none">
+        <div class="flex md:hidden items-center gap-1 select-none flex-shrink-0">
           <!-- Mobile Search Icon Button matching provided design demo -->
-          <button id="mobile-search-toggle-btn" class="p-2 text-slate-700 hover:text-[#f97316] transition cursor-pointer focus:outline-none rounded-full hover:bg-slate-100" title="Search">
-            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <button id="mobile-search-toggle-btn" class="p-1.5 text-slate-700 hover:text-[#f97316] transition cursor-pointer focus:outline-none rounded-full" title="Search">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
               <circle cx="11" cy="11" r="8"></circle>
               <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
             </svg>
           </button>
 
-          <!-- Mobile Cart Button -->
-          <a href="/cart.html" class="p-2 text-slate-700 hover:text-[#f97316] transition relative rounded-full hover:bg-slate-100" title="Cart">
-            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
-            <span class="cart-count absolute top-0.5 right-0.5 bg-red-600 text-white font-extrabold text-[9px] w-4.5 h-4.5 rounded-full flex items-center justify-center border border-white hidden">0</span>
+          <!-- Mobile Cart Button with Orange Circle Badge -->
+          <a href="/cart.html" class="p-1.5 text-slate-800 hover:text-[#f97316] transition relative rounded-full flex items-center justify-center cursor-pointer" title="Cart">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+            <span class="cart-count absolute -top-1 -right-1 bg-[#ff7800] text-white font-extrabold text-[10px] w-5 h-5 rounded-full flex items-center justify-center border-2 border-white shadow-2xs">0</span>
           </a>
         </div>
       </div>
@@ -471,79 +479,118 @@ export function injectSharedLayouts() {
         </div>
       </div>
 
-      <!-- "More" Slide-out Panel Overlay (drawer) -->
+      <!-- Slide-out Left Navigation Panel Drawer (matching Ghorer Bazar mobile demo) -->
       <div id="desktop-more-drawer" class="fixed inset-0 bg-black/60 z-[100] hidden transition-opacity duration-300 backdrop-blur-xs">
-        <div class="absolute right-0 top-0 bottom-0 w-full max-w-sm bg-white shadow-2xl p-6 overflow-y-auto transform translate-x-full transition-transform duration-300 font-sans" id="desktop-more-drawer-content">
-          <div class="flex items-center justify-between pb-4 border-b border-gray-100 mb-6">
-            <h5 class="text-base font-bold text-slate-800">অতিরিক্ত মেনু ও লিংকসমূহ</h5>
-            <button id="close-desktop-more-btn" class="p-1 rounded-full text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition focus:outline-none cursor-pointer">✕</button>
-          </div>
-          
-          <!-- Useful Links inside the More menu -->
-          <div class="space-y-6 text-sm font-semibold text-slate-700">
-            <div>
-              <p class="text-[10px] tracking-wider uppercase text-slate-400 font-black mb-3">কাস্টমার সার্ভিস</p>
-              <div class="space-y-3.5 pl-1.5">
-                <a href="/order-tracking.html" class="block hover:text-emerald-700 transition">অর্ডার ট্র্যাকিং</a>
-                <a href="/shop.html?sort_by=flash-sale" class="block hover:text-emerald-700 transition text-rose-600 flex items-center gap-1">ফ্ল্যাশ সেল ⚡</a>
-                <a href="/shop.html?sort_by=preorder" class="block hover:text-emerald-700 transition">প্রি-অর্ডার পণ্যসমূহ</a>
-                <a href="/shop.html?sort_by=b1g1" class="block hover:text-emerald-700 transition">১ কিনলে ১ ফ্রি ধামাকা অফার</a>
-              </div>
+        <div class="absolute left-0 top-0 bottom-0 w-[85%] max-w-[320px] bg-white shadow-2xl p-4 overflow-y-auto transform -translate-x-full transition-transform duration-300 font-sans flex flex-col justify-between" id="desktop-more-drawer-content">
+          <div class="space-y-4">
+            <!-- Header bar with title and close button -->
+            <div class="flex items-center justify-between pb-2 border-b border-gray-100">
+              <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">মেনু নেভিগেশন</span>
+              <button id="close-desktop-more-btn" class="p-1 rounded-full text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition cursor-pointer" title="বন্ধ করুন">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+              </button>
             </div>
 
-            <div>
-              <p class="text-[10px] tracking-wider uppercase text-slate-400 font-black mb-3">কোম্পানি নীতিমালা</p>
-              <div class="space-y-3.5 pl-1.5">
-                <a href="/about.html" class="block hover:text-emerald-700 transition">আমাদের সম্পর্কে (About Us)</a>
-                <a href="/contact.html" class="block hover:text-emerald-700 transition">যোগাযোগ করুন</a>
-                <a href="/shipping-policy.html" class="block hover:text-emerald-700 transition">শিপিং পলিসি</a>
-                <a href="/return-policy.html" class="block hover:text-emerald-700 transition">রিটার্ন পলিসি</a>
-                <a href="/privacy-and-policy.html" class="block hover:text-emerald-700 transition">প্রাইভেসি পলিসি</a>
-                <a href="/terms-and-condition.html" class="block hover:text-emerald-700 transition">শর্তাবলী ও নিয়মাবলী</a>
+            <!-- 1. Top Orange Hello There! Signin Card Banner (exact match with user demo screenshot) -->
+            <a href="${currentUser ? '/dashboard.html' : '/login.html'}" class="flex items-center gap-3 bg-gradient-to-r from-[#f97316] to-[#ea580c] text-white p-3.5 rounded-2xl shadow-md hover:shadow-lg transition duration-200 group cursor-pointer">
+              <div class="w-11 h-11 rounded-full bg-sky-200/90 border border-white/50 flex items-center justify-center flex-shrink-0 shadow-inner group-hover:scale-105 transition-transform">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" class="text-sky-600">
+                  <path d="M12 2a5 5 0 1 0 5 5 5 5 0 0 0-5-5zm0 8a3 3 0 1 1 3-3 3 3 0 0 1-3 3zm0 4c-4.42 0-8 2.24-8 5v1h16v-1c0-2.76-3.58-5-8-5z"/>
+                </svg>
               </div>
+              <div>
+                <h4 class="font-bold text-base leading-tight text-white font-sans">${currentUser ? `Hello, ${currentUser.name || 'User'}!` : 'Hello there!'}</h4>
+                <p class="text-xs font-semibold text-amber-100 flex items-center gap-1 mt-0.5">
+                  <span>${currentUser ? 'ড্যাশবোর্ড' : 'Signin'}</span>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                </p>
+              </div>
+            </a>
+
+            <!-- 2. Categories Card Container (exact match with user demo screenshot) -->
+            <div class="bg-[#f4f5f7] rounded-2xl p-1.5 border border-slate-200/60 shadow-2xs divide-y divide-gray-200/80">
+              ${categories.map((cat, idx) => {
+                return `
+                  <a href="/shop.html?category=${cat.id}" class="flex items-center justify-between px-3 py-2.5 text-xs font-bold text-slate-700 hover:text-[#f97316] hover:bg-white transition duration-150 rounded-xl group cursor-pointer">
+                    <span class="font-sans">${cat.name}</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="group-hover:translate-x-1 transition-transform opacity-80">
+                      <polyline points="9 18 15 12 9 6"></polyline>
+                    </svg>
+                  </a>
+                `;
+              }).join('')}
             </div>
 
-            <div class="border-t border-gray-100 pt-5">
-              <p class="text-[10px] tracking-wider uppercase text-slate-400 font-black mb-2.5">এডমিন জোন (Admin Zone)</p>
-              <div class="pl-0.5">
-                <a href="/admin/index.html" class="flex items-center gap-2.5 px-3 py-2.5 bg-emerald-50 hover:bg-emerald-100/90 border border-emerald-200/80 text-emerald-800 rounded-xl transition duration-200 shadow-xs group">
-                  <div class="p-1.5 bg-emerald-600 rounded-lg text-white group-hover:scale-105 transition-transform flex-shrink-0">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" class="text-white"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-                  </div>
-                  <div class="text-left">
-                    <p class="font-black text-[12.5px] leading-tight text-emerald-950 font-sans">এডমিন কন্ট্রোল প্যানেল</p>
-                    <p class="text-[10px] font-medium text-emerald-650 leading-none mt-1 font-sans">অর্ডার, প্রোডাক্ট, হেডার-ফুটার ও সব সেটিংস</p>
-                  </div>
+            <!-- 3. Quick Links Section (exact match with user demo screenshot) -->
+            <div class="pt-1">
+              <div class="mb-2">
+                <h5 class="text-xs font-bold text-slate-800 tracking-tight font-sans inline-block border-b-2 border-[#f97316] pb-0.5">Quick Links</h5>
+              </div>
+              <div class="bg-[#f4f5f7] rounded-2xl p-1.5 border border-slate-200/60 space-y-0.5 text-xs font-bold text-slate-700 divide-y divide-gray-200/60">
+                <a href="/order-tracking.html" class="flex items-center justify-between px-3 py-2 rounded-xl hover:bg-white hover:text-[#f97316] transition">
+                  <span class="font-sans">📦 অর্ডার ট্র্যাকিং</span>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                </a>
+                <a href="/shop.html?sort_by=flash-sale" class="flex items-center justify-between px-3 py-2 rounded-xl text-rose-600 hover:bg-white transition">
+                  <span class="font-sans">⚡ ফ্ল্যাশ সেল অফার</span>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                </a>
+                <a href="/shop.html?sort_by=b1g1" class="flex items-center justify-between px-3 py-2 rounded-xl text-emerald-700 hover:bg-white transition">
+                  <span class="font-sans">🎁 ১ কিনলে ১ ফ্রি ধামাকা</span>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                </a>
+                <a href="/about.html" class="flex items-center justify-between px-3 py-2 rounded-xl hover:bg-white hover:text-[#f97316] transition">
+                  <span class="font-sans">ℹ️ আমাদের সম্পর্কে</span>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                </a>
+                <a href="/contact.html" class="flex items-center justify-between px-3 py-2 rounded-xl hover:bg-white hover:text-[#f97316] transition">
+                  <span class="font-sans">📞 যোগাযোগ করুন</span>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                </a>
+                <a href="/shipping-policy.html" class="flex items-center justify-between px-3 py-2 rounded-xl hover:bg-white hover:text-[#f97316] transition">
+                  <span class="font-sans">📜 শিপিং ও ডেলিভারি পলিসি</span>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                </a>
+                <a href="/admin/index.html" class="flex items-center justify-between px-3 py-2 rounded-xl bg-amber-100/70 text-amber-900 hover:bg-amber-200/80 transition border border-amber-300/80 font-bold mt-1">
+                  <span class="font-sans">🔐 এডমিন কন্ট্রোল প্যানেল</span>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
                 </a>
               </div>
             </div>
+          </div>
 
-            <div class="border-t border-gray-100 pt-5">
-              <p class="text-xs text-gray-500 font-medium">হেল্পলাইন নম্বর: ${settings.phone || '01789-123456'}</p>
-              <p class="text-[11px] text-gray-400 font-medium mt-1">সকাল ৯:০০ - রাত ১০:০০ প্রতিদিন</p>
-            </div>
+          <!-- Drawer Bottom Helpline -->
+          <div class="pt-4 border-t border-gray-200/80 mt-4 text-center">
+            <p class="text-xs font-bold text-slate-700 font-sans">হেল্পলাইন নম্বর: ${settings.phone || '01700000000'}</p>
+            <p class="text-[10px] text-slate-500 font-medium mt-0.5 font-sans">সকাল ৯:০০ - রাত ১০:০০ প্রতিদিন</p>
           </div>
         </div>
       </div>
     `;
 
-    // Bind drawer trigger logic for More menu
+    // Bind drawer trigger logic for More menu & Mobile Hamburger
     const moreBtn = document.getElementById('desktop-more-menu-btn');
+    const mobileHamburgerBtn = document.getElementById('mobile-hamburger-btn');
     const moreDrawer = document.getElementById('desktop-more-drawer');
     const moreDrawerContent = document.getElementById('desktop-more-drawer-content');
     const closeMoreBtn = document.getElementById('close-desktop-more-btn');
 
-    if (moreBtn && moreDrawer && moreDrawerContent) {
-      moreBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
+    const openDrawer = (e) => {
+      if (e) e.stopPropagation();
+      if (moreDrawer && moreDrawerContent) {
         moreDrawer.classList.remove('hidden');
         setTimeout(() => {
-          moreDrawerContent.classList.remove('translate-x-full');
-        }, 50);
-      });
+          moreDrawerContent.classList.remove('-translate-x-full');
+        }, 30);
+      }
+    };
 
+    if (moreBtn) moreBtn.addEventListener('click', openDrawer);
+    if (mobileHamburgerBtn) mobileHamburgerBtn.addEventListener('click', openDrawer);
+
+    if (moreDrawer && moreDrawerContent) {
       const closeDrawer = () => {
-        moreDrawerContent.classList.add('translate-x-full');
+        moreDrawerContent.classList.add('-translate-x-full');
         setTimeout(() => {
           moreDrawer.classList.add('hidden');
         }, 300);
@@ -1318,14 +1365,24 @@ export function isSupabaseConfigured() {
 async function startMainApplication() {
   initDB();
   
-  // If Supabase is configured, sync fresh data BEFORE initial layout injection
+  // 1. Render layout and badges IMMEDIATELY with local/cached data (0ms delay)
+  try {
+    injectSharedLayouts();
+    updateCartBadges();
+    updateWishlistBadges();
+    bindGlobalProductButtons();
+  } catch (err) {
+    console.error("Instant layout injection failed:", err);
+  }
+
+  // 2. If Supabase is configured, sync fresh data in background/race timeout
   if (isSupabaseConfigured()) {
     window.isSupabaseSyncing = true;
     try {
       const { syncAllDataFromSupabase } = await import('./supabase.js');
       await Promise.race([
         syncAllDataFromSupabase(),
-        new Promise(resolve => setTimeout(resolve, 3500))
+        new Promise(resolve => setTimeout(resolve, 2500))
       ]);
       localStorage.setItem('supabase_synced', 'true');
     } catch (e) {
@@ -1333,21 +1390,21 @@ async function startMainApplication() {
     } finally {
       window.isSupabaseSyncing = false;
     }
+
+    // Re-render layout & badges with freshly synced Supabase data
+    try {
+      injectSharedLayouts();
+      updateCartBadges();
+      updateWishlistBadges();
+      bindGlobalProductButtons();
+    } catch (err) {
+      console.error("Synced layout injection failed:", err);
+    }
   } else {
     window.isSupabaseSyncing = false;
   }
 
-  // 1. Render layout and badges with freshly synced data
-  try {
-    injectSharedLayouts();
-    updateCartBadges();
-    updateWishlistBadges();
-    bindGlobalProductButtons();
-  } catch (err) {
-    console.error("Initial layout injection failed:", err);
-  }
-
-  // 2. Dispatch custom event so active page renders with updated cloud data directly
+  // 3. Dispatch custom event so active page renders with updated cloud data directly
   window.dispatchEvent(new CustomEvent('supabaseDataSynced'));
 
   // Initialize facebook pixel dynamically
