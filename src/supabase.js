@@ -1,6 +1,14 @@
 // Supabase Integration Handler - Lightweight REST implementation for maximum reliability
 import { showToast } from './app.js';
 
+export function ensureWebpUrl(url) {
+  if (!url || typeof url !== 'string') return url || '';
+  if (url.includes('images.unsplash.com') && !url.includes('fm=webp')) {
+    return url + (url.includes('?') ? '&fm=webp' : '?fm=webp');
+  }
+  return url;
+}
+
 export function getSupabaseConfig() {
   // Read from Vite env variables first (best practice for Vercel / Production build)
   let url = import.meta.env?.VITE_SUPABASE_URL || '';
@@ -335,8 +343,8 @@ export async function saveProductsToSupabase(products) {
         discountPrice: p.discountPrice !== undefined ? Number(p.discountPrice) : null,
         stock: Number(p.stock || 0),
         description: p.description || '',
-        image: p.image || '',
-        images: p.images || [],
+        image: ensureWebpUrl(p.image || ''),
+        images: (p.images || []).map(img => ensureWebpUrl(img)),
         variant: p.variant || '',
         tag: p.tag || ''
       }));

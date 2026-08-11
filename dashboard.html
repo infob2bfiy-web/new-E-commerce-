@@ -540,7 +540,7 @@
         // 1. Render beautiful horizontal cards on overview
         overviewWishlist.innerHTML = wishlist.slice(0, 3).map(item => `
           <div class="flex items-center gap-3 border-b border-gray-50 pb-2.5 last:border-none last:pb-0">
-            <img src="${item.image}" referrerPolicy="no-referrer" class="w-10 h-10 object-cover rounded-lg border border-gray-100 flex-shrink-0">
+            <img src="${item.image}" loading="lazy" decoding="async" referrerPolicy="no-referrer" class="w-10 h-10 object-cover rounded-lg border border-gray-100 flex-shrink-0">
             <div class="text-left flex-grow">
               <h5 class="font-bold text-slate-800 text-[11px] line-clamp-1">${item.name}</h5>
               <p class="text-[10px] text-emerald-700 font-bold font-sans mt-0.5">৳${item.price}</p>
@@ -552,7 +552,7 @@
         // 2. Render all inside wishlist tab
         wishlistFullWrapper.innerHTML = wishlist.map(item => `
           <div class="bg-gray-50/50 border border-gray-150 rounded-2xl p-4 flex flex-col gap-3">
-            <img src="${item.image}" referrerPolicy="no-referrer" class="w-full h-28 object-cover rounded-xl border border-gray-100">
+            <img src="${item.image}" loading="lazy" decoding="async" referrerPolicy="no-referrer" class="w-full h-28 object-cover rounded-xl border border-gray-100">
             <div class="text-left space-y-1">
               <h4 class="font-bold text-slate-800 text-xs line-clamp-1">${item.name}</h4>
               <p class="text-xs text-emerald-700 font-black font-sans">৳${item.price}</p>

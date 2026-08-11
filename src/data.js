@@ -25,7 +25,7 @@ export const INITIAL_PRODUCTS = [
     discountPrice: 110,
     stock: 50,
     description: "Freshly harvested premium Amrapali mangoes from Rajshahi orchards. Chemical-free and naturally ripened.",
-    image: "https://images.unsplash.com/photo-1553279768-865429fa0078?auto=format&fit=crop&q=80&w=600",
+    image: "https://images.unsplash.com/photo-1553279768-865429fa0078?auto=format&fit=crop&q=80&w=600&fm=webp",
     tag: "Featured"
   },
   {
@@ -37,7 +37,7 @@ export const INITIAL_PRODUCTS = [
     discountPrice: 130,
     stock: 35,
     description: "Highly sought-after sweet and aromatic Himsagor mangoes directly sourced from Satkhira.",
-    image: "https://images.unsplash.com/photo-1591073113125-e46713c829ed?auto=format&fit=crop&q=80&w=600",
+    image: "https://images.unsplash.com/photo-1591073113125-e46713c829ed?auto=format&fit=crop&q=80&w=600&fm=webp",
     tag: "Flash Sale"
   },
   {
@@ -49,7 +49,7 @@ export const INITIAL_PRODUCTS = [
     discountPrice: 125,
     stock: 40,
     description: "Deliciously juicy Lengra mangoes, famous for their thin skin and distinct rich flavor.",
-    image: "https://images.unsplash.com/photo-1605000797439-75a150088d44?auto=format&fit=crop&q=80&w=600",
+    image: "https://images.unsplash.com/photo-1605000797439-75a150088d44?auto=format&fit=crop&q=80&w=600&fm=webp",
     tag: "Preorder"
   },
 
@@ -63,7 +63,7 @@ export const INITIAL_PRODUCTS = [
     discountPrice: 1100,
     stock: 20,
     description: "Traditionally stirred purely organic clarified cow ghee, rich in flavor and aroma.",
-    image: "https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?auto=format&fit=crop&q=80&w=600",
+    image: "https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?auto=format&fit=crop&q=80&w=600&fm=webp",
     tag: "Buy 1 Get 1"
   },
   {
@@ -75,7 +75,7 @@ export const INITIAL_PRODUCTS = [
     discountPrice: 290,
     stock: 60,
     description: "100% pure mustard oil extracted using traditional ghani wooden expeller method.",
-    image: "https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?auto=format&fit=crop&q=80&w=600",
+    image: "https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?auto=format&fit=crop&q=80&w=600&fm=webp",
     tag: "Featured"
   },
   {
@@ -87,7 +87,7 @@ export const INITIAL_PRODUCTS = [
     discountPrice: 420,
     stock: 30,
     description: "Extract of selected rich coconuts, cold-pressed raw virgin oil for versatile lifestyle needs.",
-    image: "https://images.unsplash.com/photo-1622484211148-716598e0911a?auto=format&fit=crop&q=80&w=600",
+    image: "https://images.unsplash.com/photo-1622484211148-716598e0911a?auto=format&fit=crop&q=80&w=600&fm=webp",
     tag: "New"
   },
 
@@ -101,7 +101,7 @@ export const INITIAL_PRODUCTS = [
     discountPrice: 850,
     stock: 15,
     description: "Precious organic raw honey collected from Wild Khalisha flower of Sundarban mangroves.",
-    image: "https://images.unsplash.com/photo-1587049352846-4a222e784d38?auto=format&fit=crop&q=80&w=600",
+    image: "https://images.unsplash.com/photo-1587049352846-4a222e784d38?auto=format&fit=crop&q=80&w=600&fm=webp",
     tag: "Featured"
   },
   {
@@ -113,7 +113,7 @@ export const INITIAL_PRODUCTS = [
     discountPrice: 590,
     stock: 25,
     description: "Delightful organic honey sourced from extensive honeybee farms in Dinajpur Litchi gardens.",
-    image: "https://images.unsplash.com/photo-1558642452-9d2a7deb7f62?auto=format&fit=crop&q=80&w=600",
+    image: "https://images.unsplash.com/photo-1558642452-9d2a7deb7f62?auto=format&fit=crop&q=80&w=600&fm=webp",
     tag: "New"
   },
   {
@@ -125,7 +125,7 @@ export const INITIAL_PRODUCTS = [
     discountPrice: 910,
     stock: 10,
     description: "Strong dark amber honey collected from Kali Jeera cumin flower farms, packed with health benefits.",
-    image: "https://images.unsplash.com/photo-1471193945509-9ad0617afabf?auto=format&fit=crop&q=80&w=600",
+    image: "https://images.unsplash.com/photo-1471193945509-9ad0617afabf?auto=format&fit=crop&q=80&w=600&fm=webp",
     tag: "Featured"
   },
 
@@ -139,7 +139,7 @@ export const INITIAL_PRODUCTS = [
     discountPrice: 850,
     stock: 45,
     description: "Premium handpicked soft black dates from Al-Madinah, high nutritional, imported.",
-    image: "https://images.unsplash.com/photo-1509223348103-9bb670fd7b31?auto=format&fit=crop&q=80&w=600",
+    image: "https://images.unsplash.com/photo-1509223348103-9bb670fd7b31?auto=format&fit=crop&q=80&w=600&fm=webp",
     tag: "Flash Sale"
   },
   {
@@ -151,7 +151,7 @@ export const INITIAL_PRODUCTS = [
     discountPrice: 1150,
     stock: 28,
     description: "King of dates. Extremely large, soft, moist, wonderfully rich and caramel sweet.",
-    image: "https://images.unsplash.com/photo-1618213837799-25d5552820d3?auto=format&fit=crop&q=80&w=600",
+    image: "https://images.unsplash.com/photo-1618213837799-25d5552820d3?auto=format&fit=crop&q=80&w=600&fm=webp",
     tag: "Featured"
   },
   {
@@ -163,7 +163,7 @@ export const INITIAL_PRODUCTS = [
     discountPrice: 430,
     stock: 50,
     description: "Authentic Kalmi dates, cylindrically long dark brown flesh with subtle sweetness.",
-    image: "https://images.unsplash.com/photo-1541334903584-6338fe84ee1e?auto=format&fit=crop&q=80&w=600",
+    image: "https://images.unsplash.com/photo-1541334903584-6338fe84ee1e?auto=format&fit=crop&q=80&w=600&fm=webp",
     tag: "New"
   },
 
@@ -177,7 +177,7 @@ export const INITIAL_PRODUCTS = [
     discountPrice: 380,
     stock: 80,
     description: "Extremely strong aromatic large green cardamom pods, freshly sourced whole spice.",
-    image: "https://images.unsplash.com/photo-1596040033229-a9821ebd058d?auto=format&fit=crop&q=80&w=600",
+    image: "https://images.unsplash.com/photo-1596040033229-a9821ebd058d?auto=format&fit=crop&q=80&w=600&fm=webp",
     tag: "Featured"
   },
   {
@@ -189,7 +189,7 @@ export const INITIAL_PRODUCTS = [
     discountPrice: 110,
     stock: 120,
     description: "Perfect golden organic turmeric processed with utmost hygiene - full of curcumin components.",
-    image: "https://images.unsplash.com/photo-1615485290382-441e4d049cb5?auto=format&fit=crop&q=80&w=600",
+    image: "https://images.unsplash.com/photo-1615485290382-441e4d049cb5?auto=format&fit=crop&q=80&w=600&fm=webp",
     tag: "New"
   },
 
@@ -203,7 +203,7 @@ export const INITIAL_PRODUCTS = [
     discountPrice: 590,
     stock: 40,
     description: "Perfect balanced mix formulation of Almonds, Cashew Nuts, Pistachios, Walnuts, and Raisins.",
-    image: "https://images.unsplash.com/photo-1608797178974-15b35a61d121?auto=format&fit=crop&q=80&w=600",
+    image: "https://images.unsplash.com/photo-1608797178974-15b35a61d121?auto=format&fit=crop&q=80&w=600&fm=webp",
     tag: "Featured"
   },
   {
@@ -215,7 +215,7 @@ export const INITIAL_PRODUCTS = [
     discountPrice: 280,
     stock: 75,
     description: "Superfood organic chia seeds loaded with Omega-3 fatty acids, dietary fibers, and minerals.",
-    image: "https://images.unsplash.com/photo-1515694346937-94d85e41e6f0?auto=format&fit=crop&q=80&w=600",
+    image: "https://images.unsplash.com/photo-1515694346937-94d85e41e6f0?auto=format&fit=crop&q=80&w=600&fm=webp",
     tag: "Flash Sale"
   },
 
@@ -229,7 +229,7 @@ export const INITIAL_PRODUCTS = [
     discountPrice: 170,
     stock: 90,
     description: "Finest Orthodox CTC tea leaves picked from tea estates of Sreemangal, Sylhet.",
-    image: "https://images.unsplash.com/photo-1576092768241-dec231879fc3?auto=format&fit=crop&q=80&w=600",
+    image: "https://images.unsplash.com/photo-1576092768241-dec231879fc3?auto=format&fit=crop&q=80&w=600&fm=webp",
     tag: "New"
   },
 
@@ -243,7 +243,7 @@ export const INITIAL_PRODUCTS = [
     discountPrice: 115,
     stock: 65,
     description: "Wholesale nutrition mix of Wheat, Barley, Chickpea, Oats, Maize and Flaxseeds flour.",
-    image: "https://images.unsplash.com/photo-1549590143-d5855148a9d5?auto=format&fit=crop&q=80&w=600",
+    image: "https://images.unsplash.com/photo-1549590143-d5855148a9d5?auto=format&fit=crop&q=80&w=600&fm=webp",
     tag: "New"
   },
 
@@ -257,7 +257,7 @@ export const INITIAL_PRODUCTS = [
     discountPrice: 160,
     stock: 35,
     description: "Traditional homemade recipe pickled green mango slices in organic cold pressed mustard oil.",
-    image: "https://images.unsplash.com/photo-1647462417772-5ccf2bca5304?auto=format&fit=crop&q=80&w=600",
+    image: "https://images.unsplash.com/photo-1647462417772-5ccf2bca5304?auto=format&fit=crop&q=80&w=600&fm=webp",
     tag: "Featured"
   },
 
@@ -271,7 +271,7 @@ export const INITIAL_PRODUCTS = [
     discountPrice: 450,
     stock: 100,
     description: "Famous Dinajpur Bedana Litchis. High flesh proportion, tiny seed, sweet premium taste. Price per 100 pieces.",
-    image: "https://images.unsplash.com/photo-1628135898808-1cc6868846be?auto=format&fit=crop&q=80&w=600",
+    image: "https://images.unsplash.com/photo-1628135898808-1cc6868846be?auto=format&fit=crop&q=80&w=600&fm=webp",
     tag: "Preorder"
   },
 
@@ -285,7 +285,7 @@ export const INITIAL_PRODUCTS = [
     discountPrice: 80,
     stock: 200,
     description: "Highest grade long, slender-grain premium polished parboiled Nazirshail rice.",
-    image: "https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&q=80&w=600",
+    image: "https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&q=80&w=600&fm=webp",
     tag: "Featured"
   }
 ];
@@ -319,9 +319,9 @@ export const DEFAULT_SITE_SETTINGS = {
 };
 
 export const INITIAL_BANNERS = [
-  { id: "ban-1", imageUrl: "https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&q=80&w=1200", title: "১০০% অর্গ্যানিক ও তাজা ফলমূল", text: "রাসায়নিক মুক্ত মিষ্টি স্বাদের আম ও দিনাজপুরের সেরা লিচু কিনুন সাশ্রয়ী মূল্যে।" },
-  { id: "ban-2", imageUrl: "https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?auto=format&fit=crop&q=80&w=1200", title: "ঘানি ভাঙা খাস তেল ও খাঁটি ঘি", text: "আমাদের নিজস্ব তত্ত্বাবধানে কাঠ ভাঙা ঘানির তেল ও ঐতিহ্যবাহী খাঁটি ঘি।" },
-  { id: "ban-3", imageUrl: "https://images.unsplash.com/photo-1509223348103-9bb670fd7b31?auto=format&fit=crop&q=80&w=1200", title: "মদিনার প্রিমিয়াম খেজুর ও মধু", text: "আজওয়া খেজুর ও সুন্দরবনের খাটি খলিসা ফুলের মধু সরাসরি আমাদের কাছে স্টকড!" }
+  { id: "ban-1", imageUrl: "https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&q=80&w=1200&fm=webp", title: "১০০% অর্গ্যানিক ও তাজা ফলমূল", text: "রাসায়নিক মুক্ত মিষ্টি স্বাদের আম ও দিনাজপুরের সেরা লিচু কিনুন সাশ্রয়ী মূল্যে।" },
+  { id: "ban-2", imageUrl: "https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?auto=format&fit=crop&q=80&w=1200&fm=webp", title: "ঘানি ভাঙা খাস তেল ও খাঁটি ঘি", text: "আমাদের নিজস্ব তত্ত্বাবধানে কাঠ ভাঙা ঘানির তেল ও ঐতিহ্যবাহী খাঁটি ঘি।" },
+  { id: "ban-3", imageUrl: "https://images.unsplash.com/photo-1509223348103-9bb670fd7b31?auto=format&fit=crop&q=80&w=1200&fm=webp", title: "মদিনার প্রিমিয়াম খেজুর ও মধু", text: "আজওয়া খেজুর ও সুন্দরবনের খাটি খলিসা ফুলের মধু সরাসরি আমাদের কাছে স্টকড!" }
 ];
 
 export const INITIAL_COUPONS = [
