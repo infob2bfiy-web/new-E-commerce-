@@ -96,6 +96,52 @@ export async function saveOrderToSupabase(order) {
 }
 
 /**
+ * Saves full list of orders to Supabase (e.g. status changes from Admin)
+ */
+export async function saveOrdersToSupabase(orders) {
+  const config = getSupabaseConfig();
+  if (!config.enabled) return { success: false };
+  try {
+    if (!Array.isArray(orders)) return { success: false };
+
+    // Clear existing orders in Supabase before re-inserting synced list
+    try {
+      await fetch(`${config.supabaseUrl}/rest/v1/orders?order_id=not.is.null`, {
+        method: 'DELETE',
+        headers: {
+          'apikey': config.supabaseKey,
+          'Authorization': `Bearer ${config.supabaseKey}`
+        }
+      });
+    } catch (delErr) {
+      console.warn("DELETE prior orders rows failed:", delErr);
+    }
+
+    if (orders.length === 0) return { success: true };
+
+    const payload = orders.map(o => prepareOrderPayload(o));
+    const res = await fetch(`${config.supabaseUrl}/rest/v1/orders`, {
+      method: 'POST',
+      headers: {
+        'apikey': config.supabaseKey,
+        'Authorization': `Bearer ${config.supabaseKey}`,
+        'Content-Type': 'application/json',
+        'Prefer': 'return=minimal'
+      },
+      body: JSON.stringify(payload)
+    });
+
+    if (!res.ok) {
+      console.warn("POST saveOrdersToSupabase failed:", res.status, await res.text());
+    }
+    return { success: res.ok };
+  } catch (e) {
+    console.warn("Error saving orders to Supabase:", e);
+    return { success: false, error: e };
+  }
+}
+
+/**
  * Fetch all orders from Supabase (defaults to fallback to local if fail or not configured)
  */
 export async function getOrdersFromSupabase() {
@@ -491,16 +537,18 @@ export async function saveAdminCredentialsToSupabase(creds) {
         'apikey': config.supabaseKey,
         'Authorization': `Bearer ${config.supabaseKey}`,
         'Content-Type': 'application/json',
-        'Prefer': 'return=minimal'
+        'Prefer': 'resolution=merge-duplicates,return=minimal'
       },
       body: JSON.stringify({
         username: creds.username,
-        password: creds.password || 'admin1'
+        password: creds.password || 'admin1',
+        updated_at: new Date().toISOString()
       })
     });
 
     if (!res.ok) {
-      console.warn("POST new admin credentials failed:", res.status);
+      const txt = await res.text();
+      console.warn("POST new admin credentials failed:", res.status, txt);
     }
     return { success: res.ok };
   } catch (e) {
@@ -712,21 +760,27 @@ export async function syncAllDataFromSupabase() {
     return null;
   };
 
-  // Fetch all public storefront tables in parallel for maximum performance
+  // Fetch all public storefront and admin tables in parallel for maximum performance
   const [
     catData,
     prodData,
     banData,
     coupData,
     settingsData,
-    userData
+    userData,
+    ordersData,
+    adminCredsData,
+    supportTicketsData
   ] = await Promise.all([
     fetchTable('categories'),
     fetchTable('products'),
     fetchTable('banners'),
     fetchTable('coupons'),
     fetchTable('site_settings'),
-    fetchTable('users')
+    fetchTable('users'),
+    fetchTable('orders'),
+    fetchTable('admin_credentials'),
+    fetchTable('support_tickets')
   ]);
 
   // 1. Categories
@@ -763,5 +817,46 @@ export async function syncAllDataFromSupabase() {
   // 6. Users
   if (userData !== null) {
     localStorage.setItem('users', JSON.stringify(userData));
+  }
+
+  // 7. Orders
+  if (ordersData !== null) {
+    const formattedOrders = ordersData.map(item => ({
+      orderId: item.order_id,
+      date: item.date,
+      customerName: item.customer_name,
+      customerPhone: item.customer_phone,
+      customerEmail: item.customer_email,
+      division: item.division,
+      district: item.district,
+      area: item.area,
+      address: item.address,
+      note: item.note,
+      items: item.items,
+      subtotal: item.subtotal,
+      discount: item.discount,
+      deliveryFee: item.delivery_fee,
+      totalPrice: item.total_price,
+      paymentMethod: item.payment_method,
+      status: item.status,
+      supabaseId: item.id
+    }));
+    localStorage.setItem('orders', JSON.stringify(formattedOrders));
+  }
+
+  // 8. Admin Credentials
+  if (adminCredsData !== null && adminCredsData.length > 0) {
+    const remoteCred = adminCredsData[0];
+    if (remoteCred && remoteCred.username && remoteCred.password) {
+      localStorage.setItem('adminCredentials', JSON.stringify({
+        username: remoteCred.username,
+        password: remoteCred.password
+      }));
+    }
+  }
+
+  // 9. Support Tickets
+  if (supportTicketsData !== null) {
+    localStorage.setItem('supportTickets', JSON.stringify(supportTicketsData));
   }
 }

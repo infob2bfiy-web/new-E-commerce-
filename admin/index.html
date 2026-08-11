@@ -1767,6 +1767,7 @@ alter table public.products add column if not exists variant text;
       saveBannersToSupabase,
       saveCouponsToSupabase,
       saveUsersToSupabase,
+      saveOrdersToSupabase,
       saveAdminCredentialsToSupabase,
       saveSupportTicketsToSupabase
     } from '../src/supabase.js';
@@ -2090,6 +2091,8 @@ alter table public.products add column if not exists variant text;
             saveCouponsToSupabase(serializedArray).then(() => updateSupabaseStats());
           } else if (key === 'users') {
             saveUsersToSupabase(serializedArray).then(() => updateSupabaseStats());
+          } else if (key === 'orders') {
+            saveOrdersToSupabase(serializedArray).then(() => updateSupabaseStats());
           } else if (key === 'adminCredentials') {
             saveAdminCredentialsToSupabase(serializedArray).then(() => updateSupabaseStats());
           } else if (key === 'supportTickets') {
@@ -3919,6 +3922,7 @@ Grand Total Payable Amount: ৳${activeOrderDetailObj.totalPrice}
             renderActiveDashboardMetrics();
             try { renderProductsPanelTable(); } catch(e){}
             try { renderCategoriesPanelTable(); } catch(e){}
+            try { renderOrdersPanelTable(); } catch(e){}
             try { renderBannersSettingsList(); } catch(e){}
             try { populateActiveSettingsForm(); } catch(e){}
           }).catch(err => {
@@ -3940,10 +3944,34 @@ Grand Total Payable Amount: ৳${activeOrderDetailObj.totalPrice}
         });
 
         // Login trigger submit interceptor
-        document.getElementById('login-form')?.addEventListener('submit', (e) => {
+        document.getElementById('login-form')?.addEventListener('submit', async (e) => {
           e.preventDefault();
           const user = document.getElementById('login-username')?.value?.trim();
           const pass = document.getElementById('login-password')?.value?.trim();
+
+          // Query Supabase for latest admin credentials first if enabled
+          try {
+            const config = getSupabaseConfig();
+            if (config.enabled) {
+              const res = await fetch(`${config.supabaseUrl}/rest/v1/admin_credentials?select=*`, {
+                headers: {
+                  'apikey': config.supabaseKey,
+                  'Authorization': `Bearer ${config.supabaseKey}`
+                }
+              });
+              if (res.ok) {
+                const rows = await res.json();
+                if (rows && rows.length > 0 && rows[0].username && rows[0].password) {
+                  localStorage.setItem('adminCredentials', JSON.stringify({
+                    username: rows[0].username,
+                    password: rows[0].password
+                  }));
+                }
+              }
+            }
+          } catch (sbErr) {
+            console.warn("Direct admin_credentials sync failed:", sbErr);
+          }
 
           // Load correct active credential check
           let creds = { username: "admin", password: "admin1" };
