@@ -41,19 +41,19 @@ export function initDB() {
     localStorage.setItem('users', JSON.stringify([]));
   }
   if (!localStorage.getItem('products')) {
-    localStorage.setItem('products', JSON.stringify(INITIAL_PRODUCTS));
+    localStorage.setItem('products', JSON.stringify([]));
   }
   if (!localStorage.getItem('categories')) {
-    localStorage.setItem('categories', JSON.stringify(INITIAL_CATEGORIES));
+    localStorage.setItem('categories', JSON.stringify([]));
   }
   if (!localStorage.getItem('banners')) {
-    localStorage.setItem('banners', JSON.stringify(INITIAL_BANNERS));
+    localStorage.setItem('banners', JSON.stringify([]));
   }
   if (!localStorage.getItem('coupons')) {
-    localStorage.setItem('coupons', JSON.stringify(INITIAL_COUPONS));
+    localStorage.setItem('coupons', JSON.stringify([]));
   }
   if (!localStorage.getItem('siteSettings')) {
-    localStorage.setItem('siteSettings', JSON.stringify(DEFAULT_SITE_SETTINGS));
+    localStorage.setItem('siteSettings', JSON.stringify({}));
   }
 }
 
@@ -1396,6 +1396,13 @@ export function isSupabaseConfigured() {
 function startMainApplication() {
   initDB();
   
+  const hasConfig = isSupabaseConfigured();
+  if (hasConfig) {
+    window.isSupabaseSyncing = true;
+  } else {
+    window.isSupabaseSyncing = false;
+  }
+
   // 1. Render layout and badges IMMEDIATELY with local/cached data (0ms delay)
   try {
     injectSharedLayouts();
@@ -1406,11 +1413,11 @@ function startMainApplication() {
     console.error("Instant layout injection failed:", err);
   }
 
-  // 2. Dispatch custom event so active page renders instantly with local data
+  // 2. Dispatch custom event so active page renders initial state
   window.dispatchEvent(new CustomEvent('supabaseDataSynced'));
 
-  // 3. If Supabase is configured, sync fresh data in background without blocking initial paint
-  if (isSupabaseConfigured()) {
+  // 3. If Supabase is configured, sync fresh data
+  if (hasConfig) {
     syncAllDataFromSupabase()
       .then(() => {
         localStorage.setItem('supabase_synced', 'true');
@@ -1428,10 +1435,39 @@ function startMainApplication() {
       .catch((e) => {
         console.warn("Background Supabase sync error:", e);
         window.isSupabaseSyncing = false;
+        window.dispatchEvent(new CustomEvent('supabaseDataSynced'));
       });
-  } else {
-    window.isSupabaseSyncing = false;
   }
+
+  // 4. Cross-tab instant propagation via storage event
+  window.addEventListener('storage', (e) => {
+    if (['products', 'categories', 'banners', 'coupons', 'siteSettings', 'orders'].includes(e.key)) {
+      try {
+        injectSharedLayouts();
+        updateCartBadges();
+        updateWishlistBadges();
+        bindGlobalProductButtons();
+      } catch (err) {}
+      window.dispatchEvent(new CustomEvent('supabaseDataSynced'));
+    }
+  });
+
+  // 5. Automatic tab focus revalidation when switching back to storefront
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible' && isSupabaseConfigured()) {
+      syncAllDataFromSupabase()
+        .then(() => {
+          try {
+            injectSharedLayouts();
+            updateCartBadges();
+            updateWishlistBadges();
+            bindGlobalProductButtons();
+          } catch (err) {}
+          window.dispatchEvent(new CustomEvent('supabaseDataSynced'));
+        })
+        .catch(() => {});
+    }
+  });
 
   // Initialize facebook pixel dynamically
   try {
