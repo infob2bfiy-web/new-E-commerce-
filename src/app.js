@@ -40,6 +40,21 @@ export function initDB() {
   if (!localStorage.getItem('users')) {
     localStorage.setItem('users', JSON.stringify([]));
   }
+  if (!localStorage.getItem('products')) {
+    localStorage.setItem('products', JSON.stringify(INITIAL_PRODUCTS));
+  }
+  if (!localStorage.getItem('categories')) {
+    localStorage.setItem('categories', JSON.stringify(INITIAL_CATEGORIES));
+  }
+  if (!localStorage.getItem('banners')) {
+    localStorage.setItem('banners', JSON.stringify(INITIAL_BANNERS));
+  }
+  if (!localStorage.getItem('coupons')) {
+    localStorage.setItem('coupons', JSON.stringify(INITIAL_COUPONS));
+  }
+  if (!localStorage.getItem('siteSettings')) {
+    localStorage.setItem('siteSettings', JSON.stringify(DEFAULT_SITE_SETTINGS));
+  }
 }
 
 // Helpers
@@ -1378,7 +1393,7 @@ export function isSupabaseConfigured() {
 }
 
 // Trigger initializations on loaded safely
-async function startMainApplication() {
+function startMainApplication() {
   initDB();
   
   // 1. Render layout and badges IMMEDIATELY with local/cached data (0ms delay)
@@ -1391,36 +1406,32 @@ async function startMainApplication() {
     console.error("Instant layout injection failed:", err);
   }
 
-  // 2. If Supabase is configured, sync fresh data in background/race timeout
-  if (isSupabaseConfigured()) {
-    window.isSupabaseSyncing = true;
-    try {
-      await Promise.race([
-        syncAllDataFromSupabase(),
-        new Promise(resolve => setTimeout(resolve, 3500))
-      ]);
-      localStorage.setItem('supabase_synced', 'true');
-    } catch (e) {
-      console.warn("Pre-render Supabase sync error:", e);
-    } finally {
-      window.isSupabaseSyncing = false;
-    }
+  // 2. Dispatch custom event so active page renders instantly with local data
+  window.dispatchEvent(new CustomEvent('supabaseDataSynced'));
 
-    // Re-render layout & badges with freshly synced Supabase data
-    try {
-      injectSharedLayouts();
-      updateCartBadges();
-      updateWishlistBadges();
-      bindGlobalProductButtons();
-    } catch (err) {
-      console.error("Synced layout injection failed:", err);
-    }
+  // 3. If Supabase is configured, sync fresh data in background without blocking initial paint
+  if (isSupabaseConfigured()) {
+    syncAllDataFromSupabase()
+      .then(() => {
+        localStorage.setItem('supabase_synced', 'true');
+        window.isSupabaseSyncing = false;
+        try {
+          injectSharedLayouts();
+          updateCartBadges();
+          updateWishlistBadges();
+          bindGlobalProductButtons();
+        } catch (err) {
+          console.error("Synced layout injection failed:", err);
+        }
+        window.dispatchEvent(new CustomEvent('supabaseDataSynced'));
+      })
+      .catch((e) => {
+        console.warn("Background Supabase sync error:", e);
+        window.isSupabaseSyncing = false;
+      });
   } else {
     window.isSupabaseSyncing = false;
   }
-
-  // 3. Dispatch custom event so active page renders with updated cloud data directly
-  window.dispatchEvent(new CustomEvent('supabaseDataSynced'));
 
   // Initialize facebook pixel dynamically
   try {

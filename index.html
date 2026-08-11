@@ -4,6 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Ghorer Shad - ১০০% খাঁটি ও অর্গ্যানিক গ্রোসারি শপ</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="/src/style.css">
     <script type="module" src="/src/app.js"></script>
   </head>
@@ -139,7 +141,7 @@
         const carousel = document.getElementById('home-carousel');
         const dotsContainer = document.getElementById('carousel-dots');
         if (carousel) {
-          if (window.isSupabaseSyncing) {
+          if (window.isSupabaseSyncing && banners.length === 0) {
             carousel.innerHTML = `<div class="w-full h-full bg-slate-100 animate-pulse"></div>`;
           } else if (banners.length > 0) {
             carousel.innerHTML = banners.map((ban, index) => `
@@ -174,7 +176,7 @@
         // 2. Render Top Categories Icons
         const topCatGrid = document.getElementById('top-category-grid');
         if (topCatGrid) {
-          if (window.isSupabaseSyncing) {
+          if (window.isSupabaseSyncing && categories.length === 0) {
             topCatGrid.innerHTML = Array(6).fill(0).map(() => `
               <div class="w-[105px] h-[105px] md:w-[120px] md:h-[120px] rounded-[1.8rem] bg-slate-100 animate-pulse shrink-0"></div>
             `).join('');
@@ -226,7 +228,7 @@
         // 3. Render Flash Sale Grid
         const flashSaleGrid = document.getElementById('flash-sale-grid');
         if (flashSaleGrid) {
-          if (window.isSupabaseSyncing) {
+          if (window.isSupabaseSyncing && products.length === 0) {
             flashSaleGrid.innerHTML = Array(4).fill(0).map(() => `
               <div class="bg-white rounded-xl border border-gray-100 p-4 space-y-4 animate-pulse">
                 <div class="aspect-square bg-slate-100 rounded-xl"></div>
@@ -271,7 +273,7 @@
         // 4. Render category-wise sections
         const catSections = document.getElementById('category-sections');
         if (catSections) {
-          if (window.isSupabaseSyncing) {
+          if (window.isSupabaseSyncing && products.length === 0) {
             catSections.innerHTML = `
               <div>
                 <div class="h-6 bg-slate-200 rounded w-1/4 mb-6 animate-pulse"></div>
@@ -313,7 +315,7 @@
         // 5. Render All products grid
         const allProdsGrid = document.getElementById('all-products-grid');
         if (allProdsGrid) {
-          if (window.isSupabaseSyncing) {
+          if (window.isSupabaseSyncing && products.length === 0) {
             allProdsGrid.innerHTML = Array(8).fill(0).map(() => `
               <div class="bg-white rounded-xl border border-gray-100 p-4 space-y-4 animate-pulse">
                 <div class="aspect-square bg-slate-100 rounded-xl"></div>
