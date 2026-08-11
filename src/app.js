@@ -7,31 +7,38 @@ import {
   INITIAL_BANNERS, 
   INITIAL_COUPONS 
 } from './data.js';
+import { syncAllDataFromSupabase } from './supabase.js';
+
+// Synchronously flag syncing on new/unsynced devices before any DOM script runs
+if (typeof window !== 'undefined') {
+  try {
+    let url = import.meta.env?.VITE_SUPABASE_URL || '';
+    let key = import.meta.env?.VITE_SUPABASE_ANON_KEY || '';
+    const savedConfig = JSON.parse(localStorage.getItem('supabaseSettings') || '{}');
+    if (savedConfig.supabaseUrl) url = savedConfig.supabaseUrl;
+    if (savedConfig.supabaseKey) key = savedConfig.supabaseKey;
+    const cleanUrl = url?.trim().replace(/\/$/, "") || '';
+    const cleanKey = key?.trim() || '';
+    const isValid = cleanUrl.startsWith('http') && cleanKey.length >= 40 && !cleanUrl.includes('placeholder');
+    if (isValid && localStorage.getItem('supabase_synced') !== 'true') {
+      window.isSupabaseSyncing = true;
+    }
+  } catch (e) {}
+}
 
 // Global Initializations
 export function initDB() {
-  if (!localStorage.getItem('products')) {
-    localStorage.setItem('products', JSON.stringify(INITIAL_PRODUCTS));
-  }
-  if (!localStorage.getItem('categories')) {
-    localStorage.setItem('categories', JSON.stringify(INITIAL_CATEGORIES));
-  }
-  if (!localStorage.getItem('siteSettings')) {
-    localStorage.setItem('siteSettings', JSON.stringify(DEFAULT_SITE_SETTINGS));
-  }
-  if (!localStorage.getItem('banners')) {
-    localStorage.setItem('banners', JSON.stringify(INITIAL_BANNERS));
-  }
-  if (!localStorage.getItem('coupons')) {
-    localStorage.setItem('coupons', JSON.stringify(INITIAL_COUPONS));
-  }
   if (!localStorage.getItem('orders')) {
     localStorage.setItem('orders', JSON.stringify([]));
   }
+  if (!localStorage.getItem('cart')) {
+    localStorage.setItem('cart', JSON.stringify([]));
+  }
+  if (!localStorage.getItem('wishlist')) {
+    localStorage.setItem('wishlist', JSON.stringify([]));
+  }
   if (!localStorage.getItem('users')) {
-    localStorage.setItem('users', JSON.stringify([
-      { name: "Demo User", email: "user@test.com", phone: "01700000000", password: "123", address: "Dhaka, Bangladesh" }
-    ]));
+    localStorage.setItem('users', JSON.stringify([]));
   }
 }
 
@@ -77,14 +84,23 @@ export function getCategories() {
 }
 export function getSettings() {
   const saved = JSON.parse(localStorage.getItem('siteSettings') || '{}');
-  const merged = { ...DEFAULT_SITE_SETTINGS, ...saved };
-  if (!saved.siteName || saved.siteName === "আম্রপালি" || saved.siteName === "Ghorer Bazar") {
-    merged.siteName = "Ghorer Shad";
-    if (!saved.logoUrl || saved.logoUrl.includes('unsplash')) {
-      merged.logoUrl = "/assets/ghorer-shad-logo.jpg";
-    }
-  }
-  return merged;
+  const baseDefaults = {
+    siteName: "Ghorer Shad",
+    tagline: "",
+    logoUrl: "/assets/ghorer-shad-logo.jpg",
+    favicon: "/assets/ghorer-shad-logo.jpg",
+    phone: "01615469679",
+    whatsapp: "01615469679",
+    bkash: "01615469679",
+    nagad: "01615469679",
+    announcement: "",
+    footerText: "Premium Organic grocery directly from local farmers of Bangladesh to your dining table safely.",
+    footerLogoUrl: "/assets/ghorer-shad-logo.jpg",
+    footerLogoText: "Ghorer Shad",
+    fbPixel: "",
+    adminNotifyEmail: "info.b2bfiy@gmail.com"
+  };
+  return { ...baseDefaults, ...saved };
 }
 export function getCart() {
   return JSON.parse(localStorage.getItem('cart') || '[]');
@@ -1379,10 +1395,9 @@ async function startMainApplication() {
   if (isSupabaseConfigured()) {
     window.isSupabaseSyncing = true;
     try {
-      const { syncAllDataFromSupabase } = await import('./supabase.js');
       await Promise.race([
         syncAllDataFromSupabase(),
-        new Promise(resolve => setTimeout(resolve, 2500))
+        new Promise(resolve => setTimeout(resolve, 3500))
       ]);
       localStorage.setItem('supabase_synced', 'true');
     } catch (e) {

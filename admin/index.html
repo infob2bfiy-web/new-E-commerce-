@@ -1886,27 +1886,22 @@ alter table public.products add column if not exists variant text;
     // Initial database initialization checker
     function initializeDatabaseState() {
       if (!localStorage.getItem('products')) {
-        localStorage.setItem('products', JSON.stringify(INITIAL_PRODUCTS));
+        localStorage.setItem('products', JSON.stringify([]));
       }
       if (!localStorage.getItem('categories')) {
-        localStorage.setItem('categories', JSON.stringify(INITIAL_CATEGORIES));
-      }
-      if (!localStorage.getItem('siteSettings')) {
-        localStorage.setItem('siteSettings', JSON.stringify(DEFAULT_SITE_SETTINGS));
+        localStorage.setItem('categories', JSON.stringify([]));
       }
       if (!localStorage.getItem('banners')) {
-        localStorage.setItem('banners', JSON.stringify(INITIAL_BANNERS));
+        localStorage.setItem('banners', JSON.stringify([]));
       }
       if (!localStorage.getItem('coupons')) {
-        localStorage.setItem('coupons', JSON.stringify(INITIAL_COUPONS));
+        localStorage.setItem('coupons', JSON.stringify([]));
       }
       if (!localStorage.getItem('orders')) {
-        localStorage.setItem('orders', JSON.stringify(SAMPLE_ORDERS));
+        localStorage.setItem('orders', JSON.stringify([]));
       }
       if (!localStorage.getItem('users')) {
-        localStorage.setItem('users', JSON.stringify([
-          { name: "Demo User", email: "user@test.com", phone: "01700000000", password: "123", address: "Dhaka, Bangladesh" }
-        ]));
+        localStorage.setItem('users', JSON.stringify([]));
       }
       // Security default credential verification
       if (!localStorage.getItem('adminCredentials')) {

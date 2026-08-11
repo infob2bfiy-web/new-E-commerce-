@@ -691,16 +691,20 @@ export async function syncAllDataFromSupabase() {
   const config = getSupabaseConfig();
   if (!config.enabled) return;
 
-  console.log("Supabase is enabled. Checking cloud data collections...");
+  console.log("Supabase is enabled. Syncing cloud data collections...");
 
   const fetchTable = async (tableName) => {
     try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 3500);
       const res = await fetch(`${config.supabaseUrl}/rest/v1/${tableName}?select=*`, {
         headers: {
           'apikey': config.supabaseKey,
           'Authorization': `Bearer ${config.supabaseKey}`
-        }
+        },
+        signal: controller.signal
       });
+      clearTimeout(timeoutId);
       if (res.ok) return await res.json();
     } catch (e) {
       console.log(`Note: Supabase table ${tableName} fetch omitted/offline. Using cached local fallback.`, e);
@@ -708,121 +712,56 @@ export async function syncAllDataFromSupabase() {
     return null;
   };
 
-  // Fetch all tables in parallel to dramatically speed up loading time and performance!
+  // Fetch all public storefront tables in parallel for maximum performance
   const [
     catData,
     prodData,
     banData,
     coupData,
     settingsData,
-    userData,
-    adminCredData,
-    ticketData
+    userData
   ] = await Promise.all([
     fetchTable('categories'),
     fetchTable('products'),
     fetchTable('banners'),
     fetchTable('coupons'),
     fetchTable('site_settings'),
-    fetchTable('users'),
-    fetchTable('admin_credentials'),
-    fetchTable('support_tickets')
+    fetchTable('users')
   ]);
 
   // 1. Categories
   if (catData !== null) {
-    if (catData.length === 0) {
-      const defaults = JSON.parse(localStorage.getItem('categories') || '[]');
-      if (defaults.length > 0) await saveCategoriesToSupabase(defaults);
-    } else {
-      localStorage.setItem('categories', JSON.stringify(catData));
-    }
+    localStorage.setItem('categories', JSON.stringify(catData));
   }
 
   // 2. Products
   if (prodData !== null) {
-    if (prodData.length === 0) {
-      const defaults = JSON.parse(localStorage.getItem('products') || '[]');
-      if (defaults.length > 0) await saveProductsToSupabase(defaults);
-    } else {
-      localStorage.setItem('products', JSON.stringify(prodData));
-    }
+    localStorage.setItem('products', JSON.stringify(prodData));
   }
 
   // 3. Banners
   if (banData !== null) {
-    if (banData.length === 0) {
-      const defaults = JSON.parse(localStorage.getItem('banners') || '[]');
-      if (defaults.length > 0) await saveBannersToSupabase(defaults);
-    } else {
-      localStorage.setItem('banners', JSON.stringify(banData));
-    }
+    localStorage.setItem('banners', JSON.stringify(banData));
   }
 
   // 4. Coupons
   if (coupData !== null) {
-    if (coupData.length === 0) {
-      const defaults = JSON.parse(localStorage.getItem('coupons') || '[]');
-      if (defaults.length > 0) await saveCouponsToSupabase(defaults);
-    } else {
-      localStorage.setItem('coupons', JSON.stringify(coupData));
-    }
+    localStorage.setItem('coupons', JSON.stringify(coupData));
   }
 
   // 5. Site Settings
   if (settingsData !== null) {
-    if (settingsData.length === 0) {
-      const defaults = JSON.parse(localStorage.getItem('siteSettings') || '{}');
-      if (Object.keys(defaults).length > 0) await saveSiteSettingsToSupabase(defaults);
-    } else {
-      const localSettings = JSON.parse(localStorage.getItem('siteSettings') || '{}');
+    if (settingsData.length > 0) {
       const remoteSettings = settingsData.find(s => s.id === 'default') || settingsData[0] || {};
-      delete remoteSettings.id;
-      delete remoteSettings.updated_at;
-      
-      // Merge remote settings on top of local settings to avoid wiping out properties not supported in remote schema
-      const mergedSettings = { ...localSettings };
-      for (const key of Object.keys(remoteSettings)) {
-        if (remoteSettings[key] !== null && remoteSettings[key] !== undefined) {
-          mergedSettings[key] = remoteSettings[key];
-        }
-      }
-      localStorage.setItem('siteSettings', JSON.stringify(mergedSettings));
+      const cleanSettings = { ...remoteSettings };
+      delete cleanSettings.id;
+      delete cleanSettings.updated_at;
+      localStorage.setItem('siteSettings', JSON.stringify(cleanSettings));
     }
   }
 
   // 6. Users
   if (userData !== null) {
-    if (userData.length === 0) {
-      const defaults = JSON.parse(localStorage.getItem('users') || '[]');
-      if (defaults.length > 0) await saveUsersToSupabase(defaults);
-    } else {
-      localStorage.setItem('users', JSON.stringify(userData));
-    }
-  }
-
-  // 7. Admin Credentials
-  if (adminCredData !== null) {
-    if (adminCredData.length === 0) {
-      const defaults = JSON.parse(localStorage.getItem('adminCredentials') || '{"username":"admin","password":"admin1"}');
-      if (defaults.username) await saveAdminCredentialsToSupabase(defaults);
-    } else {
-      const firstRow = adminCredData[0] || {};
-      const credentialsObj = {
-        username: firstRow.username || 'admin',
-        password: firstRow.password || 'admin1'
-      };
-      localStorage.setItem('adminCredentials', JSON.stringify(credentialsObj));
-    }
-  }
-
-  // 8. Support Tickets
-  if (ticketData !== null) {
-    if (ticketData.length === 0) {
-      const defaults = JSON.parse(localStorage.getItem('supportTickets') || '[]');
-      if (defaults.length > 0) await saveSupportTicketsToSupabase(defaults);
-    } else {
-      localStorage.setItem('supportTickets', JSON.stringify(ticketData));
-    }
+    localStorage.setItem('users', JSON.stringify(userData));
   }
 }
