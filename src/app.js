@@ -333,7 +333,7 @@ export function injectSharedLayouts() {
     const logoImgUrl = (settings.logoUrl && !settings.logoUrl.includes("images.unsplash.com")) ? settings.logoUrl : "/assets/ghorer-shad-logo.jpg";
     
     // 1. Logo image HTML - larger and prominent on mobile and desktop
-    const logoImgHtml = `<img src="${logoImgUrl}" alt="${name}" class="h-11 sm:h-14 md:h-16 w-auto object-contain max-w-[200px] sm:max-w-[280px] md:max-w-[320px] rounded transition group-hover:scale-105 duration-200" />`;
+    const logoImgHtml = `<img src="${logoImgUrl}" alt="${name}" decoding="async" class="h-11 sm:h-14 md:h-16 w-auto object-contain max-w-[200px] sm:max-w-[280px] md:max-w-[320px] rounded transition group-hover:scale-105 duration-200" />`;
 
     // 2. Logo Markup
     const logoMarkup = `
@@ -672,7 +672,7 @@ export function injectSharedLayouts() {
     const footerImgUrl = (settings.footerLogoUrl || settings.logoUrl) && !((settings.footerLogoUrl || settings.logoUrl).includes("images.unsplash.com")) ? (settings.footerLogoUrl || settings.logoUrl) : "/assets/ghorer-shad-logo.jpg";
     const footerLogoHeadingMarkup = `
       <div class="flex items-center">
-        <img src="${footerImgUrl}" class="h-14 md:h-16 w-auto object-contain max-w-[200px] rounded-lg bg-white p-1 shadow-sm">
+        <img src="${footerImgUrl}" decoding="async" class="h-14 md:h-16 w-auto object-contain max-w-[200px] rounded-lg bg-white p-1 shadow-sm">
       </div>
     `;
 
@@ -876,7 +876,7 @@ function initNavSearch() {
       } else {
         box.innerHTML = filtered.slice(0, 5).map(p => `
           <a href="/product.html?id=${p.id}" class="flex items-center gap-3 p-3 hover:bg-gray-50 transition border-b border-gray-50 last:border-none cursor-pointer">
-            <img src="${p.image}" class="w-10 h-10 object-cover rounded-lg">
+            <img src="${p.image}" loading="lazy" decoding="async" class="w-10 h-10 object-cover rounded-lg">
             <div class="text-left">
               <h6 class="text-xs font-semibold text-gray-800 line-clamp-1">${p.name}</h6>
               <div class="flex items-center gap-2 text-[10px] mt-0.5">
@@ -1028,7 +1028,7 @@ function renderCartPageInside() {
   container.innerHTML = cart.map(item => `
     <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-gray-100 pb-5 mb-5 last:border-none last:pb-0 font-sans">
       <div class="flex gap-4 items-center mb-4 sm:mb-0">
-        <img src="${item.image}" class="w-16 h-16 object-cover rounded-xl border border-gray-50 flex-shrink-0">
+        <img src="${item.image}" loading="lazy" decoding="async" class="w-16 h-16 object-cover rounded-xl border border-gray-50 flex-shrink-0">
         <div>
           <h5 class="text-sm font-bold text-gray-800 line-clamp-1">${item.name}</h5>
           <p class="text-xs text-gray-400 mt-0.5">মূল্য: ৳${item.discountPrice || item.price}</p>

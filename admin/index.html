@@ -2543,12 +2543,24 @@ Grand Total Payable Amount: ৳${activeOrderDetailObj.totalPrice}
       window.renderImageUploadSlots();
     }
 
+    function convertCanvasToWebp(canvas, quality = 0.80) {
+      try {
+        const webpDataUrl = canvas.toDataURL('image/webp', quality);
+        if (webpDataUrl && webpDataUrl.startsWith('data:image/webp')) {
+          return webpDataUrl;
+        }
+      } catch (e) {
+        console.warn("WebP export not supported or failed, falling back to JPEG:", e);
+      }
+      return canvas.toDataURL('image/jpeg', quality);
+    }
+
     window.handleProductImgFileUpload = function(event) {
       const file = event.target.files[0];
       if (!file) return;
 
       if (file.size > 1 * 1024 * 1024) {
-        triggerToast("সাইজ বড় হওয়ায় ছবিটি অটোমেটিক প্রসেস ও কমপ্রেস হচ্ছে...", "warning");
+        triggerToast("সাইজ বড় হওয়ায় ছবিটি অটোমেটিক WebP ফরম্যাটে কমপ্রেস হচ্ছে...", "warning");
       }
 
       const reader = new FileReader();
@@ -2573,7 +2585,7 @@ Grand Total Payable Amount: ৳${activeOrderDetailObj.totalPrice}
           const ctx = canvas.getContext('2d');
           ctx.drawImage(img, 0, 0, width, height);
           
-          const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.65);
+          const compressedDataUrl = convertCanvasToWebp(canvas, 0.80);
           window.currentProductImages[window.currentActiveImageIndex] = compressedDataUrl;
           
           if (window.currentActiveImageIndex === 0) {
@@ -2581,7 +2593,7 @@ Grand Total Payable Amount: ৳${activeOrderDetailObj.totalPrice}
           }
           
           window.renderImageUploadSlots();
-          triggerToast("ছবিটি কমপ্রেস ও আপলোড হয়েছে!", "success");
+          triggerToast("ছবিটি WebP ফরম্যাটে কনভার্ট ও আপলোড হয়েছে!", "success");
         };
       };
       reader.readAsDataURL(file);
@@ -2612,15 +2624,33 @@ Grand Total Payable Amount: ৳${activeOrderDetailObj.totalPrice}
           const reader = new FileReader();
           reader.onloadend = function() {
             const base64data = reader.result;
-            window.currentProductImages[window.currentActiveImageIndex] = base64data;
-            if (window.currentActiveImageIndex === 0) {
-              document.getElementById('pm-image').value = base64data;
-            }
-            window.renderImageUploadSlots();
-            triggerToast("এআই দিয়ে পণ্যের ছবি তৈরি সফল হয়েছে!", "success");
-            btn.disabled = false;
-            btn.innerHTML = origText;
-            promptInput.value = '';
+            const img = new Image();
+            img.src = base64data;
+            img.onload = function() {
+              const canvas = document.createElement('canvas');
+              const MAX_WIDTH = 500;
+              let width = img.width;
+              let height = img.height;
+              if (width > MAX_WIDTH) {
+                height = Math.round((height * MAX_WIDTH) / width);
+                width = MAX_WIDTH;
+              }
+              canvas.width = width;
+              canvas.height = height;
+              const ctx = canvas.getContext('2d');
+              ctx.drawImage(img, 0, 0, width, height);
+              
+              const webpDataUrl = convertCanvasToWebp(canvas, 0.80);
+              window.currentProductImages[window.currentActiveImageIndex] = webpDataUrl;
+              if (window.currentActiveImageIndex === 0) {
+                document.getElementById('pm-image').value = webpDataUrl;
+              }
+              window.renderImageUploadSlots();
+              triggerToast("এআই দিয়ে পণ্যের WebP ছবি তৈরি সফল হয়েছে!", "success");
+              btn.disabled = false;
+              btn.innerHTML = origText;
+              promptInput.value = '';
+            };
           };
           reader.readAsDataURL(blob);
         } catch (err) {
@@ -2653,7 +2683,7 @@ Grand Total Payable Amount: ৳${activeOrderDetailObj.totalPrice}
         img.src = rawDataUrl;
         img.onload = function() {
           const canvas = document.createElement('canvas');
-          const MAX_SIZE = 250;
+          const MAX_SIZE = 300;
           let width = img.width;
           let height = img.height;
           
@@ -2672,9 +2702,9 @@ Grand Total Payable Amount: ৳${activeOrderDetailObj.totalPrice}
           const ctx = canvas.getContext('2d');
           ctx.drawImage(img, 0, 0, width, height);
           
-          const compressedDataUrl = canvas.toDataURL('image/png', 0.8);
+          const compressedDataUrl = convertCanvasToWebp(canvas, 0.85);
           document.getElementById('set-main-logo-url').value = compressedDataUrl;
-          triggerToast("ব্র্যান্ড লোগো অপ্টিমাইজড ও লোডেড!", "success");
+          triggerToast("ব্র্যান্ড লোগো WebP ফরম্যাটে অপ্টিমাইজড ও লোডেড!", "success");
         };
       };
       reader.readAsDataURL(file);
@@ -2696,9 +2726,9 @@ Grand Total Payable Amount: ৳${activeOrderDetailObj.totalPrice}
           const ctx = canvas.getContext('2d');
           ctx.drawImage(img, 0, 0, 32, 32);
           
-          const compressedDataUrl = canvas.toDataURL('image/x-icon', 0.9);
+          const compressedDataUrl = convertCanvasToWebp(canvas, 0.90);
           document.getElementById('set-main-favicon-url').value = compressedDataUrl;
-          triggerToast("ফেভিকন তৈরি ও সংযুক্ত হয়েছে!", "success");
+          triggerToast("ফেভিকন WebP ফরম্যাটে সংযুক্ত হয়েছে!", "success");
         };
       };
       reader.readAsDataURL(file);
@@ -2717,7 +2747,7 @@ Grand Total Payable Amount: ৳${activeOrderDetailObj.totalPrice}
         img.src = rawDataUrl;
         img.onload = function() {
           const canvas = document.createElement('canvas');
-          const MAX_SIZE = 250;
+          const MAX_SIZE = 300;
           let width = img.width;
           let height = img.height;
           
@@ -2736,9 +2766,9 @@ Grand Total Payable Amount: ৳${activeOrderDetailObj.totalPrice}
           const ctx = canvas.getContext('2d');
           ctx.drawImage(img, 0, 0, width, height);
           
-          const compressedDataUrl = canvas.toDataURL('image/png', 0.8);
+          const compressedDataUrl = convertCanvasToWebp(canvas, 0.85);
           document.getElementById('set-foot-logo-url').value = compressedDataUrl;
-          triggerToast("ফুটার লোগো অপ্টিমাইজড ও আপলোড সফল!", "success");
+          triggerToast("ফুটার লোগো WebP ফরম্যাটে অপ্টিমাইজড ও আপলোড সফল!", "success");
         };
       };
       reader.readAsDataURL(file);
@@ -2773,7 +2803,7 @@ Grand Total Payable Amount: ৳${activeOrderDetailObj.totalPrice}
           const ctx = canvas.getContext('2d');
           ctx.drawImage(img, 0, 0, width, height);
 
-          const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.7);
+          const compressedDataUrl = convertCanvasToWebp(canvas, 0.80);
           
           // Set value and preview
           document.getElementById('ban-inp-url').value = compressedDataUrl;
@@ -2785,7 +2815,7 @@ Grand Total Payable Amount: ৳${activeOrderDetailObj.totalPrice}
             previewBox.classList.remove('hidden');
           }
 
-          triggerToast("ব্যানার ইমেজ সফলভাবে কমপ্রেস ও লোড হয়েছে!", "success");
+          triggerToast("ব্যানার ইমেজ WebP ফরম্যাটে কমপ্রেস ও লোড হয়েছে!", "success");
         };
       };
       reader.readAsDataURL(file);
@@ -2817,20 +2847,37 @@ Grand Total Payable Amount: ৳${activeOrderDetailObj.totalPrice}
           const reader = new FileReader();
           reader.onloadend = function() {
             const base64data = reader.result;
-            
-            document.getElementById('ban-inp-url').value = base64data;
-            
-            const previewBox = document.getElementById('ban-create-preview-box');
-            const previewImg = document.getElementById('ban-create-preview');
-            if (previewBox && previewImg) {
-              previewImg.src = base64data;
-              previewBox.classList.remove('hidden');
-            }
+            const img = new Image();
+            img.src = base64data;
+            img.onload = function() {
+              const canvas = document.createElement('canvas');
+              const MAX_WIDTH = 1200;
+              let width = img.width;
+              let height = img.height;
+              if (width > MAX_WIDTH) {
+                height = Math.round((height * MAX_WIDTH) / width);
+                width = MAX_WIDTH;
+              }
+              canvas.width = width;
+              canvas.height = height;
+              const ctx = canvas.getContext('2d');
+              ctx.drawImage(img, 0, 0, width, height);
+              const compressedDataUrl = convertCanvasToWebp(canvas, 0.80);
 
-            triggerToast("এআই ব্যানার ইমেজ জেনারেট সফল হয়েছে!", "success");
-            btn.disabled = false;
-            btn.innerHTML = origText;
-            promptInput.value = '';
+              document.getElementById('ban-inp-url').value = compressedDataUrl;
+              
+              const previewBox = document.getElementById('ban-create-preview-box');
+              const previewImg = document.getElementById('ban-create-preview');
+              if (previewBox && previewImg) {
+                previewImg.src = compressedDataUrl;
+                previewBox.classList.remove('hidden');
+              }
+
+              triggerToast("এআই ব্যানার WebP ইমেজ জেনারেট সফল হয়েছে!", "success");
+              btn.disabled = false;
+              btn.innerHTML = origText;
+              promptInput.value = '';
+            };
           };
           reader.readAsDataURL(blob);
         } catch (err) {
@@ -3076,7 +3123,7 @@ Grand Total Payable Amount: ৳${activeOrderDetailObj.totalPrice}
           const ctx = canvas.getContext('2d');
           ctx.drawImage(img, 0, 0, width, height);
           
-          const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.7);
+          const compressedDataUrl = convertCanvasToWebp(canvas, 0.80);
           document.getElementById('cat-inp-image').value = compressedDataUrl;
           
           const previewContainer = document.getElementById('cat-image-preview-container');
@@ -3084,7 +3131,7 @@ Grand Total Payable Amount: ৳${activeOrderDetailObj.totalPrice}
           previewImg.src = compressedDataUrl;
           previewContainer.classList.remove('hidden');
           
-          triggerToast("ছবিটি কমপ্রেস ও আপলোড হয়েছে!", "success");
+          triggerToast("ছবিটি WebP ফরম্যাটে অটোমেটিক কনভার্ট ও আপলোড হয়েছে!", "success");
         };
       };
       reader.readAsDataURL(file);

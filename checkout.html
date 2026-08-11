@@ -1056,7 +1056,7 @@
 
         tray.innerHTML = cart.map(item => `
           <div class="flex items-center gap-2.5 pb-3 border-b border-gray-100 last:border-none last:pb-0 font-sans group">
-            <img src="${item.image}" referrerPolicy="no-referrer" class="w-11 h-11 object-cover rounded-xl border border-gray-100 flex-shrink-0">
+            <img src="${item.image}" loading="lazy" decoding="async" referrerPolicy="no-referrer" class="w-11 h-11 object-cover rounded-xl border border-gray-100 flex-shrink-0">
             <div class="flex-grow text-left">
               <h6 class="text-[12px] font-bold text-slate-800 line-clamp-1 b-f leading-tight">${item.name}</h6>
               <div class="flex items-center gap-2 mt-1">

@@ -251,7 +251,7 @@
             : "border border-gray-200 hover:border-amber-400 opacity-80 hover:opacity-100";
           return `
             <button class="gallery-thumb-btn ${borderClass} rounded-lg overflow-hidden aspect-square p-0.5 bg-white cursor-pointer select-none transition shrink-0" onclick="changeMainDetailImage(this, '${img}')">
-              <img src="${img}" class="w-full h-full object-cover rounded" referrerPolicy="no-referrer">
+              <img src="${img}" loading="lazy" decoding="async" class="w-full h-full object-cover rounded" referrerPolicy="no-referrer">
             </button>
           `;
         }).join('');
@@ -297,7 +297,7 @@
 
             <!-- Main Big Display Frame -->
             <div class="flex-grow border border-gray-200/80 rounded-xl bg-white overflow-hidden aspect-square flex items-center justify-center p-3 relative shadow-inner">
-              <img id="main-detail-img" src="${product.image}" class="max-h-full max-w-full object-contain transition-all duration-300" alt="${product.name}" referrerPolicy="no-referrer">
+              <img id="main-detail-img" src="${product.image}" fetchpriority="high" decoding="async" class="max-h-full max-w-full object-contain transition-all duration-300" alt="${product.name}" referrerPolicy="no-referrer">
             </div>
           </div>
 
